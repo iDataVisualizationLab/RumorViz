@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tweeter Data</title>
+
+
+    <style> /* set the CSS */
+
+        body { font: 12px Arial;}
+
+        path { 
+            stroke: steelblue;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+        circle{
+          stroke: blue;
+          fill: white;
+          margin-right: 10px;
+        }
+        .tooltip {
+          position: absolute;
+          width: 400px;
+          height: 100px;
+          pointer-events: none;
+        }
+
+    </style>  
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  </head>
+  <body>
+
+      <script>
+              // Set the dimensions of the canvas / graph
+              var margin = {top: 30, right: 20, bottom: 30, left: 50},
+              width = 1000 - margin.left - margin.right,
+              height = 600 - margin.top - margin.bottom;
+
+              // Set the ranges
+              var x = d3.scaleTime().range([0, width]);
+              var y = d3.scaleLinear().domain([0,100]).range([height, 0]);
+
+              // Adds the svg canvas
+              var svg = d3.select("body")
+                  .append("svg")
+                      .attr("width", width + margin.left + margin.right)
+                      .attr("height", height + margin.top + margin.bottom)
+                  .append("g")
+                      .attr("transform", 
+                            "translate(" + margin.left + "," + margin.top + ")");
+              // add the tooltip area to the webpage
+              var tooltip = d3.select("body").append("div")
+                  .attr("class", "tooltip")
+                  .style("opacity", 0);
+
+
+              format = d3.timeFormat("%d %m %y (%H: %M h)");
+
+          d3.json("rumor.json", function(error, data) {
+            
+            console.log(data);
+              data.forEach(function(d) {
+                   d.tweetText =  d.text;
+
+                   d.date = Date.parse(d.created_at);
+
+                    
+                 });
+
+                console.log(data);
+
+              x.domain(d3.extent(data, function(d) { return d.date; }));
+
+              // Add the valueline path.
+              
+
+              // Add the scatterplot
+              svg.selectAll("dot")
+                  .data(data)
+                .enter().append("circle")
+                  .attr("r", 10)
+                  .attr("cx", function(d) { return x(d.date); })
+                  .attr("cy", 200)
+                  .on("mouseover", function(d) {
+                      tooltip.transition()
+                           .duration(200)
+                           .style("opacity", .9);
+                      tooltip.html(d["tweetText"] + "<br/>" + d.created_at)
+                           .style("left", (d3.event.pageX + 5) + "px")
+                           .style("top", (d3.event.pageY - 70) + "px");
+                  })
+                  .on("mouseout", function(d) {
+                      tooltip.transition()
+                           .duration(500)
+                           .style("opacity", 0);
+                  });
+
+
+
+            });
+      </script>
+
+  </body>
+
+</html>
