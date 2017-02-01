@@ -1,4 +1,0 @@
-1. Max time of tweet 
-2. Min time of tweet
-3. Number of bin ---> Numbers of histogram bar
-4. Size of bin ---> This mean the size of histogram bar

@@ -1,0 +1,170 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <body>
+    <title>twitter data Vizualization</title>
+    <style>
+      .d3-tip {
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(245, 245, 245, 0.90) !important;
+      color: #000;
+      border-radius: 2px;
+      font-size: 13px;
+      margin-top: 80px;
+
+      }
+      .bar rect {
+      fill: steelblue;
+      shape-rendering: crispEdges;
+      }
+      .bar rect:hover{
+      fill: rgba(0,0,0,.8);
+      }
+      .axis path, .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+      }
+      #twitterViz{
+        margin-top: 50px;
+        margin-right: 20px;
+      }
+      .singletwitt{
+        clear: both;
+        border-bottom: 1px solid #777;
+        margin-bottom: 10px;
+        text-align: justify;
+        font-weight: normal;
+        min-width: 700px;
+        font-size: 14px;
+        font-family: Arial;
+
+
+      }
+      .singletwitt b{
+        font-size: 15px;
+      }
+      .twittTextInf{
+          height: 32px;
+
+      }
+      .singletwitt img{
+        float: left;
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+      }
+      .twittText{
+        float: left;
+        width: 75%;
+        font-size: 14px;
+        background-color: rgba(0, 0, 0, .1);
+        padding: 1px;
+        padding-left: 5px;
+        padding-right: 5px;
+
+      }
+      .twittDate{
+        width: 22%;
+        float: right;
+        font-size: 14px;
+        text-align: left;
+      }
+      .twittDate img{
+        width: 13px;
+        height: 11px;
+        margin-right: 1px;
+        margin-top: 1px;
+      }
+      .twittTerms{
+        clear: both;
+        max-width: 900px;
+        font-size: 13px;
+        color: #111;
+
+      }
+      div{
+          margin-top: 1px;
+      }
+      text{
+        font-size: 13px;
+      }
+      svg{
+        margin-left: 100px;
+      }
+      body{
+        margin: 100px;
+      }
+    </style>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script src="d3.layout.cloud.js"></script>
+    
+    <script>
+
+   var terms = [];
+
+   function wordCloud(wordList){
+    console.log(wordList);
+
+    termsList = wordList.map(function(d) {return {text: d, size: 10 + Math.random() * 90}});
+
+    var color = d3.scale.category20();
+
+    d3.layout.cloud().size([1000, 300])
+            .words(termsList)
+            .rotate(0)
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+
+    function draw(termsList) {
+        d3.select("body").append("svg")
+                .attr("width", 1000)
+                .attr("height", 300)
+                .attr("class", "wordcloud")
+                .append("g")
+                // without the transform, words words would get cutoff to the left and top, they would
+                // appear outside of the SVG area
+                .attr("transform", "translate(320,200)")
+                .selectAll("text")
+                .data(termsList)
+                .enter().append("text")
+                .style("font-size", function(d) { return (d.size/3) + "px"; })
+                 .style("fill", function(d, i) { return color(i); })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+    }
+  }
+
+
+    // Read in .csv data and make graph
+d3.json("rumor.json", function(error, data) {
+ 
+  var parseDate = d3.time.format("%Y-%m-%d");
+
+  var format = d3.time.format("%Y-%m-%d");
+
+         data.forEach(function(d) {
+                   d.twittText =  d.text;
+                   d.date = Date.parse(d.created_at);
+                   d.newDate = new Date(d.date);
+                   terms = d.topsy.terms;
+                   wordCloud(terms);
+                    });
+
+      //  console.log(termsList);
+        
+           
+
+}); 
+
+</script>
+
+  </body>
+</html>

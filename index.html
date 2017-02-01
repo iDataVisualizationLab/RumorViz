@@ -39,6 +39,7 @@
         font-weight: normal;
         min-width: 700px;
         font-size: 14px;
+        font-family: Arial;
 
 
       }
@@ -66,21 +67,30 @@
 
       }
       .twittDate{
-        width: 20%;
+        width: 22%;
         float: right;
+        font-size: 14px;
+        text-align: left;
       }
       .twittDate img{
-        width: 12px;
+        width: 13px;
         height: 11px;
+        margin-right: 1px;
+        margin-top: 1px;
       }
       .twittTerms{
+        clear: both;
         max-width: 900px;
-        font-size: 14px;
+        font-size: 13px;
         color: #111;
+        text-align: left;
 
       }
       div{
           margin-top: 1px;
+      }
+      text{
+        font-size: 13px;
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -147,7 +157,7 @@ function twitterViz(data) {
           console.log(img);
 
             histdata[bin].numfill += 1;
-            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "heart.png" + "\">" + d.favorite_count + ",  " + formatDate(d.newDate)+ "<br> "  + d.locData + "." + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
+            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate)+ "<br> "  + d.locData + "." + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
 
             
         }
@@ -211,7 +221,8 @@ function twitterViz(data) {
       .attr("transform", function(d, i) { return "translate(" + 
            x2(i * binsize + minbin) + "," + y(d.numfill) + ")"; })
       .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
+      .on('mouseout', tip.hide)
+      .on('click', tip.show);
 
     // add rectangles of correct size at correct location
     bar.append("rect")
