@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
   <body>
@@ -12,6 +13,9 @@
       border-radius: 2px;
       font-size: 13px;
       margin-top: 80px;
+      max-width: 945px;
+    margin-left: 35px;
+
       }
       .bar rect {
       fill: steelblue;
@@ -26,8 +30,10 @@
       shape-rendering: crispEdges;
       }
       #twitterViz{
-        margin-top: 50px;
+        margin-top: 20px;
         margin-right: 20px;
+        margin-left: 100px;
+        width: 90%;
       }
       .singletwitt{
         clear: both;
@@ -38,12 +44,17 @@
         min-width: 700px;
         font-size: 14px;
         font-family: Arial;
+        display: block;
+        visibility: show;
+
+
       }
       .singletwitt b{
         font-size: 15px;
       }
       .twittTextInf{
           height: 32px;
+
       }
       .singletwitt img{
         float: left;
@@ -59,6 +70,7 @@
         padding: 1px;
         padding-left: 5px;
         padding-right: 5px;
+
       }
       .twittDate{
         width: 22%;
@@ -78,6 +90,7 @@
         font-size: 13px;
         color: #111;
         text-align: left;
+
       }
       div{
           margin-top: 1px;
@@ -87,8 +100,10 @@
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script src="d3.tip.v0.6.3.js"></script>
     <script>
+
+
  function errorDetect(d){                  
                   try {
                         d.topsy.location.tags.admin0;
@@ -97,37 +112,48 @@
                         return  "error";
                     }
               }
+
 function twitterViz(data) {
   console.log(data);
+
   var parseDate = d3.time.format("%m/%d/%Y %I:%M:%S %p").parse;
     var formatHour = d3.time.format("%m/%d, %H:%M");
      var formatDate = d3.time.format("%m-%d-%Y, %H:%M");
     var formatCount = d3.format(",.0f");
+
+
   var minDate = (d3.min(data, function(d) { return d.newDate; }));
   var maxDate = (d3.max(data, function(d) { return d.newDate; }));
   console.log(maxDate);
+
       maxDateMargin = maxDate;
        maxDateMargin.setHours(maxDateMargin.getHours()+1);
       console.log(maxDateMargin);
+
     var binsize = 1522000;
     var minbin = 1411870522000;
     var maxbin = 1411948709000;
     var numbins = (maxbin - minbin) / binsize;
   
+
     // whitespace on either side of the bars 
     var binmargin = .2; 
     var margin = {top: 10, right: 30, bottom: 50, left: 60};
-    var width = 800 - margin.left - margin.right;
-    var height = 550 - margin.top - margin.bottom;
+    var width = 1200 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+
     // Set the limits of the x axis
     var xmin = minbin+10000;
     var xmax = minbin+10000; 
   
+
     histdata = new Array(Math.floor(numbins));
     
     for (var i = 0; i < numbins; i++) {
         histdata[i] = { numfill: 0, meta: "" };
     }
+
+
     // Fill histdata with y-axis values and meta data
     data.forEach(function(d) {
         var bin = Math.floor((d.date - minbin) / binsize); // 48.75 - 36 / 2 = 6
@@ -135,34 +161,44 @@ function twitterViz(data) {
          
        var img =  "<img src=\"" + d.user.profile_image_url + "\">"  +"onError=\"this.onerror=null;\" />";
           console.log(img);
+
             histdata[bin].numfill += 1;
             histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate)+ "<br> "  + d.locData + "." + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
+
             
         }
     });
+
     // This scale is for determining the widths of the histogram bars
+
     var x = d3.scale.linear()
       .domain([0, (maxDate - minDate)])
       .range([0, width]);
+
     // Scale for the placement of the bars
     var x2 = d3.time.scale()
       .domain([minDate, maxDate])
       .range([0, width]);
+
     
     var y = d3.scale.linear()
       .domain([0, d3.max(histdata, function(d) { 
                         return d.numfill; 
                         })])
       .range([height, 0]);
+
     var xAxis = d3.svg.axis()
       .scale(x2)
       .orient("bottom")
       .ticks(50)
       .tickFormat(formatHour);
+
+
     var yAxis = d3.svg.axis()
       .scale(y)
       .ticks(10)
       .orient("left");
+
     var tip = d3.tip()
       .attr('class', 'd3-tip')
       .direction('e')
@@ -170,6 +206,7 @@ function twitterViz(data) {
       .html(function(d) {
         return '<table id="tiptable">' + d.meta + "</table>";
     });
+
     // put the graph in the "twitterViz" div
     var svg = d3.select("#twitterViz").append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -177,7 +214,10 @@ function twitterViz(data) {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + 
                         margin.top + ")");
+
+
     svg.call(tip);
+
     // set up the bars
     var bar = svg.selectAll(".bar")
       .data(histdata)
@@ -187,12 +227,14 @@ function twitterViz(data) {
            x2(i * binsize + minbin) + "," + y(d.numfill) + ")"; })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
-      .on('click', tip.show);
+      .on('click', tip.visible);
+
     // add rectangles of correct size at correct location
     bar.append("rect")
       .attr("x", "10")
       .attr("width", x(binsize - 2 * binmargin))
       .attr("height", function(d) { return height - y(d.numfill); });
+
     // add the x axis and x-label
     svg.append("g")
       .attr("class", "x axis")
@@ -201,12 +243,14 @@ function twitterViz(data) {
       .selectAll("text")  
       .attr("x", "-50")
       .attr("transform", "rotate(-90)");
+
     svg.append("text")
       .attr("class", "xlabel")
       .attr("text-anchor", "middle")
       .attr("x", width / 2)
-      .attr("y", 600)
+      .attr("y", 550)
       .text("Time");
+
     // add the y axis and y-label
     svg.append("g")
       .attr("class", "y axis")
@@ -221,15 +265,21 @@ function twitterViz(data) {
       .style("text-anchor", "middle")
       .text("Number of twitts");
 }
+
 // Read in .csv data and make graph
 d3.json("rumor.json", function(error, data) {
  
   var parseDate = d3.time.format("%Y-%m-%d");;
+
   var format = d3.time.format("%Y-%m-%d");
+
          data.forEach(function(d) {
                    d.twittText =  d.text;
+
                    d.date = Date.parse(d.created_at);
+
                    d.newDate = new Date(d.date);
+
               var errorLoc =  errorDetect(d);
               console.log(errorLoc);             
             if(errorLoc=="error")
@@ -237,13 +287,18 @@ d3.json("rumor.json", function(error, data) {
             else{
             d.locData = d.topsy.location.tags.admin0;
                         }
+
        });
+
            
+
              twitterViz(data);
    
 }); 
     </script>
 
     <div id="twitterViz" class="graph"></div>
+
+    <div id="twittData"></div>
   </body>
 </html>
