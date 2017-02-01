@@ -1,0 +1,206 @@
+{
+  "contributors": null,
+  "truncated": false,
+  "text": "'Airborne' Ebola Virus - Public Health Agency of Canada!: http://t.co/bmuI4WA6DS via @YouTube RED ALERT!",
+  "in_reply_to_status_id": null,
+  "id": 516064125924175872,
+  "favorite_count": 0,
+  "topsy": {
+    "tokens": [
+      [
+        "airborne"
+      ],
+      [
+        "ebola"
+      ],
+      [
+        "virus"
+      ],
+      [
+        "public"
+      ],
+      [
+        "health"
+      ],
+      [
+        "agency"
+      ],
+      [
+        "of"
+      ],
+      [
+        "canada"
+      ],
+      [
+        "via"
+      ],
+      [
+        "@youtube"
+      ],
+      [
+        "red"
+      ],
+      [
+        "alert"
+      ]
+    ],
+    "terms": [
+      "airborne",
+      "ebola",
+      "airborne ebola",
+      "virus",
+      "ebola virus",
+      "public",
+      "virus public",
+      "health",
+      "public health",
+      "agency",
+      "health agency",
+      "canada",
+      "agency canada",
+      "@youtube",
+      "red",
+      "alert",
+      "red alert"
+    ],
+    "pu": "http://docid.twitter.com/516064125924175872",
+    "profanity": 1,
+    "nonterms": [
+      "via",
+      "canada via",
+      "via @youtube",
+      "@youtube red"
+    ],
+    "cts": 1411874250,
+    "searchd": "airborne ebola virus punc_dash public health agency of canada <exclamation> <colon> via @youtube red alert <exclamation>",
+    "metrics": {
+      "citations": {
+        "influential": 0,
+        "total": 3
+      }
+    },
+    "mt": "twitter:status",
+    "document_info": {
+      "lang": "en",
+      "sentiment": 0,
+      "sentiment_abs": 0.08333,
+      "sentiment_config_version": "0.0",
+      "sentiment_rel": -0.08333,
+      "token_version": "v1.0",
+      "sentiment_version": "1.0"
+    },
+    "location": {
+      "location_confidence": 0.8,
+      "tags": {
+        "city": "ho chi minh city",
+        "name": "ho chi minh city",
+        "admin2": "H? Chí Minh city",
+        "admin1": "Ðông Nam B?",
+        "admin0": "Vietnam",
+        "iso2": "VN"
+      },
+      "place_id": 75593,
+      "search_id": "vn/dong_nam_b/h_chi_minh_city/ho_chi_minh_city",
+      "place_ids": [
+        232,
+        6700,
+        41714,
+        75593
+      ],
+      "method": "inference1"
+    },
+    "urls": [
+      {
+        "url": "http://bit.ly/V4hxYY",
+        "type": "video",
+        "expanded_url": "http://www.youtube.com/watch?v=k38ttMBU0UE&feature=youtu.be"
+      }
+    ],
+    "ti": 1411874711,
+    "extracted": true
+  },
+  "source": "<a href=\"http://ifttt.com\" rel=\"nofollow\">IFTTT</a>",
+  "retweeted": false,
+  "coordinates": null,
+  "entities": {
+    "symbols": [],
+    "user_mentions": [
+      {
+        "indices": [
+          85,
+          93
+        ],
+        "id_str": "10228272",
+        "screen_name": "YouTube",
+        "name": "YouTube",
+        "id": 10228272
+      }
+    ],
+    "trends": [],
+    "hashtags": [],
+    "urls": [
+      {
+        "indices": [
+          58,
+          80
+        ],
+        "url": "http://t.co/bmuI4WA6DS",
+        "expanded_url": "http://bit.ly/V4hxYY",
+        "display_url": "bit.ly/V4hxYY"
+      }
+    ]
+  },
+  "in_reply_to_screen_name": null,
+  "in_reply_to_user_id": null,
+  "retweet_count": 1,
+  "id_str": "516064125924175872",
+  "favorited": false,
+  "user": {
+    "follow_request_sent": null,
+    "profile_use_background_image": true,
+    "geo_enabled": false,
+    "description": "Libertarian Who, Believes in Life, Liberty & Pursuit of Happiness, w\\Responsibility for ones actions. molṑn labé - ΜΟΛΩΝ ΛΑΒΕ #TGDN",
+    "verified": false,
+    "profile_image_url_https": "https://pbs.twimg.com/profile_images/2829023662/5ab715708503c430a78564276517c474_normal.png",
+    "profile_sidebar_fill_color": "260100",
+    "is_translator": false,
+    "id": 5950272,
+    "profile_text_color": "FF082D",
+    "followers_count": 17447,
+    "profile_sidebar_border_color": "FC0314",
+    "id_str": "5950272",
+    "default_profile_image": false,
+    "location": "Texas",
+    "utc_offset": null,
+    "statuses_count": 1119127,
+    "profile_background_color": "2B0101",
+    "friends_count": 9181,
+    "profile_link_color": "CC9131",
+    "profile_image_url": "http://pbs.twimg.com/profile_images/2829023662/5ab715708503c430a78564276517c474_normal.png",
+    "notifications": null,
+    "profile_background_image_url_https": "https://pbs.twimg.com/profile_background_images/102491029/chinese-landscape_1024x768.jpg",
+    "profile_banner_url": "https://pbs.twimg.com/profile_banners/5950272/1355520650",
+    "profile_background_image_url": "http://pbs.twimg.com/profile_background_images/102491029/chinese-landscape_1024x768.jpg",
+    "name": "Cary",
+    "lang": "en",
+    "profile_background_tile": true,
+    "favourites_count": 7070,
+    "screen_name": "Carydc",
+    "url": "http://defendconstitutionofusa.blogspot.com/",
+    "created_at": "Fri May 11 04:54:09 +0000 2007",
+    "contributors_enabled": false,
+    "time_zone": null,
+    "protected": false,
+    "default_profile": false,
+    "following": null,
+    "listed_count": 390
+  },
+  "geo": null,
+  "in_reply_to_user_id_str": null,
+  "possibly_sensitive": true,
+  "lang": "en",
+  "created_at": "Sun Sep 28 03:17:30 +0000 2014",
+  "filter_level": "low",
+  "in_reply_to_status_id_str": null,
+  "place": null
+}

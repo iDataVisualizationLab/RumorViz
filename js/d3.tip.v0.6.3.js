@@ -41,7 +41,6 @@ d3.tip = function() {
 
     while(i--) nodel.classed(directions[i], false)
     coords = direction_callbacks.get(dir).apply(this)
-console.log(coords.left + "," + coords.top)
    if(coords.left > 750)
    {
     if(coords.left > 950)
@@ -56,7 +55,7 @@ console.log(coords.left + "," + coords.top)
 
 
    if(coords.top < 0)
-     coords.top = -50
+     coords.top = -90
    
    if(coords.top > 150) 
    {

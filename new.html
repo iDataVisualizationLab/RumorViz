@@ -96,7 +96,7 @@
           margin-top: 1px;
       }
       text{
-        font-size: 13px;
+        
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -166,6 +166,7 @@ function twitterViz(data) {
             histdata[bin].numfill += 1;
             histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate) + ", " + d.locData + "." + "<br> " + "Retweet:"+ d.retweet_count + " ," + "Sentiment:" + d.topsy.document_info.sentiment + ", " + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
 
+              
             
         }
     });

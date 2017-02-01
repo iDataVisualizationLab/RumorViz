@@ -109,37 +109,59 @@
 
    function wordCloud(wordList){
     console.log(wordList);
+     
+        var words = wordList.reduce(function(wordsCount, currentWord){
+            if(typeof wordsCount[currentWord] !== "undefined"){
+              wordsCount[currentWord]++; 
+              return wordsCount;
+            } else {
+                wordsCount[currentWord]=1; 
+                return wordsCount;
+            }
+        }, {});
 
-    termsList = wordList.map(function(d) {return {text: d, size: 10 + Math.random() * 90}});
+        var wordsArray = [];
+        var i = 0;
+        for(var x in words){
+          wordsArray[i] = ({text:x, size: words[x]}); 
+          i++;
+            //wordsArray.push(x + ": " + words[x]);
+        }
 
+console.log(wordsArray);
+
+
+
+ 
     var color = d3.scale.category20();
 
-    d3.layout.cloud().size([1000, 300])
-            .words(termsList)
+    d3.layout.cloud().size([1300, 700])
+            .words(wordsArray)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
             .on("end", draw)
             .start();
 
-    function draw(termsList) {
+    function draw(words) {
         d3.select("body").append("svg")
-                .attr("width", 1000)
-                .attr("height", 300)
+                .attr("width", 1300)
+                .attr("height", 700)
                 .attr("class", "wordcloud")
                 .append("g")
                 // without the transform, words words would get cutoff to the left and top, they would
                 // appear outside of the SVG area
                 .attr("transform", "translate(320,200)")
                 .selectAll("text")
-                .data(termsList)
+                .data(words)
                 .enter().append("text")
-                .style("font-size", function(d) { return (d.size/3) + "px"; })
-                 .style("fill", function(d, i) { return color(i); })
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("fill", function(d, i) { return color(i); })
                 .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
                 .text(function(d) { return d.text; });
     }
+    
   }
 
 
@@ -149,16 +171,15 @@ d3.json("./data/rumor.json", function(error, data) {
   var parseDate = d3.time.format("%Y-%m-%d");
 
   var format = d3.time.format("%Y-%m-%d");
-
          data.forEach(function(d) {
                    d.twittText =  d.text;
                    d.date = Date.parse(d.created_at);
                    d.newDate = new Date(d.date);
-                   terms = d.topsy.terms;
-                   wordCloud(terms);
+                   terms =  terms.concat(d.topsy.terms);
+                   
                     });
-
-      //  console.log(termsList);
+     
+wordCloud(terms);
         
            
 
