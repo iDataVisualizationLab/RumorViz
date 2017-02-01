@@ -100,7 +100,8 @@
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="d3.tip.v0.6.3.js"></script>
+    <script src="./js/d3.tip.v0.6.3.js"></script>
+    <script src="./js/d3.layout.cloud.js"></script>
     <script>
 
 
@@ -163,7 +164,7 @@ function twitterViz(data) {
           console.log(img);
 
             histdata[bin].numfill += 1;
-            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate)+ "<br> "  + d.locData + "." + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
+            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate)+ "<br> "  + d.locData + "." + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
 
             
         }
@@ -267,7 +268,7 @@ function twitterViz(data) {
 }
 
 // Read in .csv data and make graph
-d3.json("rumor.json", function(error, data) {
+d3.json("./data/rumor.json", function(error, data) {
  
   var parseDate = d3.time.format("%Y-%m-%d");;
 
