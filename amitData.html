@@ -143,12 +143,7 @@ function drawCloudword(inputdata, i){
         //console.log(maxCount);
 
         if(maxCount > 8)
-        {
-          if(maxCount < 20)
           maxCount = 8;
-          else
-            maxCount = 3;
-        }
         else
           maxCount = 15;
 
@@ -346,7 +341,7 @@ function twitterViz(data) {
 
 
 // Read in .csv data and make graph
-d3.json("./data/rumor600.json", function(error, data) {
+d3.json("./data/data.json", function(error, data) {
  console.log(data);
   var parseDate = d3.time.format("%Y-%m-%d");;
   var format = d3.time.format("%Y-%m-%d");
