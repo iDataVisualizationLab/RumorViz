@@ -87,7 +87,6 @@
       text{
         font-size: 13px;
       }
-
       #cloudword{
         float: right;
         width: 48%;
@@ -98,7 +97,6 @@
     <script src="./js/d3.tip.v0.6.3.js"></script>
     <script src="./js/d3.layout.cloud.js"></script>
     <script>
-
     var termsData;
  function errorDetect(d){                  
                   try {
@@ -108,17 +106,13 @@
                         return  "error";
                     }
               }
-
 function drawCloudword(inputdata, i){
         console.log(termsData[i]);
         var datum =  [];
         var termlist = [];
         datum = termsData[i].terms;
         termlist = datum.split(',');
-
-
-      wordCloud(termlist);
-
+         wordCloud(termlist);
       function wordCloud(datum){
         wordList = datum;
      
@@ -131,7 +125,6 @@ function drawCloudword(inputdata, i){
                 return wordsCount;
             }
         }, {});
-
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
@@ -141,31 +134,24 @@ function drawCloudword(inputdata, i){
               maxCount = words[x];
         }
         //console.log(maxCount);
-
         if(maxCount > 8)
           maxCount = 8;
         else
           maxCount = 15;
-
         for(var x in words){
           wordsArray[i] = ({text:x, size: words[x] * maxCount}); 
           i++;
             //wordsArray.push(x + ": " + words[x]);
         }
-
-
     var color = d3.scale.category20();
-
     d3.layout.cloud().size([700, 600])
             .words(wordsArray)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
             .on("end", draw)
             .start();
-
     function draw(words) {
       d3.select("#cloudSvg").remove();
-
         d3.select("#cloudword").append("svg")
                 .attr("id", "cloudSvg")
                 .attr("width", 700)
@@ -185,11 +171,8 @@ function drawCloudword(inputdata, i){
                 })
                 .text(function(d) { return d.text; });
     }
-
-
       }
 }
-
 function twitterViz(data) {
  // console.log(data);
   var parseDate = d3.time.format("%m/%d/%Y %I:%M:%S %p").parse;
@@ -221,14 +204,11 @@ function twitterViz(data) {
     for (var i = 0; i < numbins; i++) {
         histdata[i] = { numfill: 0, meta: "" };
     }
-
-
     // Fill histdata with y-axis values and meta data
     termsData= new Array(Math.floor(numbins));
      for (var i = 0; i < numbins; i++) {
         termsData[i] = { numfill: 0, terms: "" };
     }
-
     data.forEach(function(d) {
         var bin = Math.floor((d.date - minbin) / binsize); // 48.75 - 36 / 2 = 6
         if ((bin.toString() != "NaN") && (bin < histdata.length)) {
@@ -237,11 +217,8 @@ function twitterViz(data) {
           //console.log(img);
             histdata[bin].numfill += 1;
             histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate) + ", " + d.locData + "." + "<br> " + "Retweet:"+ d.retweet_count + " ," + "Sentiment:" + d.topsy.document_info.sentiment + ", " + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
-
             termsData[bin].numfill += 1;
             termsData[bin].terms =  termsData[bin].terms.concat(d.topsy.terms);
-
-
         }
     });
   //  console.log(histdata);
@@ -331,8 +308,6 @@ function twitterViz(data) {
       .style("text-anchor", "middle")
       .text("Number of twitts");
 }
-
-
 // Read in .csv data and make graph
 d3.json("./data/rumor.json", function(error, data) {
  
