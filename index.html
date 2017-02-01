@@ -91,6 +91,7 @@
       #cloudword{
         float: right;
         width: 48%;
+        margin-top: 100px;
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -142,9 +143,10 @@ function drawCloudword(inputdata, i){
         //console.log(maxCount);
 
         if(maxCount > 8)
-          maxCount = 7;
+          maxCount = 8;
         else
           maxCount = 15;
+
         for(var x in words){
           wordsArray[i] = ({text:x, size: words[x] * maxCount}); 
           i++;
@@ -154,7 +156,7 @@ function drawCloudword(inputdata, i){
 
     var color = d3.scale.category20();
 
-    d3.layout.cloud().size([700, 500])
+    d3.layout.cloud().size([700, 600])
             .words(wordsArray)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
@@ -167,7 +169,7 @@ function drawCloudword(inputdata, i){
         d3.select("#cloudword").append("svg")
                 .attr("id", "cloudSvg")
                 .attr("width", 700)
-                .attr("height", 500)
+                .attr("height", 600)
                 .attr("class", "wordcloud")
                 .append("g")
                 // without the transform, words words would get cutoff to the left and top, they would

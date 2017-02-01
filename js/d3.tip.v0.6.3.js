@@ -41,17 +41,7 @@ d3.tip = function() {
 
     while(i--) nodel.classed(directions[i], false)
     coords = direction_callbacks.get(dir).apply(this)
-   if(coords.left > 750)
-   {
-    if(coords.left > 950)
-    coords.left = coords.left - 1000
 
-    else if(coords.left > 850)
-    coords.left = coords.left - 870
-    
-    else
-    coords.left = coords.left - 750
-   }
 
 
    if(coords.top < 0)
@@ -59,8 +49,11 @@ d3.tip = function() {
    
    if(coords.top > 150) 
    {
-     coords.top = 200
-     coords.left = coords.left-50
+     if(top<200)
+     coords.top = 50;
+    else
+      coords.top = 150;
+
    }
 
     nodel.classed(dir, true).style({
