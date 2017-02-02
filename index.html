@@ -81,16 +81,16 @@
         color: #111;
         text-align: left;
       }
-      div{
-          margin-top: 1px;
-      }
+
       text{
         font-size: 13px;
       }
       #cloudword{
         float: right;
         width: 48%;
-        margin-top: 20px;
+      }
+      #cloudword text{
+        width: 50%;
       }
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -151,17 +151,17 @@ function drawCloudword(inputdata, i){
 
     var sizeScale = d3.scale.linear()
                          .domain([minCount, maxCount])
-                         .range([20, 65]);
+                         .range([20, 50]);
 
 
-    d3.layout.cloud().size([700, 900])
+    d3.layout.cloud().size([700, 700])
             .words(wordTerms)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
             .padding(5)
             .rotate(function () { return ~~(Math.random() * 2) * 90; })
             .font("Impact")
-             .fontSize(function (d) { return sizeScale(d.frequency); })
+             .fontSize(function (d) { return sizeScale(d.size); })
             .on("end", draw)
             .start();
 
@@ -170,13 +170,13 @@ function drawCloudword(inputdata, i){
 
         d3.select("#cloudword").append("svg")
                 .attr("id", "cloudSvg")
-                .attr("width", 700)
-                .attr("height", 900)
+                .attr("width", 680)
+                .attr("height", 680)
                 .attr("class", "wordcloud")
                 .append("g")
                 // without the transform, words words would get cutoff to the left and top, they would
                 // appear outside of the SVG area
-                .attr("transform", "translate(320,300)")
+                .attr("transform", "translate(350,350)")
                 .selectAll("text")
                 .data(words)
                 .enter().append("text")
