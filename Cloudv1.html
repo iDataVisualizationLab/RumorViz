@@ -100,8 +100,6 @@
     <script>
 
     var termsData;
-
-    
  function errorDetect(d){                  
                   try {
                         d.topsy.location.tags.admin0;
@@ -244,7 +242,7 @@ function twitterViz(data) {
        var img =  "<img src=\"" + d.user.profile_image_url + "\">"  +"onError=\"this.onerror=null;\" />";
           //console.log(img);
             histdata[bin].numfill += 1;
-            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate) + "<br> Loc: " + d.locData + ", Confidence: " + d.locCondifence + "." + "<br> " + "Retweet:"+ d.retweet_count + " ," + "Sentiment:" + d.topsy.document_info.sentiment + ", " + "</div>" + "</div> " + "<div class=\"twittTerms\">" +  "</div></div>";
+            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate) + "<br> Loc: " + d.locData + ", " + d.locCondifence + "." + "<br> " + "Retweet:"+ d.retweet_count + " ," + "Sentiment:" + d.topsy.document_info.sentiment + ", " + "</div>" + "</div> " + "<div class=\"twittTerms\">" +  "</div></div>";
 
             termsData[bin].numfill += 1;
             termsData[bin].terms =  termsData[bin].terms.concat(d.topsy.terms);
