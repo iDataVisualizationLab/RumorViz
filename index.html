@@ -128,24 +128,32 @@ function drawCloudword(inputdata, i){
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
-        
+        var minCount = 50000;
+
         for(var x in words){
             if(words[x] > maxCount)
               maxCount = words[x];
         }
-        //console.log(maxCount);
-        if(maxCount < 12)
-          maxCount = 8;
-        else
-        maxCount = 2;
+        for(var x in words){
+            if(words[x] < minCount)
+              minCount = words[x];
+        }
+
+        console.log(minCount + ", " + maxCount);
 
         for(var x in words){
-          wordsArray[i] = ({text:x, size: words[x] * maxCount, frequency: words[x]}); 
+          wordsArray[i] = ({text:x, size: words[x], frequency: words[x]}); 
           i++;
             //wordsArray.push(x + ": " + words[x]);
         }
         wordTerms = wordsArray.slice(0, 50);
     var color = d3.scale.category20();
+
+    var sizeScale = d3.scale.linear()
+                         .domain([minCount, maxCount])
+                         .range([25, 70]);
+
+
     d3.layout.cloud().size([700, 900])
             .words(wordTerms)
             .rotate(0)
@@ -153,6 +161,7 @@ function drawCloudword(inputdata, i){
             .padding(5)
             .rotate(function () { return ~~(Math.random() * 2) * 90; })
             .font("Impact")
+             .fontSize(function (d) { return sizeScale(d.frequency); })
             .on("end", draw)
             .start();
 
