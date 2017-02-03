@@ -115,7 +115,8 @@ function drawCloudword(inputdata, i){
          wordCloud(termlist);
       function wordCloud(datum){
         wordList = datum;
-     
+
+       console.log(datum);
         var words = wordList.reduce(function(wordsCount, currentWord){
             if(typeof wordsCount[currentWord] !== "undefined"){
               wordsCount[currentWord]++; 
@@ -125,6 +126,8 @@ function drawCloudword(inputdata, i){
                 return wordsCount;
             }
         }, {});
+
+        console.log(words);
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
@@ -348,7 +351,7 @@ d3.json("./data/rumor600.json", function(error, data) {
             d.locData = d.topsy.location.tags.admin0;
                         }
        });
-           
+            
              twitterViz(data);
    
 }); 
