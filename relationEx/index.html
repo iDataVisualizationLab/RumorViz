@@ -44,7 +44,40 @@
       //*******************************************************************
       //  CREATE MATRIX AND MAP
       //*******************************************************************
-      d3.csv('data/trade.csv', function (error, data) {
+     d3.json('data/data.json', function (error, data) {
+        console.log(data);
+
+        var wordList = {};
+        wordList = ["liberia","bong","liberia bong","county","bong county","county 21","new","liberia bong","county","bong county"];
+        console.log(wordList);
+
+      var terms = wordList.reduce(function(wordsCount, currentWord){
+            if(typeof wordsCount[currentWord] !== "undefined"){
+              wordsCount[currentWord]++; 
+              return wordsCount;
+            } else {
+                wordsCount[currentWord]=1; 
+                return wordsCount;
+            }
+        }, {});
+
+ console.log(terms);
+
+console.log(Object.keys( terms )[0]);
+
+        var data = [];
+        keyLength = Object.keys( terms ).length;
+        totalTermsLength = 0;
+        var obj = {};
+            for(i=0; i<Object.keys( terms ).length;i++){
+                for(j=1;j<Object.keys( terms ).length;j++){
+                    var term1 = Object.keys( terms )[i];
+                    var term2 = Object.keys( terms )[j];
+                    obj = {importer1: Object.keys( terms )[i], importer2: Object.keys( terms )[j], flow1: terms[term1], flow2: terms[term2] };
+                    data[totalTermsLength] = obj;
+                    totalTermsLength++;
+                }
+            }
 
 
         console.log(data);
@@ -140,23 +173,15 @@
 
           function chordTip (d) {
             var p = d3.format(".1%"), q = d3.format(",.2f")
-            return "Chord Info:<br/>"
-              +  d.sname + " imports from " + d.tname
-              + ": $" + q(d.svalue) + "M<br/>"
-              + p(d.svalue/d.stotal) + " of " + d.sname + "'s Total ($" + q(d.stotal) + "M)<br/>"
-              + p(d.svalue/d.mtotal) + " of Matrix Total ($" + q(d.mtotal) + "M)<br/>"
-              + "<br/>"
-              + d.tname + " imports from " + d.sname
-              + ": $" + q(d.tvalue) + "M<br/>"
-              + p(d.tvalue/d.ttotal) + " of " + d.tname + "'s Total ($" + q(d.ttotal) + "M)<br/>"
-              + p(d.tvalue/d.mtotal) + " of Matrix Total ($" + q(d.mtotal) + "M)";
+            return "Info:<br/>"
+              +  d.sname + " and " + d.tname + " appears " +  q(d.svalue) + " times<br/>";
           }
 
           function groupTip (d) {
             var p = d3.format(".1%"), q = d3.format(",.2f")
-            return "Group Info:<br/>"
-                + d.gname + " : " + q(d.gvalue) + "M<br/>"
-                + p(d.gvalue/d.mtotal) + " of Matrix Total (" + q(d.mtotal) + "M)"
+            return "<br/>"
+                + d.gname + "<br/>";
+                
           }
 
           function mouseover(d, i) {
