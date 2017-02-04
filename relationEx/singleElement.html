@@ -66,7 +66,8 @@
               for(j=0;j<dataArray[m].length;j++){
               //   console.log(dataArray[0][0] + "==" + dataArray[m][j]);
                   if(dataArray[0][0] == dataArray[m][j]){
-                      dataArray[m].splice(j,1);
+
+                      dataArray[m].splice(j,1); // Removing the current terms from array so that it can't call duplicately
                       relatedTerms[0].terms = relatedTerms[0].terms.concat(dataArray[m]);
                       m++;
                       j=0;

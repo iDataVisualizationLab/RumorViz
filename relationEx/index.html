@@ -45,13 +45,43 @@
       //  CREATE MATRIX AND MAP
       //*******************************************************************
      d3.json('data/data.json', function (error, data) {
-        console.log(data);
 
-        var wordList = {};
-        wordList = ["liberia","bong","liberia bong","county","bong county","county 21","new","liberia bong","county","bong county"];
+        var termsObj = [];
+        dataArray = [];
+        data.forEach(function(d) {
+                  dataArray.push(d.topsy.terms);
+            });
+         console.log(dataArray);
+         var originalData = dataArray;
+
+         dataArrayLength = dataArray.length;
+         var wordList = [];
+        var relatedTerms = [];
+         for(i=0;i<1;i++){
+              relatedTerms[0] = {terms: ""};
+              relatedTerms[0].terms = dataArray[i];
+              console.log(relatedTerms);
+              l = 0;
+              m = 1;
+              for(j=0;j<dataArray[m].length;j++){
+              //   console.log(dataArray[0][0] + "==" + dataArray[m][j]);
+                  if(dataArray[0][0] == dataArray[m][j]){
+
+                      dataArray[m].splice(j,1); // Removing the current terms from array so that it can't call duplicately
+                      relatedTerms[0].terms = relatedTerms[0].terms.concat(dataArray[m]);
+                      m++;
+                      j=0;
+                  }
+              }
+              wordList.push(relatedTerms);
+         }
+
+    //    wordList = ["liberia","bong","liberia bong","county","bong county","county 21","new","liberia bong","county","bong county"];
+
         console.log(wordList);
+        console.log(wordList[0][0].terms);
 
-      var terms = wordList.reduce(function(wordsCount, currentWord){
+      var terms = wordList[0][0].terms.reduce(function(wordsCount, currentWord){
             if(typeof wordsCount[currentWord] !== "undefined"){
               wordsCount[currentWord]++; 
               return wordsCount;
@@ -69,8 +99,8 @@ console.log(Object.keys( terms )[0]);
         keyLength = Object.keys( terms ).length;
         totalTermsLength = 0;
         var obj = {};
-            for(i=0; i<Object.keys( terms ).length;i++){
-                for(j=1;j<Object.keys( terms ).length;j++){
+            for(i=0; i<4;i++){
+                for(j=i+1;j<Object.keys( terms ).length;j++){
                     var term1 = Object.keys( terms )[i];
                     var term2 = Object.keys( terms )[j];
                     obj = {importer1: Object.keys( terms )[i], importer2: Object.keys( terms )[j], flow1: terms[term1], flow2: terms[term2] };
