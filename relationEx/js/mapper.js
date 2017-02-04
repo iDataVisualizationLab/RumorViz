@@ -2,7 +2,7 @@
 //  CHORD MAPPER 
 //*******************************************************************
 function chordMpr (data) {
-  console.log(data);
+  // console.log(data);
   var mpr = {}, mmap = {}, n = 0,
       matrix = [], filter, accessor;
 
@@ -41,7 +41,7 @@ function chordMpr (data) {
     }
   },
   mpr.addValuesToMap = function (varName, info) {
-    console.log(varName);
+  //  console.log(varName);
     var values = _.uniq(_.pluck(data, varName));
     _.map(values, function (v) {
       if (!mmap[v]) {
@@ -50,7 +50,7 @@ function chordMpr (data) {
     });
     return this;
   }
-  console.log(mpr);
+  //console.log(mpr);
   return mpr;
 }
 //*******************************************************************
