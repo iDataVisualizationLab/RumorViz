@@ -31,12 +31,12 @@
 <div id="visualizations">
   <div id="options">
     <div id="topOptions">
-      <div id="sourceSelection">
+      <div id="sourceSelection" style="visibility: hidden;">
         <h5>Source:</h5>
         &ensp;<input type="radio" name="Source" id="wiki" checked> Wikinews<br>
         &ensp;<input type="radio" name="Source" id="HP"> Huffington Post<br>
       </div>
-      <div id="intervalSelection">
+      <div id="intervalSelection" style="visibility: hidden;">
         <h5>Time Period:</h5>
         <table>
           <tr>
@@ -118,8 +118,8 @@
       <div id="chartSelection">
         <h5>Chart Type:</h5>
         <input type="radio" name="chartType" id="overview" checked> Overview<br>
-        <input type="radio" name="chartType" id="relationships"> Relationships for term:
-        <input type="text" id="relationshipTerm" disabled><br>
+        <input type="radio" name="chartType" id="relationships"> Relationships for term
+        <input type="text" id="relationshipTerm" style="visibility: hidden;" disabled><br>
       </div>
       <div id="numberTermsSelection">
         <h5 style="display: inline">Number of Terms Displayed: </h5>
