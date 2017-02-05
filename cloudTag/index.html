@@ -7,7 +7,7 @@
   <script src="js/hashtable.js"></script>
   <script src="js/d3cloud.js"></script>
   <script src="js/d3-tooltip.js"></script>
-  <script src="js/terms-generator.js"></script>
+  <script src="js/terms-generator-rumor.js"></script>
   <script src="js/cmatrix.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/app.css">
@@ -225,6 +225,7 @@
           .attr("transform", "translate(10, 10)")
           .html("Updating...");
   var parse = d3.time.format("%Y %m");
+  var parse2 = d3.time.format("%Y %m %d %H %M %S");
   var start = parse.parse("2004 01");
   var end = parse.parse("2015 12");
   var topTerms;
@@ -270,7 +271,8 @@
             entry.values.category = data[term][val];
           }
           else {
-            currmonth = parse.parse(val);
+            currmonth = parse2.parse(val);
+            console.log(val);
             monthly.push({
               "month": currmonth,
               "freq": data[term][val].freq,
@@ -283,7 +285,7 @@
 
         localallTermsArray.push(entry)
       }
-
+      console.log(localallTermsArray);
       if (source == "wn") {
         wnallTermsArray = localallTermsArray;
         wnallTermsMap = localallTermsMap;
@@ -312,12 +314,15 @@
 
   //getTopTerms based on start and end dates
   function getTopTerms(allTermsArray) {
+  //  console.log(allTermsArray);
     var monthlyData = [];
     var currmonth;
     var blogs = [];
     var monthfreq = [];
     allTermsArray.forEach(function (d, i) {
+    //  console.log(d.values.monthfreq);
       var months = d.values.monthfreq;
+      //console.log(months[0].month)
       var freq = 0;
       blogs = [];
       monthfreq = [];
@@ -347,6 +352,8 @@
     monthlyData.sort(function (a, b) {
       return b.freq - a.freq;
     })
+
+    console.log(monthlyData);
     //
     //get top 50 terms
     topTerms = monthlyData.slice(0, topTermsCount)
@@ -429,6 +436,7 @@
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
+    console.log(topTerms);
     return topTerms;
   }
 
@@ -961,6 +969,7 @@ console.log(blogs);
 
     startDate = maxDate(topTerms);
 
+
     endDate = minDate(topTerms);
 
     topTerms.forEach(function (d) {
@@ -988,8 +997,8 @@ console.log(blogs);
     xAxis = d3.svg.axis()
             .scale(timelineX)
             .orient("bottom")
-            .ticks(5)
-            .tickFormat(d3.time.format("%b '%y"));
+            .ticks(12)
+            .tickFormat(d3.time.format("%H %M"));
 
     yAxis = d3.svg.axis()
             .scale(timelineY)
@@ -1144,6 +1153,7 @@ console.log(blogs);
       y = 0;
       try {
         // stream code change - changed logic as the data has months in ascending order
+       // console.log(now.getTime() + "   " +new Date(data[iterator].month).getTime())
         if (iterator < len && now.getTime() == new Date(data[iterator].month).getTime()) {
           y = data[iterator].freq;
           ++iterator;
@@ -1153,8 +1163,9 @@ console.log(blogs);
         console.log(iterator);
         debugger;
       }
+
       d.push({"month": new Date(now), "freq": y});
-      now["setMonth"](now.getMonth() + 1);
+      now["setHours"](now.getHours() + 1);
     }
 
     return d;
@@ -1237,6 +1248,7 @@ console.log(blogs);
   // Updates the stacked layers with their current data.
   function updateLayer() {
     this.attr("d", function (d) {
+     // console.log(d.monthfreq)
       return area(d.monthfreq);
     })
             .style("fill", function (d, i) {

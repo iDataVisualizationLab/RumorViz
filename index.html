@@ -98,6 +98,36 @@
     <script src="./js/d3cloud.js"></script>
     <script>
     var termsData;
+    var allTermsList = [""];
+    var allTermsListSplit;
+    var termsWithFrequency;
+
+  function getAllTermsList(){
+
+      for(var l = 0; l<termsData.length;l++){
+           allTermsList = allTermsList.concat(termsData[l].terms);
+      }
+      allTermsListSplit = allTermsList[0].split(',');
+      for(var k = 1; k<allTermsList.length;k++){
+        allTermsListSplit = allTermsListSplit.concat(allTermsList[k].split(','));
+      }
+      return allTermsListSplit;
+  }
+
+    function getFrequencyTerms(words){
+
+        words = allTermsListSplit.reduce(function(wordsCount, currentWord){
+            if(typeof wordsCount[currentWord] !== "undefined"){
+              wordsCount[currentWord]++; 
+              return wordsCount;
+            } else {
+                wordsCount[currentWord]=1; 
+                return wordsCount;
+            }
+        }, {});
+       return words;
+  }
+
  function errorDetect(d){                  
                   try {
                         d.topsy.location.tags.admin0;
@@ -107,27 +137,28 @@
                     }
               }
 function drawCloudword(inputdata, i){
-       // console.log(termsData[i]);
+     // console.log(termsData);
+
+
         var datum =  [];
         var termlist = [];
+        if(i==allTermsListSplit.length){
+
+        datum = allTermsListSplit;
+        termlist = allTermsListSplit;
+        }
+        else {
         datum = termsData[i].terms;
         termlist = datum.split(',');
+      }
          wordCloud(termlist);
       function wordCloud(datum){
         wordList = datum;
 
-       console.log(datum);
-        var words = wordList.reduce(function(wordsCount, currentWord){
-            if(typeof wordsCount[currentWord] !== "undefined"){
-              wordsCount[currentWord]++; 
-              return wordsCount;
-            } else {
-                wordsCount[currentWord]=1; 
-                return wordsCount;
-            }
-        }, {});
+     //  console.log(datum);
+        var words = getFrequencyTerms(wordList);
 
-        console.log(words);
+     //   console.log(words);
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
@@ -151,7 +182,7 @@ function drawCloudword(inputdata, i){
         wordsArray.sort(function(a,b) {return b.size - a.size});
 
         wordTerms = wordsArray.slice(0, 50);
-        console.log(wordTerms);
+     //   console.log(wordTerms);
     var color = d3.scale.category20()
 
     var sizeScale = d3.scale.linear()
@@ -353,6 +384,9 @@ d3.json("./data/rumor600.json", function(error, data) {
        });
             
              twitterViz(data);
+             getAllTermsList();
+             drawCloudword(allTermsListSplit, allTermsListSplit.length);
+             console.log(getFrequencyTerms(allTermsListSplit));
    
 }); 
     </script>
