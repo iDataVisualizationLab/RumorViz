@@ -11,4 +11,8 @@ Related project from CS5331: Visualization and Visual Analytics - Fall 2016. [De
 Tuan Dang, Nick Pendar, and Angus Forbes. TimeArcs: Visualizing Fluctuations in Dynamic Networks. Computer Graphics Forum 35(3), EuroVis 2016 [PDF](https://www.cs.uic.edu/~tdang/TimeArcs/EuroVis2016/TimeArcs_Dang_EuroVis2016.pdf) [Video](https://www.cs.uic.edu/~tdang/TimeArcs/EuroVis2016/TimeArcs_Dang_EuroVis2016.mp4) [Github](https://github.com/CreativeCodingLab/TimeArcs) 
 
 
+![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/TextFlow2011.png)
 
+![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/TopicCompetition.png)
+
+![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/TopicPanorama.png)
