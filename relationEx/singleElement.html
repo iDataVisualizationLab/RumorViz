@@ -57,22 +57,31 @@
          dataArrayLength = dataArray.length;
          var wordList = [];
         var relatedTerms = [];
+          var x = 0
          for(i=0;i<1;i++){
-              relatedTerms[0] = {terms: ""};
-              relatedTerms[0].terms = dataArray[i];
+
+              relatedTerms[x] = {terms: ""};
+              relatedTerms[x].terms = dataArray[i];
               console.log(relatedTerms);
               l = 0;
+
               m = 1;
               for(j=0;j<dataArray[m].length;j++){
               //   console.log(dataArray[0][0] + "==" + dataArray[m][j]);
-                  if(dataArray[0][0] == dataArray[m][j]){
+                  if(dataArray[i][l] == dataArray[m][j]){
 
-                      dataArray[m].splice(j,1); // Removing the current terms from array so that it can't call duplicately
-                      relatedTerms[0].terms = relatedTerms[0].terms.concat(dataArray[m]);
+                      //dataArray[m].splice(j,1); // Removing the current terms from array so that it can't call duplicately
+                      relatedTerms[x].terms = relatedTerms[x].terms.concat(dataArray[m]);
                       m++;
                       j=0;
+                      if(l>dataArray[i].length)
+                        break;
+                      else
+                      l++;
                   }
               }
+              
+              console.log(relatedTerms);
               wordList.push(relatedTerms);
          }
 
@@ -82,7 +91,9 @@
         console.log(wordList[0][0].terms);
 
       var terms = wordList[0][0].terms.reduce(function(wordsCount, currentWord){
+        console.log(wordsCount);
             if(typeof wordsCount[currentWord] !== "undefined"){
+              console.log(wordsCount[currentWord]);
               wordsCount[currentWord]++; 
               return wordsCount;
             } else {
@@ -130,8 +141,8 @@ console.log(Object.keys( terms )[0]);
       //  DRAW THE CHORD DIAGRAM
       //*******************************************************************
       function drawChords (matrix, mmap) {
-        console.log(matrix);
-        console.log(mmap);
+       // console.log(matrix);
+       // console.log(mmap);
         var w = 980, h = 800, r1 = h / 2, r0 = r1 - 110;
 
         var fill = d3.scale.ordinal()
