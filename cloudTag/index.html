@@ -1,0 +1,1772 @@
+<meta charset="utf-8">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.js"></script>
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/hashtable.js"></script>
+  <script src="js/d3cloud.js"></script>
+  <script src="js/d3-tooltip.js"></script>
+  <script src="js/terms-generator.js"></script>
+  <script src="js/cmatrix.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script>
+    $(document).ready(function () {
+      $(document.getElementsByName("chartType")).on('click', function () {
+        if (this.id == "overview") {
+          $("#relationshipTerm").attr("disabled", true);
+        } else {
+          $("#relationshipTerm").attr("disabled", false);
+        }
+      });
+    });
+  </script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Text Visualization</title>
+</head>
+
+<body>
+<h1>Text Visualization</h1>
+<div id="visualizations">
+  <div id="options">
+    <div id="topOptions">
+      <div id="sourceSelection">
+        <h5>Source:</h5>
+        &ensp;<input type="radio" name="Source" id="wiki" checked> Wikinews<br>
+        &ensp;<input type="radio" name="Source" id="HP"> Huffington Post<br>
+      </div>
+      <div id="intervalSelection">
+        <h5>Time Period:</h5>
+        <table>
+          <tr>
+            <td>
+              &ensp;From: &ensp;
+            </td>
+            <td>
+              <select id="fromMonth" placeholder="From Month">
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+                <option>05</option>
+                <option>06</option>
+                <option>07</option>
+                <option>08</option>
+                <option>09</option>
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+              </select>
+            </td>
+            <td>
+              <select id="fromYear" placeholder="From Year">
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+                <option>2008</option>
+                <option>2009</option>
+                <option>2010</option>
+                <option>2011</option>
+                <option>2012</option>
+                <option>2013</option>
+                <option>2014</option>
+                <option>2015</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              &ensp;To: &ensp;
+            </td>
+            <td>
+              <select id="toMonth" placeholder="To Month">
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+                <option>05</option>
+                <option>06</option>
+                <option>07</option>
+                <option>08</option>
+                <option>09</option>
+                <option>10</option>
+                <option>11</option>
+                <option selected>12</option>
+              </select>
+            </td>
+            <td>
+              <select id="toYear" placeholder="From Year">
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+                <option>2008</option>
+                <option>2009</option>
+                <option>2010</option>
+                <option>2011</option>
+                <option>2012</option>
+                <option>2013</option>
+                <option>2014</option>
+                <option selected>2015</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="chartSelection">
+        <h5>Chart Type:</h5>
+        <input type="radio" name="chartType" id="overview" checked> Overview<br>
+        <input type="radio" name="chartType" id="relationships"> Relationships for term:
+        <input type="text" id="relationshipTerm" disabled><br>
+      </div>
+      <div id="numberTermsSelection">
+        <h5 style="display: inline">Number of Terms Displayed: </h5>
+        &ensp;<input type="text" style="width: 40px" id="texttermscount" placeholder="count" value="50">
+      </div>
+      <div id="updateButtonContainer">
+        <button onclick="updateData()">Go</button>
+      </div>
+    </div>
+    <div id="bottomOptions">
+
+    </div>
+  </div>
+  <div id="left">
+
+    <div id="tagCloud" class="active">
+    </div>
+    <div id="relationshipChart" class="inactive">
+    </div>
+  </div>
+  <div id="timeline">
+  </div>
+</div>
+</body>
+
+<script>
+  var source = "wn";
+  var topTermsCount = 50;
+  function setSource(s) {
+    if (s == "wiki") {
+      source = "wn";
+      allTermsArray = wnallTermsArray;
+      allTermsMap = wnallTermsMap;
+    }
+    else {
+      source = "hp"
+      allTermsArray = hpallTermsArray;
+      allTermsMap = hpallTermsMap;
+
+    }
+
+  }
+
+  // stream graph variables declared globally to keep the scope for update
+  var stack;
+  var startDate;
+  var endDate;
+  var area;
+  var line;
+  var layers;
+  var timeline;
+  var defs;
+  var timelineX
+  var timelineY;
+  var xAxis, yAxis;
+  var catcolors = [];
+  // Method for creating stack layout.
+  stack = d3.layout.stack().offset("wiggle")
+          .values(function (d) {
+            return d.monthfreq;
+          })
+          .x(function (d) {
+            return d.month;
+          })
+          .y(function (d) {
+            return d.freq;
+          });
+
+  //Mouse click delay variables
+  var DELAY = 300, clicks = 0, timer = null;
+  //Global Variable to hold the data
+  var allTermsMap;
+  var allTermsArray = [];
+  var wnallTermsMap;
+  var wnallTermsArray = [];
+  var hpallTermsMap;
+  var hpallTermsArray = [];
+
+  // An array of dates in which all frequencies are zero. Used to hide a term
+  // in the streamgraph (as opposed to completely deleting it).
+  var zeroSeries = [{freq: 0, month: endDate}];
+  zeroSeries = fillData(zeroSeries, startDate, endDate);
+
+  //cloud svg width and height
+  var cloudWidth = $("#tagCloud").width();
+  var cloudHeight = $("#tagCloud").height();
+  var svg = d3.select("#tagCloud").append("svg")
+          .attr("width", cloudWidth)
+          .attr("height", cloudHeight)
+          .append("g")
+          .attr("transform", "translate(" + cloudWidth / 2 + "," + cloudHeight / 2 + ")");
+
+  /* Initialize tooltip */
+  var wordTip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function (d) {
+            return "<strong>" + d.text + " :" + d.frequency + "</strong>";
+          });
+  svg.call(wordTip);
+  var cloudmessages = svg.append("p")
+          .attr("class", "messages")
+          .attr("transform", "translate(10, 10)")
+          .html("Updating...");
+  var parse = d3.time.format("%Y %m");
+  var start = parse.parse("2004 01");
+  var end = parse.parse("2015 12");
+  var topTerms;
+  var wnrawdata = [];
+  var hprawdata = [];
+  var myWordCloud;
+  var fill = d3.scale.category20();
+  var personcolor = [];
+  var misccolor = [];
+  var orgcolor = [];
+  var locationcolor = [];
+  var color1 = d3.hsl("#cdf6d2");
+  var brush;
+  var sizeScale = d3.scale.linear()
+          .range([5, 80]);
+  $(document).ready(function () {
+    var termsData;
+    //Create a new instance of the word cloud visualisation.
+    myWordCloud = wordCloud('#tagCloud');
+    loadData("data/wikinews.tsv", "wn")
+    //loadData("data/huffington.tsv", "hp")
+  });
+
+  function loadData(filename, source) {
+    var localallTermsArray = [];
+    var localallTermsMap;
+    var data = preProcessData();
+    data.startProcess(filename, function (data) {
+      cloudmessages.attr("opacity", 1);
+      localallTermsMap = data;
+      var monthly = [];
+      var currmonth;
+      for (var term in data) {
+        monthly = []
+        var entry = {};
+        entry.term = term;
+        entry.values = {};
+        for (var val in data[term]) {
+          if (val == "frequency") {
+            entry.values.frequency = data[term][val];
+          }
+          else if (val == "category") {
+            entry.values.category = data[term][val];
+          }
+          else {
+            currmonth = parse.parse(val);
+            monthly.push({
+              "month": currmonth,
+              "freq": data[term][val].freq,
+              "blogs": data[term][val].blogs
+            })
+          }
+        }
+        entry.values.monthfreq = monthly;
+
+
+        localallTermsArray.push(entry)
+      }
+
+      if (source == "wn") {
+        wnallTermsArray = localallTermsArray;
+        wnallTermsMap = localallTermsMap;
+        allTermsArray = wnallTermsArray;
+        allTermsMap = wnallTermsMap
+        topTerms = getTopTerms(allTermsArray);
+        showNewWords(myWordCloud, topTerms);
+        //Set stream graph, topterms.monthfreq contains monthly frequency
+        setStreamGraph();
+      }
+      else {
+        hpallTermsArray = localallTermsArray;
+        hpallTermsMap = localallTermsMap;
+        allTermsArray = hpallTermsArray;
+        allTermsMap = hpallTermsMap
+        topTerms = getTopTerms(allTermsArray);
+        showNewWords(myWordCloud, topTerms);
+        updateStreamGraph(topTerms,false)
+        //Set stream graph, topterms.monthfreq contains monthly frequency
+
+      }
+      cloudmessages.attr("opacity", 0);
+
+    });
+  }
+
+  //getTopTerms based on start and end dates
+  function getTopTerms(allTermsArray) {
+    var monthlyData = [];
+    var currmonth;
+    var blogs = [];
+    var monthfreq = [];
+    allTermsArray.forEach(function (d, i) {
+      var months = d.values.monthfreq;
+      var freq = 0;
+      blogs = [];
+      monthfreq = [];
+      for (var i = 0; i < months.length; i++) {
+        currmonth = months[i].month;
+        if (currmonth >= start && currmonth <= end) {
+          freq = freq + months[i].freq;
+
+          months[i].blogs.forEach(function (b) {
+            blogs.push(b);
+
+          })
+          monthfreq.push(months[i]);
+        }
+      }
+      if (freq > 0)
+
+        monthlyData.push({
+          "term": d.term,
+          "freq": freq,
+          "blogs": blogs,
+          "monthfreq": monthfreq,
+          "category": d.values.category
+        });
+    });
+
+    monthlyData.sort(function (a, b) {
+      return b.freq - a.freq;
+    })
+    //
+    //get top 50 terms
+    topTerms = monthlyData.slice(0, topTermsCount)
+    //sort by month
+    topTerms.forEach(function (currterm) {
+      currterm.monthfreq.sort(function (a, b) {
+        return a.month - b.month;
+      })
+    })
+
+    topTerms.sort(function (a, b) {
+      if (a.category == b.category) {
+        return (a.freq < b.freq) ? -1 : (a.freq > b.freq) ? 1 : 0;
+      }
+      else {
+        return (a.category < b.category) ? -1 : 1;
+      }
+    });
+
+    personcolor = [];
+    locationcolor = [];
+    misccolor = [];
+    orgcolor = [];
+    var personcount = 0;
+    var locationcount = 0;
+    var misccount = 0;
+    var orgcount = 0;
+    for (var i = 0; i < topTerms.length; i++) {
+      var cat = topTerms[i].category;
+      if (cat == "Person")
+        personcount++
+      else if (cat == "Location")
+        locationcount++
+      else if (cat == "Misc")
+        misccount++
+      else if (cat == "Organization")
+        orgcount++
+    }
+    var currpersinc = 0.1;
+    var currlocinc = 0.1;
+    var currmiscinc = 0.1;
+    var currorginc = 0.1;
+    var colorP = d3.hsl("#cdf6d2");
+    var colorM = d3.hsl("#e66c6d");
+    var colorO = d3.hsl("#4da4e0");
+    var colorL = d3.hsl("#ffdbbc");
+    var persinc = 1 / personcount;
+    var locinc = 1 / locationcount;
+    var miscinc = 1 / misccount;
+    var orginc = 1 / orgcount;
+    for (var i = 0; i < topTerms.length; i++) {
+      var cat = topTerms[i].category;
+      if (cat == "Person") {
+        currpersinc = currpersinc + persinc;
+        personcolor[topTerms[i].term] = colorP.darker(currpersinc)
+      }
+      else if (cat == "Location") {
+        currlocinc = currlocinc + locinc;
+        locationcolor[topTerms[i].term] = colorL.darker(currlocinc)
+      }
+      if (cat == "Misc") {
+        currmiscinc = currmiscinc + miscinc;
+        misccolor[topTerms[i].term] = colorM.darker(currmiscinc)
+      }
+      if (cat == "Organization") {
+        currorginc = currorginc + orginc;
+        orgcolor[topTerms[i].term] = colorO.darker(currorginc)
+      }
+    }
+    catcolors = [];
+    for (var term in orgcolor) {
+      catcolors[term] = orgcolor[term];
+    }
+    for (var term in locationcolor) {
+      catcolors[term] = locationcolor[term];
+    }
+    for (var term in misccolor) {
+      catcolors[term] = misccolor[term];
+    }
+    for (var term in personcolor) {
+      catcolors[term] = personcolor[term];
+    }
+    return topTerms;
+  }
+
+
+  function getTopTerms_particularTerm(inputterm) {
+
+    var localallTermsArray = [];
+    var allTerms = new Object();
+    d3.tsv("data/wikinews.tsv", function (data) {
+      console.log(data);
+      rawdata = data;
+      var blogs = []
+      for (var v in wnallTermsMap[inputterm]) {
+        if (v == "category" || v == "frequency")
+          continue;
+        wnallTermsMap[inputterm][v].blogs.forEach(function (d) {
+          blogs.push(d);
+        })
+      }
+console.log(wnallTermsMap);
+console.log(blogs);
+      var lines = 0;
+      blogs.forEach(function (blognumber) {
+        ++lines;
+        var time = rawdata[blognumber - 1].time;
+        var month = rawdata[blognumber - 1].time.substring(0, 4) + " " + rawdata[blognumber - 1].time.substring(5, 7);
+        var words = rawdata[blognumber - 1].person.split("|")
+
+        words.forEach(function (d) {
+
+          if (d != "") {
+            //allTerms consideration.
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Person";
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+
+            }
+
+          }
+
+        })
+
+        words = rawdata[blognumber - 1].location.split("|")
+
+        words.forEach(function (d) {
+
+          if (d != "") {
+            //allTerms consideration.
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Location";
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+
+            }
+
+          }
+
+        })
+
+        words = rawdata[blognumber - 1].organization.split("|")
+        words.forEach(function (d) {
+
+          if (d != "") {
+            //allTerms consideration.
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Organization";
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+
+            }
+
+          }
+
+        })
+
+        words = rawdata[blognumber - 1].miscellaneous.split("|")
+
+        words.forEach(function (d) {
+
+          if (d != "") {
+            //allTerms consideration.
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Misc";
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+
+            }
+
+          }
+
+        })
+      })
+      var monthly = [];
+      var currmonth;
+      for (var term in allTerms) {
+        monthly = []
+        var entry = {};
+        entry.term = term;
+        entry.values = {};
+        for (var val in allTerms[term]) {
+          if (val == "frequency") {
+            entry.values.frequency = allTerms[term][val];
+          }
+          else if (val == "category") {
+            entry.values.category = allTerms[term][val];
+          }
+          else {
+            currmonth = parse.parse(val);
+            monthly.push({
+              "month": currmonth,
+              "freq": allTerms[term][val].freq,
+              "blogs": allTerms[term][val].blogs
+            })
+          }
+        }
+        entry.values.monthfreq = monthly;
+
+
+        localallTermsArray.push(entry)
+      }
+
+      topTerms = getTopTerms(localallTermsArray);
+      stack = stack.offset("silhouette");
+      updateStreamGraph(topTerms, true);
+      plotRelations()
+    })
+    // return relatedwordsArray;
+
+  }
+  function minDate(data) {
+    return d3.min(data, function (d) {
+      var localMin = d3.min(d.monthfreq, function (d) {
+        return d.month;
+      });
+      return localMin;
+    });
+  }
+
+  function maxDate(data) {
+    return d3.max(data, function (d) {
+      var localMax = d3.max(d.monthfreq, function (d) {
+        return d.month;
+      });
+      return localMax;
+    });
+  }
+
+  function showNewWords(vis, words) {
+
+
+    vis.update(words)
+  }
+
+  // Encapsulate the word cloud functionality
+  function wordCloud(selector) {
+
+    //Draw the word cloud
+    function draw(words) {
+
+      var cloud = svg.selectAll("g text")
+              .data(words, function (d) {
+                return d.text;
+              })
+
+      //Entering words
+      cloud.enter().append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .style("font-family", "Impact")
+              .style("fill", function (d, i) {
+                if (catcolors[d.text])
+                  return catcolors[d.text]
+                else
+                  return fill(i);
+              })
+              .style("cursor", "pointer")
+              .style("pointer-events", "all")
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .attr("class", "cloud-terms")
+              .text(function (d) {
+                return d.text;
+              })
+              .on("mousemove", function (d) {
+                //  d3.select(this).attr("opacity", "0.6");
+                wordTip.show(d, this);
+                highlightLayer({term: d.text});
+              })
+              .on("mouseout", function (d) {
+                d3.select(this).attr("opacity", "1");
+                wordTip.hide();
+                unhighlightLayer();
+              })
+              //handle single and double clicks
+              .on("click", function (d) {
+                clicks++;  //count clicks to know the double click
+                if (clicks === 1) {
+                  timer = setTimeout(function () {
+                    //perform single-click action
+                    //Click Logic goes here
+                    svg.selectAll(".cloud-terms")
+                            .style("fill", function (d1, i) {
+                              if (d.text == d1.text)
+                                d1.active = !d1.active;
+                              if (d1.active == undefined || d1.active == false)
+                                return "grey";
+                              else
+                                return catcolors[d1.text];
+                            })
+
+                    stack = stack.offset("wiggle");
+
+                    var startDate = minDate(topTerms);
+
+                    var endDate = maxDate(topTerms);
+
+                    // Hide/show the corresponding layer in the timeline.
+                    topTerms.forEach(function (d1) {
+                      if (d1.tempValues == undefined) {
+                        d1.tempValues = d1.monthfreq;
+                      }
+                      if (d1.term == d.text) {
+                        // If this element is the one that needs to be changed.
+                        if (d.active == false) {
+                          d1.monthfreq = fillData([{freq: 0, month: startDate}], endDate, startDate);
+                        } else {
+                          d1.monthfreq = d1.tempValues;
+                        }
+                      }
+                    });
+
+                    updateStreamGraph(topTerms, true);
+
+                    clicks = 0;             //after action performed, reset counter
+
+                  }, DELAY);
+
+                } else {
+                  clearTimeout(timer);    //prevent single-click action
+                  //perform double-click action
+                  svg.selectAll(".cloud-terms")
+
+                          .style("fill", function (d1, i) {
+                            d1.active = false;
+                            if (d.text == d1.text) {
+                              d1.active = true;
+                              return catcolors[d1.text];
+                            }
+
+                            else
+                              return "grey";
+                          })
+
+                  stack = stack.offset("silhouette");
+
+                  var startDate = minDate(topTerms);
+
+                  var endDate = maxDate(topTerms);
+
+                  // Hide/show the corresponding layer in the timeline.
+                  topTerms.forEach(function (d1) {
+                    if (d1.tempValues == undefined) {
+                      d1.tempValues = d1.monthfreq;
+                    }
+                    if (d1.term != d.text) {
+                      d1.monthfreq = fillData([{freq: 0, month: minDate}], endDate, startDate);
+                    } else {
+                      d1.monthfreq = d1.tempValues;
+                    }
+                  });
+
+                  updateStreamGraph(topTerms, true);
+
+                  clicks = 0;             //after action performed, reset counter
+                }
+
+              })
+
+      //Entering and existing words
+      cloud.transition()
+              .duration(100)
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .style("fill-opacity", 1);
+
+      //Exiting words
+      cloud.exit()
+              .transition()
+              .duration(100)
+              .style('fill-opacity', 1e-6)
+              .attr('font-size', 1)
+              .remove();
+
+    }
+
+
+    return {
+      update: function (words) {
+        var newHighRange;
+        if ($("#tagCloud").width() > 430)
+          newHighRange = 80;
+        else
+          newHighRange = 60;
+        sizeScale.domain([d3.min(words, function (d) {
+          return d.freq
+        }), d3.max(words, function (d) {
+          return d.freq
+        })])
+
+        var newLowRange = Math.floor((newHighRange) / words.length) + 9;
+        sizeScale.range([newLowRange, newHighRange]);
+
+
+        d3.layout.cloud().size([cloudWidth, cloudHeight])
+                .timeInterval(Infinity)
+                .words(words.map(function (d) {
+                  return {text: d.term, size: sizeScale(d.freq), frequency: d.freq, active: true, category: d.category};
+                }))
+                .padding(3)
+                .rotate(function () {
+                  return ~~(Math.random() * 2) * 90;
+                })
+                .font("Impact")
+                .fontSize(function (d) {
+                  return d.size
+                })
+                .on("end", draw)
+                .start();
+      }
+    }
+  }
+
+  function updateData() {
+    if ($("#wiki").is(":checked")) {
+      setSource("wiki");
+    } else {
+      setSource("wiki");
+    }
+    topTermsCount = $('#texttermscount').val();
+    start = parse.parse($('#fromYear').val() + " " + $('#fromMonth').val());
+    end = parse.parse($('#toYear').val() + " " + $('#toMonth').val());
+    if (source == "hp" && hpallTermsArray.length == 0) {
+
+
+      loadData("data/huffington.tsv", "hp");
+      cloudmessages.attr("opacity", 0);
+    }
+    else {
+
+
+      if ($("#relationships").is(":checked") && $("#relationshipTerm").val() != "") {
+        getTopTerms_particularTerm($("#relationshipTerm").val());
+        $("#tagCloud").removeClass("active").addClass("inactive");
+        $("#relationshipChart").addClass("active").removeClass("inactive");
+
+      }
+      else {
+        $("#tagCloud").addClass("loading");
+        setTimeout(function () {
+
+
+          updateVisualization();
+          svg.selectAll(".cloud-terms").style("fill", function (d, i) {
+            return getColor(d.category, d.text);
+          })
+          $("#tagCloud").removeClass("loading");
+        }, 0);
+
+        // If relationships are chosen, hide tag cloud and show relationships.
+        // If not, then hide relationships and show tag cloud.
+
+      }
+
+      // If relationships are chosen, hide tag cloud and show relationships.
+      // If not, then hide relationships and show tag cloud.
+
+
+    }
+  }
+
+  function brushend() {
+    start = brush.extent()[0];
+    end = brush.extent()[1];
+
+    $("#tagCloud").addClass("loading");
+    setTimeout(function () {
+      updateVisualization();
+      svg.selectAll(".cloud-terms").style("fill", function (d, i) {
+
+        return catcolors[d.term];
+
+      })
+      $("#tagCloud").removeClass("loading");
+    }, 0);
+
+  }
+
+  function updateVisualization() {
+
+    $("#range").text(start.getMonth() + " " + start.getFullYear() + " TO " + end.getMonth() + " " + end.getFullYear());
+    topTerms = getTopTerms(allTermsArray);
+    showNewWords(myWordCloud, topTerms);
+    //update stream graph, topterms.monthfreq contains monthly frequency
+    updateStreamGraph(topTerms, false);
+    if ($("#relationships").is(":checked")) {
+      $("#tagCloud").removeClass("active").addClass("inactive");
+      $("#relationshipChart").addClass("active").removeClass("inactive");
+      plotRelations()
+    } else {
+      $("#tagCloud").addClass("active").removeClass("inactive");
+      $("#relationshipChart").removeClass("active").addClass("inactive");
+    }
+  }
+
+  function setStreamGraph() {
+    // TODO(manorepo): Remove below comment.
+    // stream code change - Moved the sub functions out of this function to make available for update.
+
+    startDate = maxDate(topTerms);
+
+    endDate = minDate(topTerms);
+
+    topTerms.forEach(function (d) {
+      d.monthfreq = fillData(d.monthfreq, startDate, endDate);
+    });
+
+    zeroSeries = [{freq: 0, month: endDate}];
+    zeroSeries = fillData(zeroSeries, startDate, endDate);
+
+    // Define dimensions.
+    var margin = {top: 20, right: 0, bottom: 30, left: 40};
+    var svgWidth = $("#timeline").width();
+    var svgHeight = $("#timeline").height();
+    var width = svgWidth * 0.98 - margin.left - margin.right;
+    var height = svgHeight - margin.bottom - margin.top;
+
+    // Define scales.
+    timelineX = d3.time.scale()
+            .range([0, width]);
+
+    timelineY = d3.scale.linear()
+            .range([height, 0]);
+
+    // Define axes.
+    xAxis = d3.svg.axis()
+            .scale(timelineX)
+            .orient("bottom")
+            .ticks(5)
+            .tickFormat(d3.time.format("%b '%y"));
+
+    yAxis = d3.svg.axis()
+            .scale(timelineY)
+            .orient("left")
+            .ticks(7);
+
+    // Define stacked areas and lines that separate the areas.
+    area = d3.svg.area()
+            .interpolate("cardinal")
+            .x(function (d) {
+              return timelineX(d.month);
+            })
+            .y0(function (d) {
+              return timelineY(d.y0);
+            })
+            .y1(function (d) {
+              return timelineY(d.y0 + d.y);
+            });
+
+    line = d3.svg.line()
+            .interpolate("cardinal")
+            .x(function (d) {
+              return timelineX(d.month);
+            })
+            .y(function (d) {
+              return timelineY(d.y0);
+            });
+
+    // TODO: Sort topTerms by category.
+
+    layers = stack(topTerms);
+
+    timelineX.domain([endDate, startDate]);
+    timelineY.domain([0, d3.max(layers, function (d) {
+      var localMax = d3.max(d.monthfreq, function (d) {
+        return d.y0 + d.y;
+      });
+      return localMax;
+    })]);
+
+    timeline = d3.select("#timeline").append("svg")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define a clip path to prevent the graph from going out of its region on zoom.
+    defs = timeline.append("defs");
+    defs.append("clipPath")
+            .attr("id", "sideClip")
+            .append("rect")
+            .attr("transform", "translate(0,-" + margin.top + ")")
+            .attr("width", width)
+            .attr("height", height + margin.top);
+
+    // Stacked layers.
+    timeline.selectAll(".layer")
+            .data(layers)
+            .enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layer")
+            .call(updateLayer)
+            .on("mouseover", function (d) {
+              highlightLayer(d);
+              highlightWord(d);
+            })
+            .on("mouseout", function () {
+              unhighlightLayer();
+              unHighlightWord();
+            });
+
+    // Lines separating stacked layers.
+    timeline.selectAll(".layerLine")
+            .data(layers)
+            .enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layerLine")
+            .call(updateLayerLine);
+
+    // Add axes.
+    timeline.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+    timeline.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+    timeline.append("text")
+        .attr("transform","rotate(-90)")
+        .attr("y",0 - margin.left-4)
+        .attr("x",0 - (height / 2))
+        .attr("dy","1em")
+        .style("text-anchor","middle")
+        .text("frequency");
+    timeline.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Date")
+        .attr("class", "axis-label")
+    
+    // Create legend.
+    var legend = timeline.append("g")
+        .attr("transform", "translate(" + (width - 100) + "," + (-margin.top + 2) + ")")
+        .style("fill", "rgb(255, 142, 44)");
+    
+    var categoryColors = [
+      { category: "Person", color: "#0E0" },
+      { category: "Organization", color: "#22F" },
+      { category: "Miscellaneous", color: "#F00" },
+      { category: "Location", color: "rgb(255, 120, 44)" }
+    ];
+    
+    legend.append("rect")
+        .attr("width", 110)
+        .attr("height", 100)
+        .attr("fill", "#FFF")
+        .style("stroke", "#000")
+        .style("stroke-width", "2");
+    
+    legend.selectAll("g").data(categoryColors)
+        .enter()
+        .append("g")
+        .each(function(d, i) {
+          var g = d3.select(this);
+          g.append("circle")
+              .attr("cx", 10)
+              .attr("cy", i * 25 + 10)
+              .attr("r", 6)
+              .style("fill", d.color);
+          
+          g.append("text")
+              .attr("x", 22)
+              .attr("y", i * 25 + 16)
+              .style("fill", d.color)
+              .text(d.category);
+        });
+
+  }
+
+  // Fills in missing dates in 'data'. 'data' must be non-empty.
+  // Assumes that 'data' is sorted by date in chronological order.
+  function fillData(data, endDate, startDate) {
+    var d = [],
+            len = data.length,
+            now = new Date(startDate),
+            last = new Date(endDate),
+            iterator = 0,
+            y;
+
+    while (now <= last) {
+      y = 0;
+      try {
+        // stream code change - changed logic as the data has months in ascending order
+        if (iterator < len && now.getTime() == new Date(data[iterator].month).getTime()) {
+          y = data[iterator].freq;
+          ++iterator;
+        }
+      }
+      catch (exc) {
+        console.log(iterator);
+        debugger;
+      }
+      d.push({"month": new Date(now), "freq": y});
+      now["setMonth"](now.getMonth() + 1);
+    }
+
+    return d;
+  }
+
+  function updateStreamGraph(topTerms, hasTransition) {
+    startDate = maxDate(topTerms);
+
+    endDate = minDate(topTerms);
+
+    topTerms.forEach(function (d) {
+      d.monthfreq = fillData(d.monthfreq, startDate, endDate);
+    });
+
+    layers = stack(topTerms);
+    stack = stack.offset("wiggle");
+    
+    timelineX.domain([endDate, startDate]);
+    timelineY.domain([0, d3.max(layers, function (d) {
+      var localMax = d3.max(d.monthfreq, function (d) {
+        return d.y0 + d.y;
+      });
+      return localMax;
+    })]);
+
+    // Stacked layers.
+    var stackLayers = timeline.selectAll(".layer")
+            .data(layers);
+    stackLayers.enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layer")
+            .call(updateLayer)
+            .on("mouseover", function (d) {
+              highlightLayer(d);
+              highlightWord(d);
+            })
+            .on("mouseout", function () {
+              unhighlightLayer();
+              unHighlightWord();
+            });
+
+    // Lines separating stacked layers.
+    var layerLines = timeline.selectAll(".layerLine")
+            .data(layers);
+    layerLines.enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layerLine")
+            .call(updateLayerLine);
+
+    if (hasTransition) {
+      timeline.selectAll(".layer")
+              .transition()
+              .call(updateLayer);
+
+      timeline.selectAll(".layerLine")
+              .transition()
+              .call(updateLayerLine);
+    } else {
+      timeline.selectAll(".layer")
+              .call(updateLayer);
+
+      timeline.selectAll(".layerLine")
+              .call(updateLayerLine);
+    }
+
+    // Remove layers that should no longer be there.
+    stackLayers.exit().remove();
+    layerLines.exit().remove();
+
+    // Add axes.
+
+    timeline.select(".x.axis")
+            .call(xAxis);
+
+    timeline.select(".y.axis")
+            .call(yAxis);
+
+  }
+
+  // Updates the stacked layers with their current data.
+  function updateLayer() {
+    this.attr("d", function (d) {
+      return area(d.monthfreq);
+    })
+            .style("fill", function (d, i) {
+              return catcolors[d.term];
+            });
+  }
+
+  // Updates the lines with their current data.
+  function updateLayerLine() {
+    this.attr("d", function (d) {
+      return line(d.monthfreq);
+    });
+  }
+
+  function highlightLayer(d) {
+    timeline.selectAll(".layer")
+            .attr("opacity", function (d1) {
+              if (d.term == d1.term) {
+                return "1";
+              } else {
+                return "0.2";
+              }
+            });
+    timeline.selectAll(".layerLine")
+            .attr("opacity", function (d1) {
+              if (d.term == d1.term) {
+                return "1";
+              } else {
+                return "0.2";
+              }
+            });
+  }
+
+  function highlightWord(d) {
+    var cloudText = svg.selectAll("g text")
+            .each(function (d1) {
+              var currentText = d3.select(this);
+              if (d1.text == d.term) {
+                wordTip.show(d1, this);
+                currentText.attr("opacity", "1");
+              } else {
+                currentText.attr("opacity", "0.1");
+              }
+            });
+    if ($("#relationshipChart").hasClass("active")) {
+      wordTip.hide();
+
+      container.selectAll("path.chord").style("opacity", function (p) {
+        // COMPARE CHORD IDS
+        return (p.source._id === d.term || p.target._id == d.term) ? 1 : 0.1;
+
+
+      });
+      container.selectAll(".group").select("path").style("opacity", function (p) {
+        if (p._id == d.term)
+          return 1
+        else
+          return 0.1
+
+      });
+
+    }
+  }
+
+  function unHighlightWord() {
+    svg.selectAll("g text")
+            .attr("opacity", "1")
+            .call(wordTip.hide);
+    if ($("#relationshipChart").hasClass("active")) {
+
+      container.selectAll("path.chord").style("opacity", function (p) {
+        // COMPARE CHORD IDS
+        return 1;
+
+
+      });
+      container.selectAll(".group").select("path").style("opacity", function (p) {
+        return 1;
+
+      });
+
+    }
+  }
+
+  function unhighlightLayer() {
+    timeline.selectAll(".layer")
+            .attr("opacity", "1");
+    timeline.selectAll(".layerLine")
+            .attr("opacity", "1");
+  }
+  function getColor(category, term) {
+    if (category == "Person")
+      return personcolor[term];
+    else if (category == "Misc")
+      return misccolor[term];
+    else if (category == "Location")
+      return locationcolor[term];
+    else if (category == "Organization")
+      return orgcolor[term];
+    else
+      return fill(i);
+  }
+
+  //
+  //Relations
+
+  function getRelatedWords() {
+    var rawdata;
+    var originwords
+    if (source == "wn") {
+      if (wnrawdata.length > 0) {
+        rawdata = wnrawdata;
+        originwords = new Object();
+        topTerms.forEach(function (term) {
+          originwords[term.term] = 1;
+
+        })
+        plotRelations_Process(rawdata, originwords);
+
+      }
+      else {
+        d3.tsv("data/wikinews.tsv", function (data) {
+          rawdata = data;
+          wnrawdata = data;
+          originwords = new Object();
+          topTerms.forEach(function (term) {
+            originwords[term.term] = 1;
+
+          })
+          plotRelations_Process(rawdata, originwords);
+
+
+        })
+      }
+    }
+
+    if (source == "hp") {
+      if (hprawdata.length > 0) {
+        rawdata = hprawdata;
+        originwords = new Object();
+        topTerms.forEach(function (term) {
+          originwords[term.term] = 1;
+
+        })
+        plotRelations_Process(rawdata, originwords);
+
+      }
+      else {
+        d3.tsv("data/huffington.tsv", function (data) {
+          rawdata = data;
+          hprawdata = data;
+          originwords = new Object();
+          topTerms.forEach(function (term) {
+            originwords[term.term] = 1;
+
+          })
+          plotRelations_Process(rawdata, originwords);
+
+
+        })
+      }
+    }
+
+
+    // return relatedwordsArray;
+
+  }
+
+  function plotRelations_Process(rawdata, originwords) {
+    var relatedwordsArray = [];
+    var relatedWords = new Object()
+    topTerms.forEach(function (term) {
+      var blogs = term.blogs;
+      blogs.forEach(function (blognumber) {
+        var words = rawdata[blognumber - 1].person.split("|")
+
+        words.forEach(function (currterm) {
+          if (currterm != term.term) {
+            if (originwords[currterm]) {
+              if (!relatedWords[term.term]) {
+                relatedWords[term.term] = new Object();
+              }
+              if (relatedWords[term.term][currterm])
+                relatedWords[term.term][currterm] = relatedWords[term.term][currterm] + 1;
+              else {
+                relatedWords[term.term][currterm] = 1;
+              }
+
+            }
+          }
+        })
+
+        words = rawdata[blognumber - 1].location.split("|")
+
+        words.forEach(function (currterm) {
+          if (currterm != term.term) {
+            if (originwords[currterm]) {
+              if (!relatedWords[term.term]) {
+                relatedWords[term.term] = new Object();
+              }
+              if (relatedWords[term.term][currterm])
+                relatedWords[term.term][currterm] = relatedWords[term.term][currterm] + 1;
+              else {
+                relatedWords[term.term][currterm] = 1;
+              }
+
+            }
+          }
+        })
+
+        words = rawdata[blognumber - 1].organization.split("|")
+        words.forEach(function (currterm) {
+          if (currterm != term.term) {
+            if (originwords[currterm]) {
+              if (!relatedWords[term.term]) {
+                relatedWords[term.term] = new Object();
+              }
+              if (relatedWords[term.term][currterm])
+                relatedWords[term.term][currterm] = relatedWords[term.term][currterm] + 1;
+              else {
+                relatedWords[term.term][currterm] = 1;
+              }
+
+            }
+          }
+        })
+
+        words = rawdata[blognumber - 1].miscellaneous.split("|")
+
+        words.forEach(function (currterm) {
+          if (currterm != term.term) {
+            if (originwords[currterm]) {
+              if (!relatedWords[term.term]) {
+                relatedWords[term.term] = new Object();
+              }
+              if (relatedWords[term.term][currterm])
+                relatedWords[term.term][currterm] = relatedWords[term.term][currterm] + 1;
+              else {
+                relatedWords[term.term][currterm] = 1;
+              }
+
+            }
+          }
+        })
+      })
+
+    })
+
+    for (var firstterm in relatedWords) {
+      for (var secondterm in relatedWords[firstterm]) {
+        var obj = new Object();
+        obj.firstterm = firstterm;
+        obj.secondterm = secondterm;
+        obj.frequency = relatedWords[firstterm][secondterm];
+        relatedwordsArray.push(obj)
+      }
+    }
+    drawChords(relatedwordsArray);
+    console.log(relatedwordsArray);
+
+  }
+
+
+  var chordsvg;
+  var container;
+  var arc
+  var chordpath;
+  function plotRelations() {
+    var width = $('#relationshipChart').width();
+    var height = $('#relationshipChart').height();
+    innerRadius = ((Math.min(height, width)) / 2) * 3 / 5;
+    chordsvg.attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", "0 0 " + width + " " + height);
+    container.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+
+
+    arc = d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(innerRadius + 20);
+    chordpath = d3.svg.chord()
+            .radius(innerRadius);
+
+    getRelatedWords();
+    // IMPORT THE CSV DATA
+    // d3.csv('data/test.csv', function (err, data) {
+
+
+    // });
+  }
+
+  var size = [$('#relationshipChart').width(), $('#relationshipChart').height()]; // SVG SIZE WIDTH, HEIGHT
+  var marg = [0, 0, 0, 0]; // TOP, RIGHT, BOTTOM, LEFT
+  var dims = []; // USABLE DIMENSIONS
+  dims[0] = size[0] - marg[1] - marg[3]; // WIDTH
+  dims[1] = size[1] - marg[0] - marg[2]; // HEIGHT
+
+  var colors = d3.scale.ordinal()
+          .range(['#9C6744', '#C9BEB9', '#CFA07E', '#C4BAA1', '#C2B6BF', '#121212', '#8FB5AA', '#85889E', '#9C7989', '#91919C', '#242B27', '#212429', '#99677B', '#36352B', '#33332F', '#2B2B2E', '#2E1F13', '#2B242A', '#918A59', '#6E676C', '#6E4752', '#6B4A2F', '#998476', '#8A968D', '#968D8A', '#968D96', '#CC855C', '#967860', '#929488', '#949278', '#A0A3BD', '#BD93A1', '#65666B', '#6B5745', '#6B6664', '#695C52', '#56695E', '#69545C', '#565A69', '#696043', '#63635C', '#636150', '#333131', '#332820', '#302D30', '#302D1F', '#2D302F', '#CFB6A3', '#362F2A']);
+
+  var chord = d3.layout.chord()
+          .padding(0.02)
+          .sortGroups(d3.descending)
+          .sortSubgroups(d3.ascending);
+
+  var matrix = chordMatrix()
+          .layout(chord)
+          .filter(function (item, r, c) {
+            return (item.firstterm === r.name && item.secondterm === c.name) ||
+                    (item.firstterm === c.name && item.secondterm === r.name);
+          })
+          .reduce(function (items, r, c) {
+            var value;
+            if (!items[0]) {
+              value = 0;
+            } else {
+              value = items.reduce(function (m, n) {
+                if (r === c) {
+                  return m + (n.frequency + n.frequency);
+                } else {
+                  return m + (n.firstterm === r.name ? n.frequency : n.frequency);
+                }
+              }, 0);
+            }
+            return {value: value, data: items};
+          });
+
+  innerRadius = (dims[1] / 2) - 100;
+
+  arc = d3.svg.arc()
+          .innerRadius(innerRadius)
+          .outerRadius(innerRadius + 20);
+
+  chordpath = d3.svg.chord()
+          .radius(innerRadius);
+
+  chordsvg = d3.select("#relationshipChart").append("svg")
+          .attr("class", "chart")
+          .attr("width", dims[0])
+          .attr("height", dims[1])
+          .attr("preserveAspectRatio", "xMinYMin")
+          .attr("viewBox", "0 0 " + size[0] + " " + size[1]);
+  /* Initialize tooltip */
+  var chordlinkTip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function (d) {
+            return "<strong>" + d.sname + " -" + d.tname + " :" + d.tvalue + "</strong>";
+          });
+  chordsvg.call(chordlinkTip);
+
+  container = chordsvg.append("g")
+  //.attr("class", "container")
+          .attr("transform", "translate(" + dims[0] / 2 + "," + dims[1] / 2 + ")")
+
+
+  var messages = chordsvg.append("text")
+          .attr("class", "messages")
+          .attr("transform", "translate(10, 10)")
+          .text("Updating...");
+
+  drawChords = function (data) {
+
+    messages.attr("opacity", 1);
+    messages.transition().duration(1000).attr("opacity", 0);
+
+    matrix.data(data)
+            .resetKeys()
+            .addKeys(['firstterm', 'secondterm'])
+            .update()
+
+    var groups = container.selectAll("g.group")
+            .data(matrix.groups(), function (d) {
+              return d._id;
+            });
+
+    var gEnter = groups.enter()
+            .append("g")
+            .attr("class", "group");
+
+    gEnter.append("path")
+            .style("pointer-events", "none")
+            .style("fill", function (d) {
+              return catcolors[d._id];
+            })
+            .attr("d", arc);
+
+    gEnter.append("text")
+            .attr("dy", ".35em")
+            .on("click", groupClick)
+            .on("mouseover", dimChords)
+            .on("mouseout", resetChords)
+            .text(function (d) {
+              return d._id;
+            });
+
+    groups.select("path")
+            .transition().duration(2000)
+            .attrTween("d", matrix.groupTween(arc));
+
+    groups.select("text")
+            .transition()
+            .duration(2000)
+            .attr("transform", function (d) {
+              d.angle = (d.startAngle + d.endAngle) / 2;
+              var r = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")";
+              var t = " translate(" + (innerRadius + 26) + ")";
+              return r + t + (d.angle > Math.PI ? " rotate(180)" : " rotate(0)");
+            })
+            .attr("text-anchor", function (d) {
+              return d.angle > Math.PI ? "end" : "begin";
+            });
+
+    groups.exit().select("text").attr("fill", "orange");
+    groups.exit().select("path").remove();
+
+    groups.exit().transition().duration(1000)
+            .style("opacity", 0).remove();
+
+    var chords = container.selectAll("path.chord")
+            .data(matrix.chords(), function (d) {
+              return d._id;
+            });
+
+    chords.enter().append("path")
+            .attr("class", "chord")
+            .style("fill", function (d) {
+              return catcolors[d.source._id];
+            })
+            .attr("d", chordpath)
+            .on("mouseover", chordMouseover)
+            .on("mouseout", hideTooltip);
+
+    chords.transition().duration(2000)
+            .attrTween("d", matrix.chordTween(chordpath));
+
+    chords.exit().remove()
+
+    function groupClick(d) {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+      $scope.addFilter(d._id);
+      resetChords();
+    }
+
+    updateTooltip = function (data) {
+      chordlinkTip.show(data);
+    }
+    function chordMouseover(d) {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+      dimChords(d);
+      d3.select("#tooltip").style("opacity", 1);
+      updateTooltip(matrix.read(d));
+    }
+
+    function hideTooltip() {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+      chordlinkTip.hide();
+      resetChords();
+    }
+
+    function resetChords() {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+      container.selectAll("path.chord").style("opacity", 0.9);
+      timeline.selectAll(".layer")
+              .attr("opacity", function (d1) {
+                return "1";
+              });
+      timeline.selectAll(".layerLine")
+              .attr("opacity", function (d1) {
+                return "1";
+              });
+    }
+
+    function dimChords(d) {
+      d3.event.preventDefault();
+      d3.event.stopPropagation()
+      var grpChords = [];
+      container.selectAll("path.chord").style("opacity", function (p) {
+        if (d.source) { // COMPARE CHORD IDS
+          return (p._id === d._id) ? 1 : 0.1;
+        } else { // COMPARE GROUP IDS
+          if (p.source._id === d._id) {
+            grpChords.push(p.target._id);
+            return 1
+          }
+          else if (p.target._id === d._id) {
+            grpChords.push(p.source._id);
+            return 1
+          }
+          else
+            return 0;
+        }
+
+      });
+      if (!d.source) {
+        container.selectAll(".group").select("path").style("opacity", function (p) {
+          if (grpChords.indexOf(p._id) >= 0)
+            return 1
+          else
+            return 0.1
+
+        });
+      }
+      //
+      timeline.selectAll(".layer")
+              .attr("opacity", function (d1) {
+                if (d._id == d1.term) {
+                  return "1";
+                } else {
+                  return "0.2";
+                }
+              });
+      timeline.selectAll(".layerLine")
+              .attr("opacity", function (d1) {
+                if (d._id == d1.term) {
+                  return "1";
+                } else {
+                  return "0.2";
+                }
+              });
+    }
+  }
+  var master = new Object();
+  update = function () {
+
+    drawChords(data);
+
+  }
+</script>

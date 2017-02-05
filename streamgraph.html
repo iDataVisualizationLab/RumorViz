@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <body>
+    <title>twitter data Vizualization</title>
+    <style>
+      .d3-tip {
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(245, 245, 245, 0.90) !important;
+      color: #000;
+      border-radius: 2px;
+      font-size: 13px;
+      margin-top: 80px;
+      }
+      .bar rect {
+      fill: steelblue;
+      shape-rendering: crispEdges;
+      }
+      .bar rect:hover{
+      fill: rgba(0,0,0,.8);
+      }
+      .axis path, .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+      }
+      #twitterViz{
+        margin-top: 50px;
+        margin-right: 20px;
+        float: left;
+        width: 50%;
+      }
+      .singletwitt{
+        clear: both;
+        border-bottom: 1px solid #777;
+        margin-bottom: 10px;
+        text-align: justify;
+        font-weight: normal;
+        min-width: 700px;
+        font-size: 14px;
+        font-family: Arial;
+      }
+      .singletwitt b{
+        font-size: 15px;
+      }
+      .twittTextInf{
+          height: 32px;
+      }
+      .singletwitt img{
+        float: left;
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+      }
+      .twittText{
+        float: left;
+        width: 75%;
+        font-size: 14px;
+        background-color: rgba(0, 0, 0, .1);
+        padding: 1px;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .twittDate{
+        width: 22%;
+        float: right;
+        font-size: 14px;
+        text-align: left;
+      }
+      .twittDate img{
+        width: 13px;
+        height: 11px;
+        margin-right: 1px;
+        margin-top: 1px;
+      }
+      .twittTerms{
+        clear: both;
+        max-width: 900px;
+        font-size: 13px;
+        color: #111;
+        text-align: left;
+      }
+
+      text{
+        font-size: 13px;
+      }
+      #cloudword{
+        float: right;
+        width: 48%;
+      }
+      #cloudword text{
+        width: 50%;
+      }
+    </style>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="./js/d3.tip.v0.6.3.js"></script>
+    <script src="./js/d3cloud.js"></script>
+    <script>
+    var termsData;
+    var allTermsList = [""];
+    var allTermsListSplit;
+    var termsWithFrequency;
+
+  function getAllTermsList(){
+
+      for(var l = 0; l<termsData.length;l++){
+           allTermsList = allTermsList.concat(termsData[l].terms);
+      }
+      allTermsListSplit = allTermsList[0].split(',');
+      for(var k = 1; k<allTermsList.length;k++){
+        allTermsListSplit = allTermsListSplit.concat(allTermsList[k].split(','));
+      }
+      return allTermsListSplit;
+  }
+
+    function getFrequencyTerms(words){
+
+        words = allTermsListSplit.reduce(function(wordsCount, currentWord){
+            if(typeof wordsCount[currentWord] !== "undefined"){
+              wordsCount[currentWord]++; 
+              return wordsCount;
+            } else {
+                wordsCount[currentWord]=1; 
+                return wordsCount;
+            }
+        }, {});
+       return words;
+  }
+
+ function errorDetect(d){                  
+                  try {
+                        d.topsy.location.tags.admin0;
+                    }
+                    catch(err) {
+                        return  "error";
+                    }
+              }
+function drawCloudword(inputdata, i){
+     // console.log(termsData);
+
+
+        var datum =  [];
+        var termlist = [];
+        if(i==allTermsListSplit.length){
+
+        datum = allTermsListSplit;
+        termlist = allTermsListSplit;
+        }
+        else {
+        datum = termsData[i].terms;
+        termlist = datum.split(',');
+      }
+         wordCloud(termlist);
+      function wordCloud(datum){
+        wordList = datum;
+
+     //  console.log(datum);
+        var words = getFrequencyTerms(wordList);
+
+     //   console.log(words);
+        var wordsArray = [];
+        var i = 0;
+        var maxCount = 0;
+        var minCount = 50000;
+
+        for(var x in words){
+            if(words[x] > maxCount)
+              maxCount = words[x];
+        }
+        for(var x in words){
+            if(words[x] < minCount)
+              minCount = words[x];
+        }
+
+
+        for(var x in words){
+          wordsArray[i] = ({text:x, size: words[x], frequency: words[x]}); 
+          i++;
+            //wordsArray.push(x + ": " + words[x]);
+        }
+        wordsArray.sort(function(a,b) {return b.size - a.size});
+
+        wordTerms = wordsArray.slice(0, 50);
+     //   console.log(wordTerms);
+    var color = d3.scale.category20()
+
+    var sizeScale = d3.scale.linear()
+                         .domain([minCount, maxCount])
+                         .range([20, 50]);
+
+
+    d3.layout.cloud().size([700, 700])
+            .words(wordTerms)
+            .rotate(0)
+            .fontSize(function(d) { return d.size; })
+            .padding(5)
+            .rotate(function () { return ~~(Math.random() * 2) * 90; })
+            .font("Impact")
+             .fontSize(function (d) { return sizeScale(d.size); })
+            .on("end", draw)
+            .start();
+
+    function draw(words) {
+      d3.select("#cloudSvg").remove();
+
+        d3.select("#cloudword").append("svg")
+                .attr("id", "cloudSvg")
+                .attr("width", 680)
+                .attr("height", 680)
+                .attr("class", "wordcloud")
+                .append("g")
+                // without the transform, words words would get cutoff to the left and top, they would
+                // appear outside of the SVG area
+                .attr("transform", "translate(350,350)")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                       .style("font-size", function (d) { return d.size + "px"; })
+                       .style("fill", function(d, i) { return color(i); })
+                       .style("font-family", "Impact")
+                         .style("cursor", "pointer")
+                         .style("pointer-events", "all")
+                       .attr("text-anchor", "middle")
+                       .attr("transform", function (d) {
+                           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                       })
+                         .attr("class", "cloud-terms")
+                         .text(function (d) { return d.text; })
+    }
+ }
+}
+function twitterViz(data) {
+ // console.log(data);
+  var parseDate = d3.time.format("%m/%d/%Y %I:%M:%S %p").parse;
+    var formatHour = d3.time.format("%m/%d, %H:%M");
+     var formatDate = d3.time.format("%m-%d-%Y, %H:%M");
+    var formatCount = d3.format(",.0f");
+  var minDate = (d3.min(data, function(d) { return d.newDate; }));
+  var maxDate = (d3.max(data, function(d) { return d.newDate; }));
+  //console.log(maxDate);
+      maxDateMargin = maxDate;
+       maxDateMargin.setHours(maxDateMargin.getHours()+1);
+    //  console.log(maxDateMargin);
+    var binsize = 1000000;
+    var minbin = (d3.min(data, function(d) { return d.date; }));
+    var maxbin = (d3.max(data, function(d) { return d.date; }));
+    var numbins = (maxbin - minbin) / binsize;
+  
+    // whitespace on either side of the bars 
+    var binmargin = .2; 
+    var margin = {top: 10, right: 30, bottom: 50, left: 60};
+    var width = 800 - margin.left - margin.right;
+    var height = 550 - margin.top - margin.bottom;
+    // Set the limits of the x axis
+    var xmin = minbin+10000;
+    var xmax = minbin+10000; 
+  
+    histdata = new Array(Math.floor(numbins));
+    
+    for (var i = 0; i < numbins; i++) {
+        histdata[i] = { numfill: 0, meta: "" };
+    }
+    // Fill histdata with y-axis values and meta data
+    termsData= new Array(Math.floor(numbins));
+     for (var i = 0; i < numbins; i++) {
+        termsData[i] = { numfill: 0, terms: "" };
+    }
+    data.forEach(function(d) {
+        var bin = Math.floor((d.date - minbin) / binsize); // 48.75 - 36 / 2 = 6
+        if ((bin.toString() != "NaN") && (bin < histdata.length)) {
+         
+       var img =  "<img src=\"" + d.user.profile_image_url + "\">"  +"onError=\"this.onerror=null;\" />";
+          //console.log(img);
+            histdata[bin].numfill += 1;
+            histdata[bin].meta += "<div class=\"singletwitt\">" + "<div class=\"twittTextInf\">"  + "<div class=\"twittText\">"+ "<img src=\"" + d.user.profile_image_url + "\">" + d.text + "</div>" + "<div class=\"twittDate\">" + "<img src=\"" + "./img/heart.png" + "\">" + d.favorite_count + ", " + formatDate(d.newDate) + ", " + d.locData + "." + "<br> " + "Retweet:"+ d.retweet_count + " ," + "Sentiment:" + d.topsy.document_info.sentiment + ", " + "</div>" + "</div> " + "<div class=\"twittTerms\"> <b>Terms: </b>" + d.topsy.terms + "</div></div>";
+            termsData[bin].numfill += 1;
+            termsData[bin].terms =  termsData[bin].terms.concat(d.topsy.terms);
+        }
+    });
+  //  console.log(histdata);
+   //console.log(termsData);
+    // This scale is for determining the widths of the histogram bars
+    var x = d3.scale.linear()
+      .domain([0, (maxDate - minDate)])
+      .range([0, width]);
+    // Scale for the placement of the bars
+    var x2 = d3.time.scale()
+      .domain([minDate, maxDate])
+      .range([0, width]);
+    
+    var y = d3.scale.linear()
+      .domain([0, d3.max(histdata, function(d) { 
+                        return d.numfill; 
+                        })])
+      .range([height, 0]);
+    var xAxis = d3.svg.axis()
+      .scale(x2)
+      .orient("bottom")
+      .ticks(50)
+      .tickFormat(formatHour);
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .ticks(10)
+      .orient("left");
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .direction('e')
+      .offset([0, 20])
+      .html(function(d) {
+       // console.log(d.meta);
+        return '<table id="tiptable">' + d.meta + "</table>";
+    });
+    // put the graph in the "twitterViz" div
+    var svg = d3.select("#twitterViz").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + 150)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + 
+                        margin.top + ")");
+    svg.call(tip);
+    // set up the bars
+    var bar = svg.selectAll(".bar")
+      .data(histdata)
+      .enter().append("g")
+      .attr("class", "bar")
+      .attr("transform", function(d, i) { return "translate(" + 
+           x2(i * binsize + minbin) + "," + y(d.numfill) + ")"; })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      .on('click', function(d,i){
+       // console.log(i);
+        drawCloudword(d,i);
+      });
+    // add rectangles of correct size at correct location
+    bar.append("rect")
+      .attr("x", "10")
+      .attr("width", x(binsize - 2 * binmargin))
+      .attr("height", function(d) { return height - y(d.numfill); });
+    // add the x axis and x-label
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")  
+      .attr("x", "-50")
+      .attr("transform", "rotate(-90)");
+    svg.append("text")
+      .attr("class", "xlabel")
+      .attr("text-anchor", "middle")
+      .attr("x", width / 2)
+      .attr("y", 600)
+      .text("Time");
+    // add the y axis and y-label
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(0,0)")
+      .call(yAxis);
+    svg.append("text")
+      .attr("class", "ylabel")
+      .attr("y", 0 - margin.left) // x and y switched due to rotation
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .attr("transform", "rotate(-90)")
+      .style("text-anchor", "middle")
+      .text("Number of twitts");
+}
+// Read in .csv data and make graph
+d3.json("./data/rumor600.json", function(error, data) {
+ 
+  var parseDate = d3.time.format("%Y-%m-%d");;
+  var format = d3.time.format("%Y-%m-%d");
+         data.forEach(function(d) {
+                   d.twittText =  d.text;
+                   d.date = Date.parse(d.created_at);
+                   d.newDate = new Date(d.date);
+              var errorLoc =  errorDetect(d);
+             // console.log(errorLoc);             
+            if(errorLoc=="error")
+               d.locData = "Not Available.";
+            else{
+            d.locData = d.topsy.location.tags.admin0;
+                        }
+       });
+            
+             twitterViz(data);
+             getAllTermsList();
+             drawCloudword(allTermsListSplit, allTermsListSplit.length);
+             console.log(getFrequencyTerms(allTermsListSplit));
+   
+}); 
+    </script>
+
+    <div id="twitterViz" class="graph"></div>
+     <div id="cloudword" class="graph"></div>
+
+  </body>
+</html>
