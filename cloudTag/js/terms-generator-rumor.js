@@ -85,7 +85,7 @@ function preProcessData() {
 
           }
 
-       console.log(allTerms);
+   //    console.log(allTerms);
         })
 
        /* //Organization Terms

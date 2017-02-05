@@ -105,7 +105,7 @@
 </body>
 
 <script>
-var c20 = d3.scale.category20();
+var c20 = d3.scale.category10();
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -661,7 +661,7 @@ console.log(blogs);
 
     //Draw the word cloud
     function draw(words) {
-      // words = words.reverse();
+      words = words.reverse();
       console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
@@ -789,7 +789,7 @@ console.log(blogs);
     return {
       update: function (words) {
         console.log(words);
-        words = words.reverse();
+    //    words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
           newHighRange = 80;
@@ -971,7 +971,7 @@ console.log(blogs);
     console.log(layers);
 
     timelineX.domain([endDate, startDate]);
-    timelineY.domain([100, d3.max(layers, function (d) {
+    timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
@@ -980,7 +980,7 @@ console.log(blogs);
     })]);
 
     timeline = d3.select("#timeline").append("svg")
-            .attr("width", "700")
+            .attr("width", "850")
             .attr("height", "800")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

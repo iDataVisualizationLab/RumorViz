@@ -9,7 +9,6 @@
   <script src="js/d3-tooltip.js"></script>
   <script src="js/terms-generator-rumor.js"></script>
   <script src="js/cmatrix.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/app.css">
   <script>
     $(document).ready(function () {
@@ -1016,13 +1015,13 @@ console.log(blogs);
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
-      console.log(localMax);
+   //   console.log(localMax);
       return localMax;
     })]);
 
     timeline = d3.select("#timeline").append("svg")
-            .attr("width", "700")
-            .attr("height", "900")
+            .attr("width", svgWidth)
+            .attr("height", "700")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
