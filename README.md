@@ -19,3 +19,6 @@ Visual Analysis of Topic Competition on Social Media [PDF](http://shixialiu.com/
 TopicPanorama: a Full Picture of Relevant Topics
 [PDF](http://shixialiu.com/publications/TopicPanorama/paper.pdf)
 ![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/TopicPanorama.png)
+
+	
+Dr. Jian Zhao [Web](http://www.cs.toronto.edu/~jianzhao/). His PEARL and FluxFlow papers are needed to cite. 
