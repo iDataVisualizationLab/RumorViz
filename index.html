@@ -266,6 +266,7 @@ function twitterViz(data) {
      for (var i = 0; i < numbins; i++) {
         termsData[i] = { numfill: 0, terms: "" };
     }
+    console.log(data);
     data.forEach(function(d) {
         var bin = Math.floor((d.date - minbin) / binsize); // 48.75 - 36 / 2 = 6
         if ((bin.toString() != "NaN") && (bin < histdata.length)) {

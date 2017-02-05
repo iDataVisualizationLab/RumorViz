@@ -695,6 +695,8 @@ console.log(blogs);
     //Draw the word cloud
     function draw(words) {
 
+
+
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;

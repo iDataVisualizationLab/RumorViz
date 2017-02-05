@@ -702,7 +702,8 @@ console.log(blogs);
 
     //Draw the word cloud
     function draw(words) {
-
+      // words = words.reverse();
+      console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -828,6 +829,8 @@ console.log(blogs);
 
     return {
       update: function (words) {
+        console.log(words);
+        words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
           newHighRange = 80;
@@ -892,7 +895,7 @@ console.log(blogs);
 
 
           updateVisualization();
-          svg.selectAll(".cloud-terms").style("fill", function(d, i) { return c20(i); })
+          svg.selectAll(".cloud-terms")
           $("#tagCloud").removeClass("loading");
         }, 0);
 
@@ -1006,6 +1009,7 @@ console.log(blogs);
     // TODO: Sort topTerms by category.
 
     layers = stack(topTerms);
+    console.log(layers);
 
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1038,6 +1042,7 @@ console.log(blogs);
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
+            .style("fill", function(d, i) { return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1181,6 +1186,7 @@ console.log(blogs);
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
+            .style("fill", function(d, i) { return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1201,7 +1207,8 @@ console.log(blogs);
     if (hasTransition) {
       timeline.selectAll(".layer")
               .transition()
-              .call(updateLayer);
+              .call(updateLayer)
+              .style("fill", function(d, i) { return c20(i); });
 
       timeline.selectAll(".layerLine")
               .transition()
@@ -1238,9 +1245,7 @@ console.log(blogs);
      // console.log(d.monthfreq)
       return area(d.monthfreq);
     })
-            .style("fill", function (d, i) {
-              return catcolors[d.term];
-            });
+            .style("fill", function(d, i) { return c20(i); })
   }
 
   // Updates the lines with their current data.
