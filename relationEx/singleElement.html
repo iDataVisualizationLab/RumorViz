@@ -62,7 +62,7 @@
 
               relatedTerms[x] = {terms: ""};
               relatedTerms[x].terms = dataArray[i];
-              console.log(relatedTerms);
+           //   console.log(relatedTerms);
               l = 0;
 
               m = 1;
@@ -81,19 +81,19 @@
                   }
               }
               
-              console.log(relatedTerms);
+             // console.log(relatedTerms);
               wordList.push(relatedTerms);
          }
 
     //    wordList = ["liberia","bong","liberia bong","county","bong county","county 21","new","liberia bong","county","bong county"];
 
         console.log(wordList);
-        console.log(wordList[0][0].terms);
+       // console.log(wordList[0][0].terms);
 
       var terms = wordList[0][0].terms.reduce(function(wordsCount, currentWord){
-        console.log(wordsCount);
+       // console.log(wordsCount);
             if(typeof wordsCount[currentWord] !== "undefined"){
-              console.log(wordsCount[currentWord]);
+          //    console.log(wordsCount[currentWord]);
               wordsCount[currentWord]++; 
               return wordsCount;
             } else {
@@ -104,7 +104,7 @@
 
  console.log(terms);
 
-console.log(Object.keys( terms )[0]);
+//console.log(Object.keys( terms )[0]);
 
         var data = [];
         keyLength = Object.keys( terms ).length;
