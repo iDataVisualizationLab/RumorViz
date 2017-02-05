@@ -347,6 +347,8 @@
     monthlyData.sort(function (a, b) {
       return b.freq - a.freq;
     })
+
+    console.log(monthlyData);
     //
     //get top 50 terms
     topTerms = monthlyData.slice(0, topTermsCount)

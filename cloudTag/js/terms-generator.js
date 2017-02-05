@@ -27,8 +27,8 @@ function preProcessData() {
         var persons = d.person;
         var time = d.time;
         var month = d.time.substring(0, 4) + " " + d.time.substring(5, 7);
-        console.log(time);
-        console.log(month);
+       // console.log(time);
+        //console.log(month);
          ++lines;
         var personsArray = persons.split("|");
         personsArray.forEach(function (d) {
@@ -382,7 +382,7 @@ function preProcessData() {
        dlAnchorElem.setAttribute("download", "hp_termsfrequency.json");
        dlAnchorElem.click();*/
       callback(allTerms);
-      console.log(lines);
+    //  console.log(lines);
 
     });
 

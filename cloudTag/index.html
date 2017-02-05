@@ -146,6 +146,7 @@
 </body>
 
 <script>
+var c20 = d3.scale.category20();
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -225,13 +226,13 @@
           .attr("transform", "translate(10, 10)")
           .html("Updating...");
   var parse = d3.time.format("%Y %m");
-  var parse2 = d3.time.format("%Y %m %d %H %M %S");
-  var start = parse.parse("2004 01");
-  var end = parse.parse("2015 12");
+  var parse2 = d3.time.format("%Y %m %d %H");
+  var start = parse2.parse("2014 09 27 0");
+  var end = parse2.parse("2014 09 29 0");
   var topTerms;
   var wnrawdata = [];
   var hprawdata = [];
-  var myWordCloud;
+  var myWordClou
   var fill = d3.scale.category20();
   var personcolor = [];
   var misccolor = [];
@@ -272,7 +273,7 @@
           }
           else {
             currmonth = parse2.parse(val);
-            console.log(val);
+            //console.log(val);
             monthly.push({
               "month": currmonth,
               "freq": data[term][val].freq,
@@ -285,7 +286,7 @@
 
         localallTermsArray.push(entry)
       }
-      console.log(localallTermsArray);
+    //  console.log(localallTermsArray);
       if (source == "wn") {
         wnallTermsArray = localallTermsArray;
         wnallTermsMap = localallTermsMap;
@@ -314,7 +315,7 @@
 
   //getTopTerms based on start and end dates
   function getTopTerms(allTermsArray) {
-  //  console.log(allTermsArray);
+  console.log(allTermsArray);
     var monthlyData = [];
     var currmonth;
     var blogs = [];
@@ -326,6 +327,7 @@
       var freq = 0;
       blogs = [];
       monthfreq = [];
+     // console.log(months)
       for (var i = 0; i < months.length; i++) {
         currmonth = months[i].month;
         if (currmonth >= start && currmonth <= end) {
@@ -712,12 +714,7 @@ console.log(blogs);
                 return d.size + "px";
               })
               .style("font-family", "Impact")
-              .style("fill", function (d, i) {
-                if (catcolors[d.text])
-                  return catcolors[d.text]
-                else
-                  return fill(i);
-              })
+              .style("fill", function(d, i) { return c20(i); })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
               .attr("text-anchor", "middle")
@@ -746,14 +743,7 @@ console.log(blogs);
                     //perform single-click action
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
-                            .style("fill", function (d1, i) {
-                              if (d.text == d1.text)
-                                d1.active = !d1.active;
-                              if (d1.active == undefined || d1.active == false)
-                                return "grey";
-                              else
-                                return catcolors[d1.text];
-                            })
+                            .style("fill", function(d, i) { return c20(i); })
 
                     stack = stack.offset("wiggle");
 
@@ -787,16 +777,7 @@ console.log(blogs);
                   //perform double-click action
                   svg.selectAll(".cloud-terms")
 
-                          .style("fill", function (d1, i) {
-                            d1.active = false;
-                            if (d.text == d1.text) {
-                              d1.active = true;
-                              return catcolors[d1.text];
-                            }
-
-                            else
-                              return "grey";
-                          })
+                           .style("fill", function(d, i) { return c20(i); })
 
                   stack = stack.offset("silhouette");
 
@@ -911,9 +892,7 @@ console.log(blogs);
 
 
           updateVisualization();
-          svg.selectAll(".cloud-terms").style("fill", function (d, i) {
-            return getColor(d.category, d.text);
-          })
+          svg.selectAll(".cloud-terms").style("fill", function(d, i) { return c20(i); })
           $("#tagCloud").removeClass("loading");
         }, 0);
 
@@ -936,11 +915,7 @@ console.log(blogs);
     $("#tagCloud").addClass("loading");
     setTimeout(function () {
       updateVisualization();
-      svg.selectAll(".cloud-terms").style("fill", function (d, i) {
-
-        return catcolors[d.term];
-
-      })
+      svg.selectAll(".cloud-terms").style("fill", function(d, i) { return color(i); })
       $("#tagCloud").removeClass("loading");
     }, 0);
 
@@ -968,9 +943,10 @@ console.log(blogs);
     // stream code change - Moved the sub functions out of this function to make available for update.
 
     startDate = maxDate(topTerms);
-
+    start = startDate;
 
     endDate = minDate(topTerms);
+    end = endDate;
 
     topTerms.forEach(function (d) {
       d.monthfreq = fillData(d.monthfreq, startDate, endDate);
@@ -998,12 +974,12 @@ console.log(blogs);
             .scale(timelineX)
             .orient("bottom")
             .ticks(12)
-            .tickFormat(d3.time.format("%H %M"));
+            .tickFormat(d3.time.format("%m-%d-%Y, %H:%M"));
 
     yAxis = d3.svg.axis()
             .scale(timelineY)
             .orient("left")
-            .ticks(7);
+            .ticks(10);
 
     // Define stacked areas and lines that separate the areas.
     area = d3.svg.area()
@@ -1036,12 +1012,13 @@ console.log(blogs);
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
+      console.log(localMax);
       return localMax;
     })]);
 
     timeline = d3.select("#timeline").append("svg")
-            .attr("width", svgWidth)
-            .attr("height", svgHeight)
+            .attr("width", "700")
+            .attr("height", "900")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1076,13 +1053,18 @@ console.log(blogs);
             .enter().append("path")
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layerLine")
+         //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
     // Add axes.
     timeline.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")  
+            .attr("x", "-60")
+            .attr("y", "-5")
+            .attr("transform", "rotate(-90)");
 
     timeline.append("g")
             .attr("class", "y axis")
@@ -1112,14 +1094,14 @@ console.log(blogs);
       { category: "Location", color: "rgb(255, 120, 44)" }
     ];
     
-    legend.append("rect")
+ /*   legend.append("rect")
         .attr("width", 110)
         .attr("height", 100)
         .attr("fill", "#FFF")
         .style("stroke", "#000")
-        .style("stroke-width", "2");
+        .style("stroke-width", "2");*/
     
-    legend.selectAll("g").data(categoryColors)
+ /*   legend.selectAll("g").data(categoryColors)
         .enter()
         .append("g")
         .each(function(d, i) {
@@ -1135,7 +1117,7 @@ console.log(blogs);
               .attr("y", i * 25 + 16)
               .style("fill", d.color)
               .text(d.category);
-        });
+        });*/
 
   }
 
@@ -1188,6 +1170,7 @@ console.log(blogs);
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
+    //  console.log(localMax)
       return localMax;
     })]);
 
@@ -1238,7 +1221,11 @@ console.log(blogs);
     // Add axes.
 
     timeline.select(".x.axis")
-            .call(xAxis);
+            .call(xAxis)
+                        .selectAll("text")  
+            .attr("x", "-60")
+            .attr("y", "-5")
+            .attr("transform", "rotate(-90)");
 
     timeline.select(".y.axis")
             .call(yAxis);
