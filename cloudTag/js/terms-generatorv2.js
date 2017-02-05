@@ -21,7 +21,6 @@ function preProcessData() {
       d3.json("data/rumor600.json", function(error, data) {
 
     //  console.log(data);
-
       data.forEach(function (d) {
 
         
@@ -36,9 +35,9 @@ function preProcessData() {
         var time = formatDate(d.newDate);
        // console.log(time);
      //  var m= d.date.getY
-      var month = time.substring(0, 4) + " " + time.substring(5, 7) + " " + time.substring(8, 10) + " " + time.substring(11, 13);
+      // var month = time.substring(0, 4) + " " + time.substring(5, 7) + " " + time.substring(8, 10) + " " + time.substring(11, 13);
 
-    
+    month = d.newDate;  
       //var month = time.substring(0, 4) + " " + time.substring(5, 7);
        // console.log(month);
          ++lines;
@@ -85,7 +84,7 @@ function preProcessData() {
 
           }
 
-       console.log(allTerms);
+  //     console.log(allTerms);
         })
 
        /* //Organization Terms

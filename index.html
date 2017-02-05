@@ -81,7 +81,6 @@
         color: #111;
         text-align: left;
       }
-
       text{
         font-size: 13px;
       }
@@ -101,9 +100,7 @@
     var allTermsList = [""];
     var allTermsListSplit;
     var termsWithFrequency;
-
   function getAllTermsList(){
-
       for(var l = 0; l<termsData.length;l++){
            allTermsList = allTermsList.concat(termsData[l].terms);
       }
@@ -113,9 +110,7 @@
       }
       return allTermsListSplit;
   }
-
     function getFrequencyTerms(words){
-
         words = allTermsListSplit.reduce(function(wordsCount, currentWord){
             if(typeof wordsCount[currentWord] !== "undefined"){
               wordsCount[currentWord]++; 
@@ -127,7 +122,6 @@
         }, {});
        return words;
   }
-
  function errorDetect(d){                  
                   try {
                         d.topsy.location.tags.admin0;
@@ -138,12 +132,9 @@
               }
 function drawCloudword(inputdata, i){
      // console.log(termsData);
-
-
         var datum =  [];
         var termlist = [];
         if(i==allTermsListSplit.length){
-
         datum = allTermsListSplit;
         termlist = allTermsListSplit;
         }
@@ -154,16 +145,13 @@ function drawCloudword(inputdata, i){
          wordCloud(termlist);
       function wordCloud(datum){
         wordList = datum;
-
      //  console.log(datum);
         var words = getFrequencyTerms(wordList);
-
      //   console.log(words);
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
         var minCount = 50000;
-
         for(var x in words){
             if(words[x] > maxCount)
               maxCount = words[x];
@@ -172,24 +160,18 @@ function drawCloudword(inputdata, i){
             if(words[x] < minCount)
               minCount = words[x];
         }
-
-
         for(var x in words){
           wordsArray[i] = ({text:x, size: words[x], frequency: words[x]}); 
           i++;
             //wordsArray.push(x + ": " + words[x]);
         }
         wordsArray.sort(function(a,b) {return b.size - a.size});
-
         wordTerms = wordsArray.slice(0, 50);
      //   console.log(wordTerms);
-    var color = d3.scale.category20()
-
+    var color = d3.scale.category10()
     var sizeScale = d3.scale.linear()
                          .domain([minCount, maxCount])
                          .range([20, 50]);
-
-
     d3.layout.cloud().size([700, 700])
             .words(wordTerms)
             .rotate(0)
@@ -200,10 +182,8 @@ function drawCloudword(inputdata, i){
              .fontSize(function (d) { return sizeScale(d.size); })
             .on("end", draw)
             .start();
-
     function draw(words) {
       d3.select("#cloudSvg").remove();
-
         d3.select("#cloudword").append("svg")
                 .attr("id", "cloudSvg")
                 .attr("width", 680)

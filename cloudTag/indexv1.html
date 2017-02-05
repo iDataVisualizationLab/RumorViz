@@ -31,7 +31,12 @@
 <div id="visualizations">
   <div id="options">
     <div id="topOptions">
-      <div id="intervalSelection">
+      <div id="sourceSelection" style="visibility: hidden;">
+        <h5>Source:</h5>
+        &ensp;<input type="radio" name="Source" id="wiki" checked> Wikinews<br>
+        &ensp;<input type="radio" name="Source" id="HP"> Huffington Post<br>
+      </div>
+      <div id="intervalSelection" style="visibility: hidden;">
         <h5>Time Period:</h5>
         <table>
           <tr>
@@ -40,6 +45,13 @@
             </td>
             <td>
               <select id="fromMonth" placeholder="From Month">
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+                <option>05</option>
+                <option>06</option>
+                <option>07</option>
                 <option>08</option>
                 <option>09</option>
                 <option>10</option>
@@ -49,7 +61,18 @@
             </td>
             <td>
               <select id="fromYear" placeholder="From Year">
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+                <option>2008</option>
+                <option>2009</option>
+                <option>2010</option>
+                <option>2011</option>
+                <option>2012</option>
+                <option>2013</option>
                 <option>2014</option>
+                <option>2015</option>
               </select>
             </td>
           </tr>
@@ -59,16 +82,34 @@
             </td>
             <td>
               <select id="toMonth" placeholder="To Month">
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+                <option>05</option>
+                <option>06</option>
+                <option>07</option>
                 <option>08</option>
-                <option selected>09</option>
+                <option>09</option>
                 <option>10</option>
                 <option>11</option>
-                <option>12</option>
+                <option selected>12</option>
               </select>
             </td>
             <td>
               <select id="toYear" placeholder="From Year">
-                <option selected>2014</option>
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+                <option>2008</option>
+                <option>2009</option>
+                <option>2010</option>
+                <option>2011</option>
+                <option>2012</option>
+                <option>2013</option>
+                <option>2014</option>
+                <option selected>2015</option>
               </select>
             </td>
           </tr>
@@ -105,7 +146,7 @@
 </body>
 
 <script>
-var c20 = d3.scale.category20();
+var c20 = d3.scale.category10();
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -789,7 +830,7 @@ console.log(blogs);
     return {
       update: function (words) {
         console.log(words);
-        words = words.reverse();
+        //words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
           newHighRange = 80;
@@ -935,7 +976,7 @@ console.log(blogs);
     xAxis = d3.svg.axis()
             .scale(timelineX)
             .orient("bottom")
-            .ticks(15)
+            .ticks(12)
             .tickFormat(d3.time.format("%m-%d-%Y, %H:%M"));
 
     yAxis = d3.svg.axis()
@@ -971,7 +1012,7 @@ console.log(blogs);
     console.log(layers);
 
     timelineX.domain([endDate, startDate]);
-    timelineY.domain([100, d3.max(layers, function (d) {
+    timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
@@ -981,7 +1022,7 @@ console.log(blogs);
 
     timeline = d3.select("#timeline").append("svg")
             .attr("width", "700")
-            .attr("height", "800")
+            .attr("height", "900")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1043,7 +1084,7 @@ console.log(blogs);
     timeline.append("text")
         .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
-        .text("")
+        .text("Date")
         .attr("class", "axis-label")
     
     // Create legend.
