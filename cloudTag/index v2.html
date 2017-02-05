@@ -319,7 +319,7 @@ var c20 = d3.scale.category10();
 
   //getTopTerms based on start and end dates
   function getTopTerms(allTermsArray) {
-  console.log(allTermsArray);
+ // console.log(allTermsArray);
     var monthlyData = [];
     var currmonth;
     var blogs = [];
@@ -359,7 +359,7 @@ var c20 = d3.scale.category10();
       return b.freq - a.freq;
     })
 
-    console.log(monthlyData);
+   // console.log(monthlyData);
     //
     //get top 50 terms
     topTerms = monthlyData.slice(0, topTermsCount)
@@ -442,7 +442,7 @@ var c20 = d3.scale.category10();
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
-    console.log(topTerms);
+   // console.log(topTerms);
     return topTerms;
   }
 
@@ -677,7 +677,7 @@ console.log(blogs);
     // return relatedwordsArray;
 
   }
-  function maxDate(data) {
+  function minDate(data) {
     return d3.min(data, function (d) {
       var localMin = d3.min(d.monthfreq, function (d) {
         return d.month;
@@ -686,7 +686,7 @@ console.log(blogs);
     });
   }
 
-  function minDate(data) {
+  function maxDate(data) {
     return d3.max(data, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.month;
@@ -706,8 +706,8 @@ console.log(blogs);
 
     //Draw the word cloud
     function draw(words) {
-      words = words.reverse();
-      console.log(words);
+    //  words = words.reverse();
+    //  console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -833,7 +833,7 @@ console.log(blogs);
 
     return {
       update: function (words) {
-        console.log(words);
+     //   console.log(words);
        // words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
@@ -949,11 +949,11 @@ console.log(blogs);
     // TODO(manorepo): Remove below comment.
     // stream code change - Moved the sub functions out of this function to make available for update.
 
-    startDate = minDate(topTerms);
+    startDate = maxDate(topTerms);
 
     start = startDate;
 
-    endDate = maxDate(topTerms);
+    endDate = minDate(topTerms);
     end = endDate;
 
     console.log(startDate + " " + endDate)
@@ -961,10 +961,12 @@ console.log(blogs);
     topTerms.forEach(function (d) {
       d.monthfreq = fillData(d.monthfreq, startDate, endDate);
     });
-    console.log(topTerms);
 
-    zeroSeries = [{freq: 0, month: endDate}];
-    zeroSeries = fillData(zeroSeries, startDate, endDate);
+
+    //zeroSeries = [{freq: 0, month: endDate}];
+    //zeroSeries = fillData(zeroSeries, startDate, endDate);
+
+    console.log(zeroSeries)
 
     // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
@@ -1015,21 +1017,23 @@ console.log(blogs);
             });
 
     // TODO: Sort topTerms by category.
+    //console.log(topTerms);
 
     layers = stack(topTerms);
-    console.log(layers);
+    
+    //console.log(layers);
 
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
         return d.y0 + d.y;
       });
-      console.log(localMax);
+      
       return localMax;
     })]);
 
     timeline = d3.select("#timeline").append("svg")
-            .attr("width", "700")
+            .attr("width", "800")
             .attr("height", "900")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -1138,6 +1142,7 @@ console.log(blogs);
   // Assumes that 'data' is sorted by date in chronological order.
   function fillData(data, endDate, startDate) {
    // console.log(startDate + " " + endDate);
+  // console.log(data);
     var d = [],
             len = data.length,
             now = new Date(startDate),
@@ -1145,27 +1150,28 @@ console.log(blogs);
             iterator = 0,
             y;
 
-            console.log(now + " " + last);
+    console.log(now + " " + last);
 
     while (now <= last) {
       y = 0;
       try {
         // stream code change - changed logic as the data has months in ascending order
        // console.log(now.getTime() + "   " +new Date(data[iterator].month).getTime())
-        if (iterator < len && now.getTime() == new Date(data[iterator].month).getTime()) {
+
+       
+        if (iterator < len && now.getHours() == new Date(data[iterator].month).getHours()) {
           y = data[iterator].freq;
           ++iterator;
         }
       }
       catch (exc) {
         console.log(iterator);
-        debugger;
       }
 
       d.push({"month": new Date(now), "freq": y});
       now["setHours"](now.getHours() + 1);
     }
-
+    //console.log(d);
     return d;
   }
 

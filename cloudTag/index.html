@@ -177,7 +177,7 @@ var c20 = d3.scale.category10();
   var xAxis, yAxis;
   var catcolors = [];
   // Method for creating stack layout.
-  stack = d3.layout.stack().offset("wiggle")
+  stack = d3.layout.stack().offset("silhouette")
           .values(function (d) {
             return d.monthfreq;
           })

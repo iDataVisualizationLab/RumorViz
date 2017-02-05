@@ -395,7 +395,7 @@ function preProcessData() {
        dlAnchorElem.setAttribute("download", "hp_termsfrequency.json");
        dlAnchorElem.click();*/
       callback(allTerms);
-      console.log(lines);
+     // console.log(lines);
 
     });
 
