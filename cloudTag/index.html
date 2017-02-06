@@ -114,7 +114,7 @@
           </tr>
         </table>
       </div>
-      <div id="chartSelection">
+      <div id="chartSelection" style="visibility: hidden;">
         <h5>Chart Type:</h5>
         <input type="radio" name="chartType" id="overview" checked> Overview<br>
         <input type="radio" name="chartType" id="relationships"> Relationships for term
@@ -145,7 +145,7 @@
 </body>
 
 <script>
-var c20 = d3.scale.category10();
+var c20 = d3.scale.category20b();
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -714,7 +714,7 @@ console.log(blogs);
 
     //Draw the word cloud
     function draw(words) {
-      // words = words.reverse();
+ words = words.reverse();
   console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
@@ -728,9 +728,12 @@ console.log(blogs);
               })
               .style("font-family", "Impact")
               .style("fill", function(d, i) { 
-                if(d.text == "Others Terms")
-                return "#a8a8a8";
-              return c20(i); })
+                if(d.text == "Other Terms"){
+                   i = 0;
+                   return "#a8a8a8";
+                 }
+                else
+                   return c20(i); })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
               .attr("text-anchor", "middle")
@@ -760,12 +763,15 @@ console.log(blogs);
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
                             .style("fill", function(d, i) {
-                              if(d.term == "Others Terms")
-                                  return "#a8a8a8";
+                              if(d.term == "Other Terms"){
+                                   i = 0;
+                                   return "#a8a8a8";
+                                 }
 
-                             return c20(i); })
+                                else
+                                   return c20(i); })
 
-                    stack = stack.offset("wiggle");
+                    stack = stack.offset("silhouette");
 
                     var startDate = minDate(topTerms);
 
@@ -858,17 +864,28 @@ console.log(blogs);
         sizeScale.domain([d3.min(words, function (d) {
           return d.freq
         }), d3.max(words, function (d) {
-          return d.freq
+                    if(d.term != "Other Terms")
+                     return d.freq
         })])
+        console.log(d3.max(words, function (d) {
+                    if(d.term != "Other Terms")
+                       return d.freq
+        }));
 
         var newLowRange = Math.floor((newHighRange) / words.length) + 9;
-        sizeScale.range([newLowRange, newHighRange]);
+        sizeScale.range([20, 45]);
 
 
         d3.layout.cloud().size([cloudWidth, cloudHeight])
                 .timeInterval(Infinity)
                 .words(words.map(function (d) {
-                  return {text: d.term, size: sizeScale(d.freq), frequency: d.freq, active: true, category: d.category};
+                    if(d.term == "Other Terms"){
+                      fontSize = 50;
+                      console.log("Yes!")
+                    }
+                    else
+                      fontSize = sizeScale(d.freq)
+                  return {text: d.term, size: fontSize, frequency: d.freq, active: true, category: d.category};
                 }))
                 .padding(3)
                 .rotate(function () {
@@ -1064,9 +1081,11 @@ console.log(blogs);
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) {
-              if(d.term == "Others Terms")
-                return "#a8a8a8";
-
+              if(d.term == "Other Terms"){
+                   i = 0;
+                   return "#a8a8a8";
+                 }
+              else
              return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
@@ -1212,9 +1231,11 @@ console.log(blogs);
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) { 
-              if(d.term == "Others Terms")
-                return "#a8a8a8";
-
+              if(d.term == "Other Terms"){
+                   i = 0;
+                   return "#a8a8a8";
+                 }
+              else
               return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
@@ -1237,9 +1258,12 @@ console.log(blogs);
       timeline.selectAll(".layer")
               .transition()
               .call(updateLayer)
-              .style("fill", function(d, i) { if(d.term == "Others Terms")
+              .style("fill", function(d, i) {
+               if(d.term == "Other Terms"){
+               i = 0;
                 return "#a8a8a8";
-
+              }
+                else
                  return c20(i); });
 
       timeline.selectAll(".layerLine")
@@ -1277,9 +1301,12 @@ console.log(blogs);
      // console.log(d.monthfreq)
       return area(d.monthfreq);
     })
-            .style("fill", function(d, i) { if(d.term == "Others Terms")
+            .style("fill", function(d, i) {
+             if(d.term == "Other Terms"){
+               i = 0;
                 return "#a8a8a8";
-
+              }
+                else
                  return c20(i); })
   }
 
