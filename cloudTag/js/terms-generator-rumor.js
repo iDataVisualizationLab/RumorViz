@@ -467,7 +467,7 @@ function preProcessData() {
     });
   console.log(allOtherTerms);
   console.log(allTerms);
-allTerms["Others Terms"] = allOtherTerms["Others"];
+allTerms["Other Terms"] = allOtherTerms["Others"];
  
   }
 
