@@ -41,7 +41,7 @@ var posCount = 0;
       d3.json("data/rumor600.json", function(error, data) {
 
 
-        console.log(sentiments)
+
       data.forEach(function (d) {
         d.date = Date.parse(d.created_at);
         d.newDate = new Date(d.date);
@@ -70,7 +70,7 @@ var posCount = 0;
                       sentiments[hours].posSentiment = defPosSentiment + d.topsy.document_info.sentiment;
                       sentiments[hours].posCount = posCount + 1;
                   }
-                  else
+                  else if(d.topsy.document_info.sentiment < 0)
                     {
                       sentiments[hours].negSentiment = defNegSentiment + d.topsy.document_info.sentiment;
                        sentiments[hours].negCount = negCount + 1;
@@ -80,6 +80,11 @@ var posCount = 0;
               }
           else {
                 sentiments[hours] = new Object();
+                  sentiments[hours].posSentiment = 0;
+                      sentiments[hours].posCount = 0;
+                      sentiments[hours].negSentiment = 0;
+                       sentiments[hours].negCount = 0;
+
                 if(d.topsy.document_info.sentiment != undefined){
                   if(d.topsy.document_info.sentiment > 0){
                       sentiments[hours].posSentiment = d.topsy.document_info.sentiment;
@@ -87,7 +92,7 @@ var posCount = 0;
                       sentiments[hours].negSentiment = 0;
                        sentiments[hours].negCount = 0;
                   }
-                  else
+                  else if(d.topsy.document_info.sentiment < 0)
                     {
                       sentiments[hours].negSentiment = d.topsy.document_info.sentiment;
                        sentiments[hours].negCount = 1;
@@ -528,8 +533,7 @@ var posCount = 0;
       console.log(lines);
 
     });
-  console.log(allOtherTerms);
-  console.log(allTerms);
+          console.log(sentiments)
 allTerms["Other Terms"] = allOtherTerms["Others"];
  
   }
