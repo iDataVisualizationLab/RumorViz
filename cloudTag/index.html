@@ -145,6 +145,7 @@
 </body>
 
 <script>
+ var sentiments = new Object();
 var c20 = d3.scale.category20b();
   var source = "wn";
   var topTermsCount = 50;
@@ -248,7 +249,14 @@ var c20 = d3.scale.category20b();
     loadData("data/wikinews.tsv", "wn")
     //loadData("data/huffington.tsv", "hp")
   });
-
+  function sentimentBar(){
+    var data = sentiments;
+    for(var sentiment in data){
+      data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].negCount + data[sentiment].posCount);
+      data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].negCount + data[sentiment].posCount);
+      console.log(data[sentiment].negAvg + " " + data[sentiment].posAvg);
+    }
+  }
   function loadData(filename, source) {
     var localallTermsArray = [];
     var localallTermsMap;
@@ -978,6 +986,9 @@ var c20 = d3.scale.category20b();
   }
 
   function setStreamGraph() {
+
+    // Ploting Sentiments
+    sentimentBar();
     // TODO(manorepo): Remove below comment.
     // stream code change - Moved the sub functions out of this function to make available for update.
 

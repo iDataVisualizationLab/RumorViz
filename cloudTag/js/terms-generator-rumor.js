@@ -28,7 +28,7 @@ function preProcessData() {
 
  // Variables for sentiments data
 
- var sentiments = new Object();
+
 var defPosSentiment = 0;
 var defNegSentiment = 0;
 var posCount = 0;
