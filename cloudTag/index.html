@@ -204,8 +204,8 @@ var c20 = d3.scale.category20b();
   zeroSeries = fillData(zeroSeries, startDate, endDate);
 
   //cloud svg width and height
-  var cloudWidth = $("#tagCloud").width();
-  var cloudHeight = $("#tagCloud").height();
+  var cloudWidth = 494;
+  var cloudHeight = 476;
   var svg = d3.select("#tagCloud").append("svg")
           .attr("width", cloudWidth)
           .attr("height", cloudHeight)
@@ -253,7 +253,7 @@ var c20 = d3.scale.category20b();
     var localallTermsArray = [];
     var localallTermsMap;
     var data = preProcessData();
-    console.log(data);
+   // console.log(data);
     data.startProcess(filename, function (data) {
       cloudmessages.attr("opacity", 1);
       localallTermsMap = data;
@@ -321,7 +321,7 @@ var c20 = d3.scale.category20b();
     var blogs = [];
     var monthfreq = [];
 
-    console.log(allTermsArray);
+  //  console.log(allTermsArray);
     allTermsArray.forEach(function (d, i) {
     //  console.log(d.values.monthfreq);
       var months = d.values.monthfreq;
@@ -361,7 +361,7 @@ var c20 = d3.scale.category20b();
  //   console.log(monthlyData);
     //
     //get top 50 terms
-    console.log(topTermsCount);
+  //  console.log(topTermsCount);
     topTerms = monthlyData.slice(0, topTermsCount);
 
     // Trying to calculate the frequency of all others terms
@@ -450,7 +450,7 @@ var c20 = d3.scale.category20b();
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
-   console.log(topTerms);
+   //console.log(topTerms);
     return topTerms;
   }
 
@@ -470,8 +470,8 @@ var c20 = d3.scale.category20b();
           blogs.push(d);
         })
       }
-console.log(wnallTermsMap);
-console.log(blogs);
+//console.log(wnallTermsMap);
+//console.log(blogs);
       var lines = 0;
       blogs.forEach(function (blognumber) {
         ++lines;
@@ -715,7 +715,7 @@ console.log(blogs);
     //Draw the word cloud
     function draw(words) {
  words = words.reverse();
-  console.log(words);
+ // console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -854,7 +854,7 @@ console.log(blogs);
 
     return {
       update: function (words) {
-  console.log(words);
+  //  console.log(words);
         //words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
@@ -867,10 +867,7 @@ console.log(blogs);
                     if(d.term != "Other Terms")
                      return d.freq
         })])
-        console.log(d3.max(words, function (d) {
-                    if(d.term != "Other Terms")
-                       return d.freq
-        }));
+
 
         var newLowRange = Math.floor((newHighRange) / words.length) + 9;
         sizeScale.range([20, 45]);
@@ -881,7 +878,7 @@ console.log(blogs);
                 .words(words.map(function (d) {
                     if(d.term == "Other Terms"){
                       fontSize = 50;
-                      console.log("Yes!")
+                   //   console.log("Yes!")
                     }
                     else
                       fontSize = sizeScale(d.freq)

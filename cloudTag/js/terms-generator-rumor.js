@@ -24,7 +24,15 @@ function preProcessData() {
  allOtherTerms[otherTerms].frequency = 0;
     var allFreq = 0;
 
- // Variable for allOtherTerms
+ // End of Variable for allOtherTerms
+
+ // Variables for sentiments data
+
+ var sentiments = new Object();
+var defPosSentiment = 0;
+var defNegSentiment = 0;
+var posCount = 0;
+ var negCount = 0;
 
   this.startProcess = function (filename, callback) {
 
@@ -32,38 +40,81 @@ function preProcessData() {
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
 
-  
-     
-  console.log(allOtherTerms);
 
-
+        console.log(sentiments)
       data.forEach(function (d) {
-
-        
-      //  console.log(d);
-        var persons = d.topsy.terms;
-        
         d.date = Date.parse(d.created_at);
         d.newDate = new Date(d.date);
        // console.log(formatDate(d.newDate));
 
         var time = formatDate(d.newDate);
-       // console.log(time);
-     //  var m= d.date.getY
-      var month = time.substring(0, 4) + " " + time.substring(5, 7) + " " + time.substring(8, 10) + " " + time.substring(11, 13);
+
+        // Code start for Sentiments data
+        var hours = parse2(d.newDate);
+
+      //  console.log(d.topsy.document_info.sentiment);
+        if (sentiments[hours]) {
+              posCount = sentiments[hours].posCount;
+              negCount = sentiments[hours].negCount;
+              defPosSentiment = sentiments[hours].posSentiment;
+              defNegSentiment = sentiments[hours].negSentiment;
+
+            if(d.topsy.document_info.sentiment != undefined){
+                  if(d.topsy.document_info.sentiment > 0){
+                    console.log(sentiments[hours].posSentiment + "="+ defPosSentiment + " + " + d.topsy.document_info.sentiment);
+                      sentiments[hours].posSentiment = defPosSentiment + d.topsy.document_info.sentiment;
+                      sentiments[hours].posCount = posCount + 1;
+                  }
+                  else
+                    {
+                      sentiments[hours].negSentiment = defNegSentiment + d.topsy.document_info.sentiment;
+                       sentiments[hours].negCount = negCount + 1;
+                    }
+                }
+
+              }
+          else {
+                sentiments[hours] = new Object();
+                if(d.topsy.document_info.sentiment != undefined){
+                  if(d.topsy.document_info.sentiment > 0){
+                      sentiments[hours].posSentiment = d.topsy.document_info.sentiment;
+                      sentiments[hours].posCount = 1;
+                  }
+                  else
+                    {
+                      sentiments[hours].negSentiment = d.topsy.document_info.sentiment;
+                       sentiments[hours].negCount = 1;
+                    }
+                }
+         }
+
+        
+
+
+
+
+      // Below is the codes for generating terms.
+      //  Here persons represent the terms array in each tweets
+        var persons = d.topsy.terms;
+        
+
+      
+        // Here month represent the hours slot actually
+        var month = parse2(d.newDate);
 
     
       //var month = time.substring(0, 4) + " " + time.substring(5, 7);
-       // console.log(month);
+
+
          ++lines;
-        var personsArray = persons;
+        var personsArray = persons;    // Taking all the terms of current tweet into personArray
 
-
-          
         personsArray.forEach(function (d) {
+
 
           if (d != "") {
             //allTerms consideration.
+
             if (allTerms[d]) {
            //   console.log(allTerms[d]);
               var freq = allTerms[d].frequency;
@@ -106,6 +157,8 @@ function preProcessData() {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
               allTerms[d].category = "Person";
+           
+           //   console.log(allTerms[d].sentiment);
 
               // allOtherTerms
                 allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
@@ -143,14 +196,15 @@ function preProcessData() {
 
 
             }
-
+            
 
           }
     
         })
 
+
   //console.log(allOtherTerms[otherTerms]);
-  //console.log(allTerms);
+
 
 
        /* //Organization Terms
