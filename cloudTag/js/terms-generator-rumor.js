@@ -530,10 +530,7 @@ var posCount = 0;
        dlAnchorElem.click();*/
         
       callback(allTerms);
-      console.log(lines);
-
     });
-          console.log(sentiments)
 allTerms["Other Terms"] = allOtherTerms["Others"];
  
   }

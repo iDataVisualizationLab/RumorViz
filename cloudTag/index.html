@@ -9,6 +9,7 @@
   <script src="js/d3-tooltip.js"></script>
   <script src="js/terms-generator-rumor.js"></script>
   <script src="js/cmatrix.js"></script>
+   <script src="js/column-chart.js"></script>
   <link rel="stylesheet" href="css/app.css">
   <script>
     $(document).ready(function () {
@@ -141,11 +142,14 @@
   </div>
   <div id="timeline">
   </div>
+  <div id="barChart"></div>
 </div>
 </body>
 
 <script>
  var sentiments = new Object();
+ var sentimentsArray = [];
+     var sentimentsForChart = [];
 var c20 = d3.scale.category20b();
   var source = "wn";
   var topTermsCount = 50;
@@ -254,8 +258,33 @@ var c20 = d3.scale.category20b();
     for(var sentiment in data){
       data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].negCount + data[sentiment].posCount);
       data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].negCount + data[sentiment].posCount);
-      console.log(data[sentiment].negAvg + " " + data[sentiment].posAvg);
+      
+      data[sentiment].time = parse2.parse(sentiment);
+
+      sentimentsArray.push(data[sentiment]);
     }
+    sentimentsArray.sort(function(a, b){
+                return a.time-b.time;
+      })
+
+
+    var arrLength = sentimentsArray.length;
+    for(var x= 0; x<sentimentsArray.length; x++){
+        sentimentsForChart[x] = {time: sentimentsArray[x].time, value: sentimentsArray[x].posAvg};
+        sentimentsForChart[arrLength++] = {time: sentimentsArray[x].time, value: sentimentsArray[x].negAvg};
+    }
+
+    console.log(sentimentsForChart);
+
+
+      d3.select("#barChart")
+  .datum(sentimentsForChart)
+    .call(columnChart()
+      .width(960)
+      .height(500)
+      .x(function(d, i) { return d.time; })
+      .y(function(d, i) { return d.value; }));
+
   }
   function loadData(filename, source) {
     var localallTermsArray = [];

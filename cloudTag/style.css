@@ -126,3 +126,12 @@ h5 {
     stroke-width: 0.02;
     fill: none;
   }
+  .positive{
+    fill: rgb(0,255,0);
+  }
+  .negative{
+     fill: rgb(255,0,0);
+  }
+  .bar rect{
+    margin-right: 10px;
+  }
