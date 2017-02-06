@@ -18,7 +18,11 @@ function preProcessData() {
 
  // Variable for allOtherTerms
  var allOtherTerms = new Object();
-
+      var otherTerms = "Others";
+     allOtherTerms[otherTerms] = new Object();
+     allOtherTerms[otherTerms].category = "Person";
+ allOtherTerms[otherTerms].frequency = 0;
+    var allFreq = 0;
 
  // Variable for allOtherTerms
 
@@ -66,8 +70,7 @@ function preProcessData() {
               allTerms[d].frequency = freq + 1;
 
               // allOtherTerms
-              var allFreq = allOtherTerms[0].frequency;
-              allOtherTerms[0].frequency = allFreq + 1;
+              allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
                // End of allOtherTerms
 
 
@@ -83,15 +86,16 @@ function preProcessData() {
 
               }
               // allOtherTerms
-              if (allOtherTerms[0][month]) {
-                allOtherTerms[0][month].freq = allOtherTerms[0][month].freq + 1;
-                allOtherTerms[0][month].blogs.push(lines);
+              if (allOtherTerms[otherTerms][month]) {
+
+                allOtherTerms[otherTerms][month].freq = allOtherTerms[otherTerms][month].freq + 1;
+                allOtherTerms[otherTerms][month].blogs.push(lines);
               }
               else {
-                allOtherTerms[0][month] = new Object();
-                allOtherTerms[0][month].freq = 1;
-                allOtherTerms[0][month].blogs = [];
-                allOtherTerms[0][month].blogs.push(lines);
+                allOtherTerms[otherTerms][month] = new Object();
+                allOtherTerms[otherTerms][month].freq = 1;
+                allOtherTerms[otherTerms][month].blogs = [];
+                allOtherTerms[otherTerms][month].blogs.push(lines);
 
               }
 
@@ -104,9 +108,8 @@ function preProcessData() {
               allTerms[d].category = "Person";
 
               // allOtherTerms
-               allOtherTerms[0] = new Object();
-               allOtherTerms[0].frequency = 1;
-               allOtherTerms[0].category = "Person";
+                allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
+               
 
                // End of allOtherTerms
 
@@ -125,15 +128,15 @@ function preProcessData() {
 
                // allOtherTerms
 
-               if (allOtherTerms[0][month]) {
-                allOtherTerms[0][month].freq = allOtherTerms[0][month].freq + 1;
-                allOtherTerms[0][month].blogs.push(lines);
+               if (allOtherTerms[otherTerms][month]) {
+                allOtherTerms[otherTerms][month].freq = allOtherTerms[otherTerms][month].freq + 1;
+                allOtherTerms[otherTerms][month].blogs.push(lines);
               }
               else {
-                allOtherTerms[0][month] = new Object();
-                allOtherTerms[0][month].freq = 1;
-                allOtherTerms[0][month].blogs = [];
-                allOtherTerms[0][month].blogs.push(lines);
+                allOtherTerms[otherTerms][month] = new Object();
+                allOtherTerms[otherTerms][month].freq = 1;
+                allOtherTerms[otherTerms][month].blogs = [];
+                allOtherTerms[otherTerms][month].blogs.push(lines);
               }
 
               // End of allOtherTerms
@@ -141,11 +144,13 @@ function preProcessData() {
 
             }
 
-          }
 
+          }
     
         })
 
+  //console.log(allOtherTerms[otherTerms]);
+  //console.log(allTerms);
 
 
        /* //Organization Terms
@@ -455,12 +460,15 @@ function preProcessData() {
        dlAnchorElem.setAttribute("href", url);
        dlAnchorElem.setAttribute("download", "hp_termsfrequency.json");
        dlAnchorElem.click();*/
+        
       callback(allTerms);
       console.log(lines);
 
     });
-
-     console.log(allTerms);
+  console.log(allOtherTerms);
+  console.log(allTerms);
+allTerms["Others Terms"] = allOtherTerms["Others"];
+ 
   }
 
   this.getRelated = function (term) {

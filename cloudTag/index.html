@@ -253,6 +253,7 @@ var c20 = d3.scale.category10();
     var localallTermsArray = [];
     var localallTermsMap;
     var data = preProcessData();
+    console.log(data);
     data.startProcess(filename, function (data) {
       cloudmessages.attr("opacity", 1);
       localallTermsMap = data;
@@ -319,14 +320,8 @@ var c20 = d3.scale.category10();
     var currmonth;
     var blogs = [];
     var monthfreq = [];
-    var allOthersTermsMonthlyData = [];
 
-    var othersFreq = 0;
-    var othersMonthsFreq;
-    for(i=0;i<12;i++){
-
-    }
-
+    console.log(allTermsArray);
     allTermsArray.forEach(function (d, i) {
     //  console.log(d.values.monthfreq);
       var months = d.values.monthfreq;
@@ -340,7 +335,6 @@ var c20 = d3.scale.category10();
         currmonth = months[i].month;
         if (currmonth >= start && currmonth <= end) {
           freq = freq + months[i].freq;
-          othersFreq = othersFreq + freq;
 
           months[i].blogs.forEach(function (b) {
             blogs.push(b);
@@ -367,11 +361,11 @@ var c20 = d3.scale.category10();
  //   console.log(monthlyData);
     //
     //get top 50 terms
-    topTerms = monthlyData.slice(0, topTermsCount)
-    allOthersTerms = monthlyData.slice(topTermsCount, monthlyData.length);
+    console.log(topTermsCount);
+    topTerms = monthlyData.slice(0, topTermsCount);
 
     // Trying to calculate the frequency of all others terms
-console.log(allOthersTerms);
+
 
 
     // Ending of calculating the frequency of all other terms
@@ -721,7 +715,7 @@ console.log(blogs);
     //Draw the word cloud
     function draw(words) {
       // words = words.reverse();
-   //   console.log(words);
+  console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -733,7 +727,10 @@ console.log(blogs);
                 return d.size + "px";
               })
               .style("font-family", "Impact")
-              .style("fill", function(d, i) { return c20(i); })
+              .style("fill", function(d, i) { 
+                if(d.text == "Others Terms")
+                return "#a8a8a8";
+              return c20(i); })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
               .attr("text-anchor", "middle")
@@ -762,7 +759,11 @@ console.log(blogs);
                     //perform single-click action
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
-                            .style("fill", function(d, i) { return c20(i); })
+                            .style("fill", function(d, i) {
+                              if(d.term == "Others Terms")
+                                  return "#a8a8a8";
+
+                             return c20(i); })
 
                     stack = stack.offset("wiggle");
 
@@ -847,7 +848,7 @@ console.log(blogs);
 
     return {
       update: function (words) {
-    //    console.log(words);
+  console.log(words);
         //words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
@@ -1062,7 +1063,11 @@ console.log(blogs);
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
-            .style("fill", function(d, i) { return c20(i); })
+            .style("fill", function(d, i) {
+              if(d.term == "Others Terms")
+                return "#a8a8a8";
+
+             return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1206,7 +1211,11 @@ console.log(blogs);
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
-            .style("fill", function(d, i) { return c20(i); })
+            .style("fill", function(d, i) { 
+              if(d.term == "Others Terms")
+                return "#a8a8a8";
+
+              return c20(i); })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1228,7 +1237,10 @@ console.log(blogs);
       timeline.selectAll(".layer")
               .transition()
               .call(updateLayer)
-              .style("fill", function(d, i) { return c20(i); });
+              .style("fill", function(d, i) { if(d.term == "Others Terms")
+                return "#a8a8a8";
+
+                 return c20(i); });
 
       timeline.selectAll(".layerLine")
               .transition()
@@ -1265,7 +1277,10 @@ console.log(blogs);
      // console.log(d.monthfreq)
       return area(d.monthfreq);
     })
-            .style("fill", function(d, i) { return c20(i); })
+            .style("fill", function(d, i) { if(d.term == "Others Terms")
+                return "#a8a8a8";
+
+                 return c20(i); })
   }
 
   // Updates the lines with their current data.
