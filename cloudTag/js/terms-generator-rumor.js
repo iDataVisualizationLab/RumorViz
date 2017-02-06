@@ -15,19 +15,29 @@ function preProcessData() {
   var allTerms = new Object();
   var lines = 0;
     var formatDate = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+ // Variable for allOtherTerms
+ var allOtherTerms = new Object();
+
+
+ // Variable for allOtherTerms
+
   this.startProcess = function (filename, callback) {
+
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
 
-    //  console.log(data);
+  
+     
+  console.log(allOtherTerms);
+
 
       data.forEach(function (d) {
 
         
       //  console.log(d);
         var persons = d.topsy.terms;
-       // console.log(persons)
         
         d.date = Date.parse(d.created_at);
         d.newDate = new Date(d.date);
@@ -43,7 +53,9 @@ function preProcessData() {
        // console.log(month);
          ++lines;
         var personsArray = persons;
-        
+
+
+          
         personsArray.forEach(function (d) {
 
           if (d != "") {
@@ -52,6 +64,13 @@ function preProcessData() {
            //   console.log(allTerms[d]);
               var freq = allTerms[d].frequency;
               allTerms[d].frequency = freq + 1;
+
+              // allOtherTerms
+              var allFreq = allOtherTerms[0].frequency;
+              allOtherTerms[0].frequency = allFreq + 1;
+               // End of allOtherTerms
+
+
               if (allTerms[d][month]) {
                 allTerms[d][month].freq = allTerms[d][month].freq + 1;
                 allTerms[d][month].blogs.push(lines);
@@ -63,11 +82,34 @@ function preProcessData() {
                 allTerms[d][month].blogs.push(lines);
 
               }
+              // allOtherTerms
+              if (allOtherTerms[0][month]) {
+                allOtherTerms[0][month].freq = allOtherTerms[0][month].freq + 1;
+                allOtherTerms[0][month].blogs.push(lines);
+              }
+              else {
+                allOtherTerms[0][month] = new Object();
+                allOtherTerms[0][month].freq = 1;
+                allOtherTerms[0][month].blogs = [];
+                allOtherTerms[0][month].blogs.push(lines);
+
+              }
+
+              // End of allOtherTerms
+
             }
             else {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
               allTerms[d].category = "Person";
+
+              // allOtherTerms
+               allOtherTerms[0] = new Object();
+               allOtherTerms[0].frequency = 1;
+               allOtherTerms[0].category = "Person";
+
+               // End of allOtherTerms
+
               if (allTerms[d][month]) {
                 allTerms[d][month].freq = allTerms[d][month].freq + 1;
                 allTerms[d][month].blogs.push(lines);
@@ -81,12 +123,30 @@ function preProcessData() {
 
               }
 
+               // allOtherTerms
+
+               if (allOtherTerms[0][month]) {
+                allOtherTerms[0][month].freq = allOtherTerms[0][month].freq + 1;
+                allOtherTerms[0][month].blogs.push(lines);
+              }
+              else {
+                allOtherTerms[0][month] = new Object();
+                allOtherTerms[0][month].freq = 1;
+                allOtherTerms[0][month].blogs = [];
+                allOtherTerms[0][month].blogs.push(lines);
+              }
+
+              // End of allOtherTerms
+
+
             }
 
           }
 
-   //    console.log(allTerms);
+    
         })
+
+
 
        /* //Organization Terms
         var orgs = d.organization;
@@ -400,7 +460,7 @@ function preProcessData() {
 
     });
 
-
+     console.log(allTerms);
   }
 
   this.getRelated = function (term) {

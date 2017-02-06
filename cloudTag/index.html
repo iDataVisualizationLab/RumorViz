@@ -314,14 +314,23 @@ var c20 = d3.scale.category10();
 
   //getTopTerms based on start and end dates
   function getTopTerms(allTermsArray) {
-  console.log(allTermsArray);
+ // console.log(allTermsArray);
     var monthlyData = [];
     var currmonth;
     var blogs = [];
     var monthfreq = [];
+    var allOthersTermsMonthlyData = [];
+
+    var othersFreq = 0;
+    var othersMonthsFreq;
+    for(i=0;i<12;i++){
+
+    }
+
     allTermsArray.forEach(function (d, i) {
     //  console.log(d.values.monthfreq);
       var months = d.values.monthfreq;
+     // console.log(months);
       //console.log(months[0].month)
       var freq = 0;
       blogs = [];
@@ -331,6 +340,7 @@ var c20 = d3.scale.category10();
         currmonth = months[i].month;
         if (currmonth >= start && currmonth <= end) {
           freq = freq + months[i].freq;
+          othersFreq = othersFreq + freq;
 
           months[i].blogs.forEach(function (b) {
             blogs.push(b);
@@ -354,10 +364,19 @@ var c20 = d3.scale.category10();
       return b.freq - a.freq;
     })
 
-    console.log(monthlyData);
+ //   console.log(monthlyData);
     //
     //get top 50 terms
     topTerms = monthlyData.slice(0, topTermsCount)
+    allOthersTerms = monthlyData.slice(topTermsCount, monthlyData.length);
+
+    // Trying to calculate the frequency of all others terms
+console.log(allOthersTerms);
+
+
+    // Ending of calculating the frequency of all other terms
+
+
     //sort by month
     topTerms.forEach(function (currterm) {
       currterm.monthfreq.sort(function (a, b) {
@@ -437,7 +456,7 @@ var c20 = d3.scale.category10();
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
-    console.log(topTerms);
+   console.log(topTerms);
     return topTerms;
   }
 
@@ -702,7 +721,7 @@ console.log(blogs);
     //Draw the word cloud
     function draw(words) {
       // words = words.reverse();
-      console.log(words);
+   //   console.log(words);
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -828,7 +847,7 @@ console.log(blogs);
 
     return {
       update: function (words) {
-        console.log(words);
+    //    console.log(words);
         //words = words.reverse();
         var newHighRange;
         if ($("#tagCloud").width() > 430)
@@ -871,6 +890,7 @@ console.log(blogs);
       setSource("wiki");
     }
     topTermsCount = $('#texttermscount').val();
+    console.log(topTermsCount);
     start = parse.parse($('#fromYear').val() + " " + $('#fromMonth').val());
     end = parse.parse($('#toYear').val() + " " + $('#toMonth').val());
     if (source == "hp" && hpallTermsArray.length == 0) {
@@ -881,6 +901,7 @@ console.log(blogs);
     }
     else {
 
+          console.log($("#relationshipTerm").val());
 
       if ($("#relationships").is(":checked") && $("#relationshipTerm").val() != "") {
         getTopTerms_particularTerm($("#relationshipTerm").val());
@@ -927,6 +948,7 @@ console.log(blogs);
 
     $("#range").text(start.getMonth() + " " + start.getFullYear() + " TO " + end.getMonth() + " " + end.getFullYear());
     topTerms = getTopTerms(allTermsArray);
+
     showNewWords(myWordCloud, topTerms);
     //update stream graph, topterms.monthfreq contains monthly frequency
     updateStreamGraph(topTerms, false);
@@ -1008,7 +1030,6 @@ console.log(blogs);
     // TODO: Sort topTerms by category.
 
     layers = stack(topTerms);
-    console.log(layers);
 
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1167,7 +1188,7 @@ console.log(blogs);
     });
 
     layers = stack(topTerms);
-    stack = stack.offset("wiggle");
+    stack = stack.offset("silhouette");
     
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1498,7 +1519,7 @@ console.log(blogs);
       }
     }
     drawChords(relatedwordsArray);
-    console.log(relatedwordsArray);
+  //  console.log(relatedwordsArray);
 
   }
 
