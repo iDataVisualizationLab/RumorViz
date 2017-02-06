@@ -54,14 +54,19 @@ var posCount = 0;
 
       //  console.log(d.topsy.document_info.sentiment);
         if (sentiments[hours]) {
-              posCount = sentiments[hours].posCount;
-              negCount = sentiments[hours].negCount;
-              defPosSentiment = sentiments[hours].posSentiment;
-              defNegSentiment = sentiments[hours].negSentiment;
+
+
 
             if(d.topsy.document_info.sentiment != undefined){
+                            if(!isNaN(sentiments[hours].posCount))
+                            posCount = sentiments[hours].posCount;
+                          if(!isNaN(sentiments[hours].negCount) )
+                            negCount = sentiments[hours].negCount;
+                          if(!isNaN(sentiments[hours].posSentiment))
+                            defPosSentiment = sentiments[hours].posSentiment;
+                          if(!isNaN(sentiments[hours].negSentiment))
+                            defNegSentiment = sentiments[hours].negSentiment;
                   if(d.topsy.document_info.sentiment > 0){
-                    console.log(sentiments[hours].posSentiment + "="+ defPosSentiment + " + " + d.topsy.document_info.sentiment);
                       sentiments[hours].posSentiment = defPosSentiment + d.topsy.document_info.sentiment;
                       sentiments[hours].posCount = posCount + 1;
                   }
@@ -79,11 +84,15 @@ var posCount = 0;
                   if(d.topsy.document_info.sentiment > 0){
                       sentiments[hours].posSentiment = d.topsy.document_info.sentiment;
                       sentiments[hours].posCount = 1;
+                      sentiments[hours].negSentiment = 0;
+                       sentiments[hours].negCount = 0;
                   }
                   else
                     {
                       sentiments[hours].negSentiment = d.topsy.document_info.sentiment;
                        sentiments[hours].negCount = 1;
+                       sentiments[hours].posSentiment = 0;
+                         sentiments[hours].posCount = 0;
                     }
                 }
          }
