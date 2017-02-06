@@ -151,7 +151,7 @@ function drawCloudword(inputdata, i){
         var wordsArray = [];
         var i = 0;
         var maxCount = 0;
-        var minCount = 50000;
+        var minCount = 50000000;
         for(var x in words){
             if(words[x] > maxCount)
               maxCount = words[x];
@@ -166,13 +166,13 @@ function drawCloudword(inputdata, i){
             //wordsArray.push(x + ": " + words[x]);
         }
         wordsArray.sort(function(a,b) {return b.size - a.size});
-        wordTerms = wordsArray.slice(0, 50);
+        wordTerms = wordsArray.slice(0, 60);
      //   console.log(wordTerms);
     var color = d3.scale.category10()
     var sizeScale = d3.scale.linear()
                          .domain([minCount, maxCount])
-                         .range([15, 40]);
-    d3.layout.cloud().size([600, 650])
+                         .range([15, 50]);
+    d3.layout.cloud().size([600, 600])
             .words(wordTerms)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
