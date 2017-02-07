@@ -1,7 +1,6 @@
 body {
-  background:#ddd;
-  font: 14px Arial;
-  width: 90%;
+  font-size: 18px;
+  width: 98%;
   height: 95%;
   margin: auto;
   padding-top: 1%;
@@ -19,8 +18,6 @@ h5 {
 #visualizations {
   height: 90%;
   padding:15px;
-  border-radius:3px;
-  box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
   background:#fff;
 }
 
@@ -85,7 +82,6 @@ h5 {
   height: 85%;
   width: 60%;
   margin: 0px;
-  background: #ddd;
   padding: 1%;
 }
 
@@ -127,11 +123,14 @@ h5 {
     fill: none;
   }
   .positive{
-    fill: rgb(0,255,0);
+    
   }
   .negative{
-     fill: rgb(255,0,0);
+     
   }
   .bar rect{
     margin-right: 10px;
+  }
+  .menu a{
+    font-size: 14px;
   }

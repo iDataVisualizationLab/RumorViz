@@ -56,7 +56,7 @@ function columnChart() {
       gEnter.append("g").attr("class", "x axis zero");
 
       // Update the outer dimensions.
-      svg .attr("width", "610")
+      svg .attr("width", "900")
           .attr("height", "700");
 
       // Update the inner dimensions.
@@ -68,10 +68,20 @@ function columnChart() {
       bar.enter().append("rect");
       bar.exit().remove();
       bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
+          .attr("fill", function(d){ console.log(d[1]); var c = Math.floor((255 * d[1])/2) ;
+                                        if(c>0)
+                                          return "rgb("+ c + ", 255, " + c + ")";
+                                        else if(c<0)
+                                          return "rgb("+ 255 + ", "+ c*-1 + ", "+ c*-1 + ")";
+                                          else
+                                            return "none";
+                                      })
+
+
           .attr("x", function(d) { return X(d); })
-          .attr("y", function(d, i) { return d[1] < 0 ? Y0() : Y(d); })
-          .attr("width", "50")
-          .attr("height", function(d, i) { return Math.abs( Y(d) - Y0() ); });
+          .attr("y", function(d, i) { return d[1] < 0 ? Y0() : "0"; })
+          .attr("width", "30")
+          .attr("height", "234");
 
     // x axis at the bottom of the chart
      g.select(".x.axis")
