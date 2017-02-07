@@ -35,7 +35,7 @@ var posCount = 0;
  var negCount = 0;
 
   this.startProcess = function (filename, callback) {
-
+console.log(sentiments);
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
@@ -69,11 +69,16 @@ var posCount = 0;
                   if(d.topsy.document_info.sentiment > 0){
                       sentiments[hours].posSentiment = defPosSentiment + d.topsy.document_info.sentiment;
                       sentiments[hours].posCount = posCount + 1;
+                      sentiments[hours].totCount = sentiments[hours].totCount + 1;
                   }
                   else if(d.topsy.document_info.sentiment < 0)
                     {
                       sentiments[hours].negSentiment = defNegSentiment + d.topsy.document_info.sentiment;
                        sentiments[hours].negCount = negCount + 1;
+                       sentiments[hours].totCount = sentiments[hours].totCount + 1;
+                    }
+                    else{
+                      sentiments[hours].totCount = sentiments[hours].totCount + 1;
                     }
                 }
 
@@ -84,6 +89,7 @@ var posCount = 0;
                       sentiments[hours].posCount = 0;
                       sentiments[hours].negSentiment = 0;
                        sentiments[hours].negCount = 0;
+                       sentiments[hours].totCount = 0;
 
                 if(d.topsy.document_info.sentiment != undefined){
                   if(d.topsy.document_info.sentiment > 0){
@@ -91,6 +97,7 @@ var posCount = 0;
                       sentiments[hours].posCount = 1;
                       sentiments[hours].negSentiment = 0;
                        sentiments[hours].negCount = 0;
+                       sentiments[hours].totCount = 1;
                   }
                   else if(d.topsy.document_info.sentiment < 0)
                     {
@@ -98,6 +105,10 @@ var posCount = 0;
                        sentiments[hours].negCount = 1;
                        sentiments[hours].posSentiment = 0;
                          sentiments[hours].posCount = 0;
+                         sentiments[hours].totCount = 1;
+                    }
+                    else{
+                      sentiments[hours].totCount = 1;
                     }
                 }
          }

@@ -32,6 +32,7 @@
         <a href="./histogram.html">Histogram</a>
         
       </div>
+<div id="visualizations" style="">
   <div id="left">
        <div id="numberTermsSelection">
         <h5 style="display: inline">Number of Terms Displayed: </h5>
@@ -51,7 +52,7 @@
   <div id="barChart"></div>
 
 
-  <div id="visualizations" style="visibility: hidden; disply:none;">
+  
   <div id="options">
     <div id="topOptions">
       <div id="sourceSelection" style="visibility: hidden; disply:none;">
@@ -260,9 +261,10 @@ var c20 = d3.scale.category20b();
   });
   function sentimentBar(){
     var data = sentiments;
+
     for(var sentiment in data){
-      data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].negCount + data[sentiment].posCount);
-      data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].negCount + data[sentiment].posCount);
+      data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].totCount);
+      data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].totCount);
       
       data[sentiment].time = parse2.parse(sentiment);
 
@@ -280,13 +282,20 @@ var c20 = d3.scale.category20b();
     }
 
     console.log(sentimentsForChart);
+ // Define dimensions.
+    var margin = {top: 20, right: 0, bottom: 30, left: 40};
+    var svgWidth = $("#timeline").width();
+    var svgHeight = $("#timeline").height();
+    var width = svgWidth * 0.98 - margin.left - margin.right;
+    var height = svgHeight - margin.bottom - margin.top - 100
 
 
-      d3.select("#barChart")
+
+      d3.select("#timeline")
   .datum(sentimentsForChart)
     .call(columnChart()
-      .width(960)
-      .height(500)
+      .width(svgWidth)
+      .height(height)
       .x(function(d, i) { return d.time; })
       .y(function(d, i) { return d.value; }));
 
@@ -947,7 +956,6 @@ var c20 = d3.scale.category20b();
       setSource("wiki");
     }
     topTermsCount = $('#texttermscount').val();
-    console.log(topTermsCount);
     start = parse.parse($('#fromYear').val() + " " + $('#fromMonth').val());
     end = parse.parse($('#toYear').val() + " " + $('#toMonth').val());
     if (source == "hp" && hpallTermsArray.length == 0) {
@@ -957,9 +965,6 @@ var c20 = d3.scale.category20b();
       cloudmessages.attr("opacity", 0);
     }
     else {
-
-          console.log($("#relationshipTerm").val());
-
       if ($("#relationships").is(":checked") && $("#relationshipTerm").val() != "") {
         getTopTerms_particularTerm($("#relationshipTerm").val());
         $("#tagCloud").removeClass("active").addClass("inactive");
@@ -1044,7 +1049,7 @@ var c20 = d3.scale.category20b();
     var svgWidth = $("#timeline").width();
     var svgHeight = $("#timeline").height();
     var width = svgWidth * 0.98 - margin.left - margin.right;
-    var height = svgHeight - margin.bottom - margin.top;
+    var height = svgHeight - margin.bottom - margin.top - 100;
 
     // Define scales.
     timelineX = d3.time.scale()
@@ -1090,7 +1095,7 @@ var c20 = d3.scale.category20b();
     // TODO: Sort topTerms by category.
 
     layers = stack(topTerms);
-
+    console.log([endDate,startDate]);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
@@ -1100,7 +1105,8 @@ var c20 = d3.scale.category20b();
       return localMax;
     })]);
 
-    timeline = d3.select("#timeline").append("svg")
+    timeline = d3.select("#timeline")
+              .select("svg")
             .attr("width", svgWidth)
             .attr("height", "700")
             .append("g")
