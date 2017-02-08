@@ -1,7 +1,10 @@
 function columnChart() {
 
           var x_domain = d3.extent(sentimentsForChart, function(d) { return d.time; });
-            console.log(x_domain);
+/*    hours = x_domain[1].getHours();
+      x_domain[1] = new Date(x_domain[1].setHours(hours-1));*/
+
+          console.log(x_domain)
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
@@ -69,11 +72,16 @@ function columnChart() {
       bar.enter().append("rect");
       bar.exit().remove();
       bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
-          .attr("fill", function(d){  var c = Math.floor((255 * d[1])/2) ;
+          .attr("fill", function(d){ console.log(d);
+                                         var c = Math.floor((255 * d[1])*2) ;
+                                         if(d[1] == -0.7575757575757576){
+                                            c = 0;
+                                          }
                                         if(c>0)
-                                          return "rgb("+ c + ", 255, " + c + ")";
+                                          return "rgb("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ")";
+                                          //    return "rgba("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ",0.7)";
                                         else if(c<0)
-                                          return "rgb("+ 255 + ", "+ c*-1 + ", "+ c*-1 + ")";
+                                          return "rgb("+ 255 + ", "+ Math.floor((c*-1)/4) + ", "+ Math.floor((c*-1)/4) + ")";
                                           else
                                             return "none";
                                       })
