@@ -25,6 +25,7 @@ function preProcessData() {
     var allFreq = 0;
 
  // End of Variable for allOtherTerms
+//-------------------------------------------
 
  // Variables for sentiments data
 
@@ -34,6 +35,17 @@ var defNegSentiment = 0;
 var posCount = 0;
  var negCount = 0;
 
+ // End of variables for sentiments data
+ //----------------------------------------
+
+
+ // Variables for most frequent terms in hous
+    var hourlyTerms = new Object();
+
+
+
+ // Variables for most frequent terms in hous
+
   this.startProcess = function (filename, callback) {
 
 
@@ -41,7 +53,9 @@ console.log(sentiments);
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
-
+      
+      //console.log(data);
+        
 
 
       data.forEach(function (d) {
@@ -135,7 +149,6 @@ console.log(sentiments);
 
          ++lines;
         var personsArray = persons;    // Taking all the terms of current tweet into personArray
-
         personsArray.forEach(function (d) {
 
 
@@ -185,8 +198,6 @@ console.log(sentiments);
               allTerms[d].frequency = 1;
               allTerms[d].category = "Person";
            
-           //   console.log(allTerms[d].sentiment);
-
               // allOtherTerms
                 allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
                
@@ -230,350 +241,21 @@ console.log(sentiments);
         })
 
 
-  //console.log(allOtherTerms[otherTerms]);
 
 
-
-       /* //Organization Terms
-        var orgs = d.organization;
-        var orgsArray = orgs.split("|");
-        orgsArray.forEach(function (d) {
-
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Organization";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        //Misc Terms
-        var misc = d.miscellaneous;
-        var miscArray = misc.split("|");
-        miscArray.forEach(function (d) {
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Misc";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        //Location Terms
-        var location = d.location;
-        var locationArray = location.split("|");
-        locationArray.forEach(function (d) {
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Location";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })*/
-
+     
       });
-
-      // huffingpost
-      /*  d3.tsv("data/huffington.tsv", function (data) {
-       data.forEach(function (d) {
-       var persons = d.person;
-       ++lines;
-       var personsArray = persons.split("|");
-       personsArray.forEach(function (d) {
-
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Organization Terms
-       var orgs = d.organization;
-       var orgsArray = orgs.split("|");
-       orgsArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Misc Terms
-       var misc = d.miscellaneous;
-       var miscArray = misc.split("|");
-       miscArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Location Terms
-       var location = d.location;
-       var locationArray = location.split("|");
-       locationArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       });
-
-       });*/
-
-      /*  //  var allTermsEntries = allTerms.entries();
-       var allTermsJson = [];
-       for(var entry in allTerms){
-       var jsonEntry = {}
-       jsonEntry.term = entry;
-       jsonEntry.properties = {};
-       jsonEntry.properties.frequency = allTerms[entry].frequency;
-       jsonEntry.properties.monthfreq = [];
-       var month = d[1].monthfreq.entries();
-       month.forEach(function (r) {
-       jsonEntry.properties.monthfreq.push({ month: r[0], freq: r[1] })
-       })
-       allTermsJson.push(jsonEntry);
-
-       }
-       allTerms.forEach(function (d) {
-
-       })
-       var finalJson = JSON.stringify(allTerms);
-
-       */
-
-
-      //
-
-
-      /*   var url = URL.createObjectURL(new Blob([finalJson], { type: 'text/json' }));
-       var dlAnchorElem = document.createElement('a');
-       dlAnchorElem.setAttribute("href", url);
-       dlAnchorElem.setAttribute("download", "hp_termsfrequency.json");
-       dlAnchorElem.click();*/
+frequentTermsInHours(data);
         
       callback(allTerms);
     });
+console.log(allTerms);
 allTerms["Other Terms"] = allOtherTerms["Others"];
+
   }
 
   this.getRelated = function (term) {
-    //
-    //var termDetails = allTerms.get(term);
-    //var related = [];
-    //var blogs = termDetails.blogs;
-    //allTerms.each(function (key, value) {
-    //    if (term != key) {
-    //        var count = 0;
-    //        var currblogs = value.blogs;
-    //        for (var i = 0; i < blogs.length; i++) {
-    //            if (currblogs.indexOf(blogs[i]) > -1) {
-    //                ++count;
-    //            }
-    //        }
-    //        if (count > 0) {
-    //            var term = {};
-    //            term.term = key;
-    //            term.freq = count;
-    //            related.push(term);
-    //        }
-    //    }
-    //})
-    //related.sort(function (a, b) {
-    //    return b.freq - a.freq;
-    //})
-    //return related.slice(0, 49);
-
+   
   }
   this.getMonthFreq = function (term) {
     //
@@ -583,29 +265,8 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
     Months.each(function (key, value) {
       result.push({"month": key, "freq": value})
     });
+    console.log(result);
     return result;
-    //allTerms.each(function (key, value) {
-    //    if (term != key) {
-    //        var count = 0;
-    //        var currblogs = value.blogs;
-    //        for (var i = 0; i < blogs.length; i++) {
-    //            if (currblogs.indexOf(blogs[i]) > -1) {
-    //                ++count;
-    //            }
-    //        }
-    //        if (count > 0) {
-    //            var term = {};
-    //            term.term = key;
-    //            term.freq = count;
-    //            related.push(term);
-    //        }
-    //    }
-    //})
-    //related.sort(function (a, b) {
-    //    return b.freq - a.freq;
-    //})
-    //return related.slice(0, 49);
-
   }
   this.getPersonTerms = function () {
     return personsTerms.entries();
@@ -622,5 +283,65 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
   this.getTerm = function (iterm) {
     return allTerms.get('gop');
   }
+  function frequentTermsInHours(data){
+      console.log(data);
+
+      data.sort(function(a, b){
+               return a.date-b.date;
+      })
+
+      var hourlyTwitt = [];
+      var startTerm = [];
+      data.forEach(function (d) {
+
+      var hours = parse2(d.newDate);
+
+          if (hourlyTerms[hours]) {
+                  hourlyTerms[hours].terms = hourlyTerms[hours].terms.concat(d.topsy.terms);
+          }
+
+          else{
+                  hourlyTerms[hours] = new Object();
+                  hourlyTerms[hours].terms = startTerm.concat(d.topsy.terms);
+                  
+          }
+
+      })
+console.log(hourlyTerms);
+      //for(var hour in hourlyTerms){
+          var allTerms = new Object();
+            var lines = 0;
+          var terms = hourlyTerms["2014 09 27 17"].terms;
+          console.log(terms);
+        /*  data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].totCount);
+          data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].totCount);
+          
+          data[sentiment].time = parse2.parse(sentiment);
+          sentimentsArray.push(data[sentiment]);*/
+         
+          terms.forEach(function (d) {
+               if (d != "") {
+
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Person";
+            }
+            
+
+          }
+
+          })
+          console.log(allTerms);
+      //}
+
+      
+
+  }
+
   return this;
 }
