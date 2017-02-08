@@ -1,10 +1,9 @@
 function columnChart() {
 
           var x_domain = d3.extent(sentimentsForChart, function(d) { return d.time; });
-/*    hours = x_domain[1].getHours();
-      x_domain[1] = new Date(x_domain[1].setHours(hours-1));*/
-
-          
+/*   hours = x_domain[1].getHours();
+      x_domain[1] = new Date(x_domain[1].setHours(hours));*/
+         
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
@@ -15,23 +14,26 @@ function columnChart() {
 
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; };
-
       xScale = d3.time.scale()
             .domain(x_domain)
             .range([0, width]);
 
+
       yScale = d3.scale.linear(),
-      yAxis = d3.svg.axis().scale(yScale).orient("left"),
+      yAxis = d3.svg.axis().scale(yScale).ticks(0).orient("left");
 
       xAxis = d3.svg.axis()
       .scale(xScale)
-      .tickFormat(d3.time.format("%m-%d-%Y, %H:%M"))
+      .orient("bottom")
       .ticks(12)
-      .orient("bottom");
+      .tickFormat(d3.time.format("%m-%d-%Y, %H:%M"));
       
 
   function chart(selection) {
     selection.each(function(data) {
+      var colorScale = d3.scale.linear().domain([0,1]).range(["white","#00FF00"]);
+      var colorScaleRed = d3.scale.linear().domain([-1,0]).range(["white","#FF0000"]);
+ 
 
       // Convert data to standard representation greedily;
       // this is needed for nondeterministic accessors.
@@ -44,7 +46,7 @@ function columnChart() {
 
       // Update the y-scale.
       yScale
-          .domain(d3.extent(data.map(function(d) { return (1/d[1])*d[1];} )))
+          .domain([-1,1])
           .range([height, 0])
           .nice();
           
@@ -67,29 +69,50 @@ function columnChart() {
       var g = svg.select("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+          counter = 0;
+
      // Update the bars.
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect");
       bar.exit().remove();
       bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
           .attr("fill", function(d){ 
-                                         var c = Math.floor((255 * d[1])*2) ;
+                                         /*var c = Math.floor((255 * d[1])*2) ;
                                          if(d[1] == -0.7575757575757576){
-                                            c = 0;
+                                            c = 1000;
                                           }
-                                        if(c>0)
+                                        if(d[1]>0 && d[1]<1)
                                           return "rgb("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ")";
                                           //    return "rgba("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ",0.7)";
-                                        else if(c<0)
+                                        else if(d[1]<0 && d[1]>-1)
                                           return "rgb("+ 255 + ", "+ Math.floor((c*-1)/4) + ", "+ Math.floor((c*-1)/4) + ")";
+                                        else if(d[1]==0)
+                                          return "#ffffff";
                                           else
+                                            return "none";*/
+                                        if(counter!=23){
+                                          counter++;
+                                          if(d[1]<0)
+                                         return colorScaleRed(d[1]);
+                                          else 
+                                            return colorScale(d[1]);
+                                          }
+                                          else {
+                                            console.log(counter);
+                                            counter = -1;
+                                            counter++;
                                             return "none";
+                                          }
+
+                                         
+                                          
+
                                       })
 
           .attr("x", function(d) { return X(d); })
-          .attr("y", function(d, i) {   return d[1] < 0 ? Y0()/2 : "0"; })
-          .attr("width", (svgWidth/24)-1)
-          .attr("height", function(d, i) { return Math.abs( Y(d)/2 ); });
+          .attr("y", function(d, i) {   return d[1] < 0 ? Y0() : "0"; })
+          .attr("width", (svgWidth/24)-2)
+          .attr("height", function(d, i) { return 225; });
 
     // x axis at the bottom of the chart
      g.select(".x.axis")

@@ -35,6 +35,8 @@ var posCount = 0;
  var negCount = 0;
 
   this.startProcess = function (filename, callback) {
+
+
 console.log(sentiments);
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
@@ -543,7 +545,6 @@ console.log(sentiments);
       callback(allTerms);
     });
 allTerms["Other Terms"] = allOtherTerms["Others"];
- 
   }
 
   this.getRelated = function (term) {
