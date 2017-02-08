@@ -27,3 +27,4 @@ TopicPanorama: a Full Picture of Relevant Topics
 ![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/TopicPanorama.png)
 
 Dr. Jian Zhao [Web](http://www.cs.toronto.edu/~jianzhao/). His PEARL and FluxFlow papers are needed to cite. 
+![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/FluxFlow.png)
