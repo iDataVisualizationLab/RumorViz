@@ -4,7 +4,7 @@ function columnChart() {
 /*    hours = x_domain[1].getHours();
       x_domain[1] = new Date(x_domain[1].setHours(hours-1));*/
 
-          console.log(x_domain)
+          
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
@@ -72,7 +72,7 @@ function columnChart() {
       bar.enter().append("rect");
       bar.exit().remove();
       bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
-          .attr("fill", function(d){ console.log(d);
+          .attr("fill", function(d){ 
                                          var c = Math.floor((255 * d[1])*2) ;
                                          if(d[1] == -0.7575757575757576){
                                             c = 0;

@@ -281,7 +281,6 @@ var c20 = d3.scale.category20b();
         sentimentsForChart[arrLength++] = {time: sentimentsArray[x].time, value: sentimentsArray[x].negAvg};
     }
 
-    console.log(sentimentsForChart);
  // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
@@ -1025,7 +1024,7 @@ var c20 = d3.scale.category20b();
   }
 
   function setStreamGraph() {
-
+    console.log(topTerms);
     // Ploting Sentiments
     sentimentBar();
     // TODO(manorepo): Remove below comment.
@@ -1095,7 +1094,6 @@ var c20 = d3.scale.category20b();
     // TODO: Sort topTerms by category.
 
     layers = stack(topTerms);
-    console.log([endDate,startDate]);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
