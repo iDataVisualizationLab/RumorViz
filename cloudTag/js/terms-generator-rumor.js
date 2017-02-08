@@ -284,7 +284,7 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
     return allTerms.get('gop');
   }
   function frequentTermsInHours(data){
-      console.log(data);
+   
 
       data.sort(function(a, b){
                return a.date-b.date;
@@ -307,18 +307,11 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
           }
 
       })
-console.log(hourlyTerms);
-      //for(var hour in hourlyTerms){
+
+      for(var hour in hourlyTerms){
           var allTerms = new Object();
             var lines = 0;
-          var terms = hourlyTerms["2014 09 27 17"].terms;
-          console.log(terms);
-        /*  data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].totCount);
-          data[sentiment].posAvg = data[sentiment].posSentiment/(data[sentiment].totCount);
-          
-          data[sentiment].time = parse2.parse(sentiment);
-          sentimentsArray.push(data[sentiment]);*/
-         
+          var terms = hourlyTerms[hour].terms;
           terms.forEach(function (d) {
                if (d != "") {
 
@@ -336,8 +329,10 @@ console.log(hourlyTerms);
           }
 
           })
-          console.log(allTerms);
-      //}
+          hourlyTerms[hour].termsWithFreq = allTerms;
+      }
+
+      console.log(hourlyTerms);
 
       
 

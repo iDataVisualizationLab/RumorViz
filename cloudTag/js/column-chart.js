@@ -98,7 +98,7 @@ function columnChart() {
                                             return colorScale(d[1]);
                                           }
                                           else {
-                                            console.log(counter);
+                                         
                                             counter = -1;
                                             counter++;
                                             return "none";

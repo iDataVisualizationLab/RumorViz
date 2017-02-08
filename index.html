@@ -260,7 +260,6 @@ var c20 = d3.scale.category20b();
     //loadData("data/huffington.tsv", "hp")
   });
   function sentimentBar(){
-    console.log(sentiments);
     var data = sentiments;
 
     for(var sentiment in data){
@@ -1029,7 +1028,7 @@ var c20 = d3.scale.category20b();
     sentimentBar();
     // TODO(manorepo): Remove below comment.
     // stream code change - Moved the sub functions out of this function to make available for update.
-
+//console.log(topTerms)
     startDate = maxDate(topTerms);
     start = startDate;
 
