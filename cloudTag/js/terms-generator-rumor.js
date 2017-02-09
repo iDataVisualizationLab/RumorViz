@@ -147,12 +147,14 @@ var posCount = 0;
         // All other terms Positive
          
           if(d.topsy.document_info.sentiment!= undefined){
-            if(d.topsy.document_info.sentiment >= 0){
+            if(d.topsy.document_info.sentiment > 0){
               var otherTerms = otherPosTerms;
                }
-            else {
+            else if(d.topsy.document_info.sentiment < 0){
              var  otherTerms = otherNegTerms;
               }
+              else
+                var otherTerms = otherNonSentimentTerms;
             }
             else
               var otherTerms = otherNonSentimentTerms;

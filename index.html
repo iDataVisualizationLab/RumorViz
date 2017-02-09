@@ -270,6 +270,7 @@ var otherPosTermsColor = "#888";
   });
   function sentimentBar(){
     var data = sentiments;
+    console.log(sentiments);
 
     for(var sentiment in data){
       data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].totCount);
@@ -312,38 +313,62 @@ var otherPosTermsColor = "#888";
   }
 
   function frequentTermsInSpecificTime(data){
-        console.log(data);
+/*        console.log(data);
         console.log(data.pos['2014 09 27 19'].termsArray[0].term);
-        console.log(topTerms);
+        console.log(topTerms);*/
+        console.log(data);
         mostFreqTerm = "none";
+        mostFreqTermFrequency = 0;
+
+        
+
+
         for(var hour in data.pos){
+          data.pos[hour].termsArray = data.pos[hour].termsArray.sort(function(a, b){
+               return b.freq-a.freq;
+          })
+
             for(var i =0; i<data.pos[hour].termsArray.length;i++){
+               var k = 0;
                 for(var j=0; j<topTerms.length; j++){
                     if(data.pos[hour].termsArray[i].term != topTerms[j].term){
-                           mostFreqTerm = data.pos[hour].termsArray[i].term;
-                          break;
-                          
+                          k++;                     
                     }
                 }
-                
+                if(k==topTerms.length){
+                    mostFreqTerm = data.pos[hour].termsArray[i].term;
+                    mostFreqTermFrequency = data.pos[hour].termsArray[i].freq;
+                    break;
+                }
                
             }
             data.pos[hour].mostFreqTerm = mostFreqTerm;
+            data.pos[hour].mostFreqTermFrequency = mostFreqTermFrequency;
         }
+        console.log(topTerms.length);
 
         for(var hour in data.neg){
+          data.pos[hour].termsArray = data.pos[hour].termsArray.sort(function(a, b){
+               return b.freq-a.freq;
+          })
             for(var i =0; i<data.neg[hour].termsArray.length;i++){
+                var k = 0;
                 for(var j=0; j<topTerms.length; j++){
-                    if(data.neg[hour].termsArray[i].term != topTerms[j].term){
-                           mostFreqTerm = data.neg[hour].termsArray[i].term;
-                          break;
-                          
+                  if(data.neg[hour].termsArray[i].term != topTerms[j].term){
+                          k++;                     
                     }
                 }
-                
+
+                if(k==topTerms.length){
+                      mostFreqTerm = data.neg[hour].termsArray[i].term;
+                      mostFreqTermFrequency = data.neg[hour].termsArray[i].freq;
+                      break;
+                          
+                    }                
                
             }
             data.neg[hour].mostFreqTerm = mostFreqTerm;
+            data.neg[hour].mostFreqTermFrequency = mostFreqTermFrequency;
         }
   }
 
@@ -551,12 +576,12 @@ var otherPosTermsColor = "#888";
    //console.log(topTerms);
    sliceArrOne = topTerms.slice(0, topTermsCount-1);
    sliceArrTwo = topTerms.slice(topTermsCount-1, topTermsCount);
-   console.log(sliceArrOne);
+/*   console.log(sliceArrOne);
    console.log(sliceArrTwo);
-   console.log(topTerms);
+   console.log(topTerms);*/
 
    topTerms = sliceArrTwo.concat(sliceArrOne);
-   console.log(topTerms);
+ //  console.log(topTerms);
 
     return topTerms;
   }
@@ -825,12 +850,12 @@ var otherPosTermsColor = "#888";
 
    sliceArrOne = words.slice(0, topTermsCount-1);
    sliceArrTwo = words.slice(topTermsCount-1, topTermsCount);
-   console.log(sliceArrOne);
+/*   console.log(sliceArrOne);
    console.log(sliceArrTwo);
-   console.log(words);
+   console.log(words);*/
 
    words = sliceArrTwo.concat(sliceArrOne);
-   console.log(words);
+  // console.log(words);
 
 
       var cloud = svg.selectAll("g text")

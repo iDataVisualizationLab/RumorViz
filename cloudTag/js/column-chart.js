@@ -32,7 +32,7 @@ function columnChart() {
   function chart(selection) {
     selection.each(function(data) {
       var colorScale = d3.scale.linear().domain([0,1]).range(["white","#00FF00"]);
-      var colorScaleRed = d3.scale.linear().domain([-1,0]).range(["white","#FF0000"]);
+      var colorScaleRed = d3.scale.linear().domain([0,-1]).range(["white","#FF0000"]);
  
 
       // Convert data to standard representation greedily;
@@ -90,10 +90,12 @@ function columnChart() {
                                           return "#ffffff";
                                           else
                                             return "none";*/
-                                        if(counter!=23){
+                                        if(1){
                                           counter++;
-                                          if(d[1]<0)
+                                          if(d[1]<0){
+                                            
                                          return colorScaleRed(d[1]);
+                                            }
                                           else 
                                             return colorScale(d[1]);
                                           }
