@@ -158,7 +158,7 @@
  var sentimentsForChart = [];
  var hourlyTerms = new Object();
 
-var c20 = d3.scale.category20b();
+var c20 = d3.scale.category20();
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -306,7 +306,7 @@ var c20 = d3.scale.category20b();
 
   function frequentTermsInSpecificTime(data){
         console.log(data);
-        console.log(data.pos['2014 09 27 17'].termsArray[0].term);
+        console.log(data.pos['2014 09 27 19'].termsArray[0].term);
         console.log(topTerms);
         mostFreqTerm = "none";
         for(var hour in data.pos){
@@ -321,7 +321,6 @@ var c20 = d3.scale.category20b();
                 
                
             }
-            console.log(mostFreqTerm);
             data.pos[hour].mostFreqTerm = mostFreqTerm;
         }
 
@@ -337,7 +336,6 @@ var c20 = d3.scale.category20b();
                 
                
             }
-            console.log(mostFreqTerm);
             data.neg[hour].mostFreqTerm = mostFreqTerm;
         }
   }
@@ -544,6 +542,15 @@ var c20 = d3.scale.category20b();
       catcolors[term] = personcolor[term];
     }
    //console.log(topTerms);
+   sliceArrOne = topTerms.slice(0, topTermsCount-1);
+   sliceArrTwo = topTerms.slice(topTermsCount-1, topTermsCount);
+   console.log(sliceArrOne);
+   console.log(sliceArrTwo);
+   console.log(topTerms);
+
+   topTerms = sliceArrTwo.concat(sliceArrOne);
+   console.log(topTerms);
+
     return topTerms;
   }
 
@@ -808,7 +815,17 @@ var c20 = d3.scale.category20b();
     //Draw the word cloud
     function draw(words) {
  words = words.reverse();
- // console.log(words);
+
+   sliceArrOne = words.slice(0, topTermsCount-1);
+   sliceArrTwo = words.slice(topTermsCount-1, topTermsCount);
+   console.log(sliceArrOne);
+   console.log(sliceArrTwo);
+   console.log(words);
+
+   words = sliceArrTwo.concat(sliceArrOne);
+   console.log(words);
+
+
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -821,7 +838,8 @@ var c20 = d3.scale.category20b();
               })
               .style("font-family", "Impact")
               .style("fill", function(d, i) { 
-                if(d.text == "Other Terms"){
+                console.log(d.text);
+                if(d.text == "Other Pos Terms" || d.text == "Other Neg Terms"){
                    i = 0;
                    return "#a8a8a8";
                  }
@@ -856,7 +874,7 @@ var c20 = d3.scale.category20b();
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
                             .style("fill", function(d, i) {
-                              if(d.term == "Other Terms"){
+                              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
                                    i = 0;
                                    return "#a8a8a8";
                                  }
@@ -957,20 +975,20 @@ var c20 = d3.scale.category20b();
         sizeScale.domain([d3.min(words, function (d) {
           return d.freq
         }), d3.max(words, function (d) {
-                    if(d.term != "Other Terms")
-                     return d.freq
+                    if(d.term != "Other Pos Terms" && d.term != "Other Neg Terms")
+                     return d.freq;
         })])
 
 
         var newLowRange = Math.floor((newHighRange) / words.length) + 9;
-        sizeScale.range([20, 45]);
+        sizeScale.range([18, 40]);
 
 
         d3.layout.cloud().size([cloudWidth, cloudHeight])
                 .timeInterval(Infinity)
                 .words(words.map(function (d) {
-                    if(d.term == "Other Terms"){
-                      fontSize = 50;
+                    if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+                      fontSize = 40;
                    //   console.log("Yes!")
                     }
                     else
@@ -1171,7 +1189,7 @@ var c20 = d3.scale.category20b();
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) {
-              if(d.term == "Other Terms"){
+              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
                    i = 0;
                    return "#a8a8a8";
                  }
@@ -1323,7 +1341,7 @@ var c20 = d3.scale.category20b();
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) { 
-              if(d.term == "Other Terms"){
+              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
                    i = 0;
                    return "#a8a8a8";
                  }
@@ -1351,7 +1369,7 @@ var c20 = d3.scale.category20b();
               .transition()
               .call(updateLayer)
               .style("fill", function(d, i) {
-               if(d.term == "Other Terms"){
+               if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
                i = 0;
                 return "#a8a8a8";
               }
@@ -1395,7 +1413,7 @@ var c20 = d3.scale.category20b();
       return area(d.monthfreq);
     })
             .style("fill", function(d, i) {
-             if(d.term == "Other Terms"){
+             if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
                i = 0;
                 return "#a8a8a8";
               }

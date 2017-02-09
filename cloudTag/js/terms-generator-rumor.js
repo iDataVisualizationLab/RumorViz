@@ -18,10 +18,25 @@ function preProcessData() {
 
  // Variable for allOtherTerms
  var allOtherTerms = new Object();
-      var otherTerms = "Others";
-     allOtherTerms[otherTerms] = new Object();
-     allOtherTerms[otherTerms].category = "Person";
- allOtherTerms[otherTerms].frequency = 0;
+      var otherPosTerms = "Others Pos";
+     allOtherTerms[otherPosTerms] = new Object();
+     allOtherTerms[otherPosTerms].category = "Person";
+ allOtherTerms[otherPosTerms].frequency = 0;
+
+
+      var otherNegTerms = "Others Neg";
+     allOtherTerms[otherNegTerms] = new Object();
+     allOtherTerms[otherNegTerms].category = "Person";
+ allOtherTerms[otherNegTerms].frequency = 0;
+
+
+ var otherNonSentimentTerms = "Others Non Sentiment"
+ allOtherTerms[otherNonSentimentTerms] = new Object();
+     allOtherTerms[otherNonSentimentTerms].category = "Person";
+ allOtherTerms[otherNonSentimentTerms].frequency = 0;
+
+
+console.log(allOtherTerms)
     var allFreq = 0;
 
  // End of Variable for allOtherTerms
@@ -49,12 +64,12 @@ var posCount = 0;
   this.startProcess = function (filename, callback) {
 
 
-console.log(sentiments);
+
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
       
-      //console.log(data);
+      console.log(data);
         
 
 
@@ -129,7 +144,21 @@ console.log(sentiments);
                 }
          }
 
-        
+        // All other terms Positive
+         
+          if(d.topsy.document_info.sentiment!= undefined){
+            if(d.topsy.document_info.sentiment >= 0){
+              var otherTerms = otherPosTerms;
+               }
+            else {
+             var  otherTerms = otherNegTerms;
+              }
+            }
+            else
+              var otherTerms = otherNonSentimentTerms;
+          
+
+        // All other Terms Negative
 
 
 
@@ -250,7 +279,9 @@ frequentTermsInHours(data);
       callback(allTerms);
     });
 console.log(allTerms);
-allTerms["Other Terms"] = allOtherTerms["Others"];
+allTerms["Other Pos Terms"] = allOtherTerms["Others Pos"];
+
+allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
 
   }
 
@@ -296,6 +327,7 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
       data.forEach(function (d) {
 
       var hours = parse2(d.newDate);
+
         if(d.topsy.document_info.sentiment >= 0){
               if (hourlyTerms.pos[hours]) {
                       hourlyTerms.pos[hours].terms = hourlyTerms.pos[hours].terms.concat(d.topsy.terms);
