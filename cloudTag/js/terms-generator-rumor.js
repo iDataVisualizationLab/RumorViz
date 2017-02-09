@@ -40,7 +40,7 @@ var posCount = 0;
 
 
  // Variables for most frequent terms in hous
-    var hourlyTerms = new Object();
+    
 
 
 
@@ -289,29 +289,43 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
       data.sort(function(a, b){
                return a.date-b.date;
       })
-
+      hourlyTerms.pos = new Object();
+      hourlyTerms.neg = new Object();
       var hourlyTwitt = [];
       var startTerm = [];
       data.forEach(function (d) {
 
       var hours = parse2(d.newDate);
+        if(d.topsy.document_info.sentiment >= 0){
+              if (hourlyTerms.pos[hours]) {
+                      hourlyTerms.pos[hours].terms = hourlyTerms.pos[hours].terms.concat(d.topsy.terms);
+              }
 
-          if (hourlyTerms[hours]) {
-                  hourlyTerms[hours].terms = hourlyTerms[hours].terms.concat(d.topsy.terms);
-          }
+              else{
+                      hourlyTerms.pos[hours] = new Object();
+                      hourlyTerms.pos[hours].terms = startTerm.concat(d.topsy.terms);
+                      
+              }
+        }
+        else{
+          if (hourlyTerms.neg[hours]) {
+                      hourlyTerms.neg[hours].terms = hourlyTerms.neg[hours].terms.concat(d.topsy.terms);
+              }
 
-          else{
-                  hourlyTerms[hours] = new Object();
-                  hourlyTerms[hours].terms = startTerm.concat(d.topsy.terms);
-                  
-          }
+              else{
+                      hourlyTerms.neg[hours] = new Object();
+                      hourlyTerms.neg[hours].terms = startTerm.concat(d.topsy.terms);
+                      
+              }
+        }
 
       })
 
-      for(var hour in hourlyTerms){
+
+      for(var hour in hourlyTerms.pos){
           var allTerms = new Object();
             var lines = 0;
-          var terms = hourlyTerms[hour].terms;
+          var terms = hourlyTerms.pos[hour].terms;
           terms.forEach(function (d) {
                if (d != "") {
 
@@ -329,11 +343,51 @@ allTerms["Other Terms"] = allOtherTerms["Others"];
           }
 
           })
-          hourlyTerms[hour].termsWithFreq = allTerms;
+          hourlyTerms.pos[hour].termsWithFreq = allTerms;
+          hourlyTerms.pos[hour].termsArray = [];
+          var i = 0;
+          for(var terms in allTerms){
+              var arr = new Object();
+              arr.term = terms;
+              arr.freq = allTerms[terms].frequency;
+              hourlyTerms.pos[hour].termsArray.push(arr);
+          }
       }
 
-      console.log(hourlyTerms);
+          for(var hour in hourlyTerms.neg){
+          var allTerms = new Object();
+            var lines = 0;
+          var terms = hourlyTerms.neg[hour].terms;
+          terms.forEach(function (d) {
+               if (d != "") {
 
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Person";
+            }
+            
+
+          }
+
+          })
+          hourlyTerms.neg[hour].termsWithFreq = allTerms;
+          hourlyTerms.neg[hour].termsArray = [];
+          var i = 0;
+          for(var terms in allTerms){
+              var arr = new Object();
+              arr.term = terms;
+              arr.freq = allTerms[terms].frequency;
+              hourlyTerms.neg[hour].termsArray.push(arr);
+          }
+      }
+
+      
+    console.log(hourlyTerms)
       
 
   }

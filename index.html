@@ -155,7 +155,9 @@
 <script>
  var sentiments = new Object();
  var sentimentsArray = [];
-     var sentimentsForChart = [];
+ var sentimentsForChart = [];
+ var hourlyTerms = new Object();
+
 var c20 = d3.scale.category20b();
   var source = "wn";
   var topTermsCount = 50;
@@ -297,7 +299,49 @@ var c20 = d3.scale.category20b();
       .x(function(d, i) { return d.time; })
       .y(function(d, i) { return d.value; }));
 
+
+   
+
   }
+
+  function frequentTermsInSpecificTime(data){
+        console.log(data);
+        console.log(data.pos['2014 09 27 17'].termsArray[0].term);
+        console.log(topTerms);
+        mostFreqTerm = "none";
+        for(var hour in data.pos){
+            for(var i =0; i<data.pos[hour].termsArray.length;i++){
+                for(var j=0; j<topTerms.length; j++){
+                    if(data.pos[hour].termsArray[i].term != topTerms[j].term){
+                           mostFreqTerm = data.pos[hour].termsArray[i].term;
+                          break;
+                          
+                    }
+                }
+                
+               
+            }
+            console.log(mostFreqTerm);
+            data.pos[hour].mostFreqTerm = mostFreqTerm;
+        }
+
+        for(var hour in data.neg){
+            for(var i =0; i<data.neg[hour].termsArray.length;i++){
+                for(var j=0; j<topTerms.length; j++){
+                    if(data.neg[hour].termsArray[i].term != topTerms[j].term){
+                           mostFreqTerm = data.neg[hour].termsArray[i].term;
+                          break;
+                          
+                    }
+                }
+                
+               
+            }
+            console.log(mostFreqTerm);
+            data.neg[hour].mostFreqTerm = mostFreqTerm;
+        }
+  }
+
   function loadData(filename, source) {
     var localallTermsArray = [];
     var localallTermsMap;
@@ -1214,7 +1258,7 @@ var c20 = d3.scale.category20b();
               .style("fill", d.color)
               .text(d.category);
         });*/
-
+ frequentTermsInSpecificTime(hourlyTerms);
   }
 
   // Fills in missing dates in 'data'. 'data' must be non-empty.
@@ -1250,6 +1294,7 @@ var c20 = d3.scale.category20b();
   }
 
   function updateStreamGraph(topTerms, hasTransition) {
+     frequentTermsInSpecificTime(hourlyTerms);
     startDate = maxDate(topTerms);
 
     endDate = minDate(topTerms);
