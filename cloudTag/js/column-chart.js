@@ -90,7 +90,7 @@ function columnChart() {
                                           return "#ffffff";
                                           else
                                             return "none";*/
-                                        if(1){
+                                        if(counter!=23){
                                           counter++;
                                           if(d[1]<0){
                                             

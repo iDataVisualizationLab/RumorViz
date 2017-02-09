@@ -36,7 +36,7 @@ function preProcessData() {
  allOtherTerms[otherNonSentimentTerms].frequency = 0;
 
 
-console.log(allOtherTerms)
+//console.log(allOtherTerms)
     var allFreq = 0;
 
  // End of Variable for allOtherTerms
@@ -69,10 +69,8 @@ var posCount = 0;
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
       
-      console.log(data);
+      // console.log(data);
         
-
-
       data.forEach(function (d) {
         d.date = Date.parse(d.created_at);
         d.newDate = new Date(d.date);
@@ -280,7 +278,7 @@ frequentTermsInHours(data);
         
       callback(allTerms);
     });
-console.log(allTerms);
+//console.log(allTerms);
 allTerms["Other Pos Terms"] = allOtherTerms["Others Pos"];
 
 allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
@@ -421,7 +419,7 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
       }
 
       
-    console.log(hourlyTerms)
+   // console.log(hourlyTerms)
       
 
   }

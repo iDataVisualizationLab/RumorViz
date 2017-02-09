@@ -240,6 +240,23 @@ var otherPosTermsColor = "#888";
             return "<strong>" + d.text + " :" + d.frequency + "</strong>";
           });
   svg.call(wordTip);
+
+
+    /* Initialize tooltip */
+
+    var tipAreaWidth;
+    var tipAreaHeight;
+
+  var otherTermsTip = d3.tip()
+          .attr('class', 'd3-tip')
+          .direction('n')
+          .offset([0, 0])
+          .html(function (d) {
+            return "<strong>"+ d +"</strong>";
+          });
+  svg.call(otherTermsTip);
+
+
   var cloudmessages = svg.append("p")
           .attr("class", "messages")
           .attr("transform", "translate(10, 10)")
@@ -270,7 +287,7 @@ var otherPosTermsColor = "#888";
   });
   function sentimentBar(){
     var data = sentiments;
-    console.log(sentiments);
+   // console.log(sentiments);
 
     for(var sentiment in data){
       data[sentiment].negAvg = data[sentiment].negSentiment/(data[sentiment].totCount);
@@ -316,7 +333,7 @@ var otherPosTermsColor = "#888";
 /*        console.log(data);
         console.log(data.pos['2014 09 27 19'].termsArray[0].term);
         console.log(topTerms);*/
-        console.log(data);
+
         mostFreqTerm = "none";
         mostFreqTermFrequency = 0;
 
@@ -345,8 +362,6 @@ var otherPosTermsColor = "#888";
             data.pos[hour].mostFreqTerm = mostFreqTerm;
             data.pos[hour].mostFreqTermFrequency = mostFreqTermFrequency;
         }
-        console.log(topTerms.length);
-
         for(var hour in data.neg){
           data.pos[hour].termsArray = data.pos[hour].termsArray.sort(function(a, b){
                return b.freq-a.freq;
@@ -999,7 +1014,7 @@ var otherPosTermsColor = "#888";
   //  console.log(words);
         //words = words.reverse();
         var newHighRange;
-        console.log($("#tagCloud").width())
+      //  console.log($("#tagCloud").width())
         if ($("#tagCloud").width() > 430)
           newHighRange = 80;
         else
@@ -1187,6 +1202,9 @@ var otherPosTermsColor = "#888";
             });
 
     // TODO: Sort topTerms by category.
+   /*  var hoursDigit = startDate.getHours();
+      startDate = new Date(startDate.setHours(hoursDigit - 1));*/
+   // console.log(endDate)
     layers = stack(topTerms);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1230,10 +1248,46 @@ var otherPosTermsColor = "#888";
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
+                if(d.term == otherNegTerms){
+                  mousex = d3.mouse(this);
+                  var invertedx = timelineX.invert(mousex[0]);
+                  var invertedy = timelineY.invert(mousex[1]);
+                  invertedx = invertedx.getTime();
+                  var time = new Date(invertedx);
+                  var hours = parse2(time);
+                 
+                  console.log(mousex);
+                 
+                 var tipAreaWidth = $("#timeline").width();
+                 var tipAreaHeight = $("#timeline").height();
+
+                 console.log( -1 * (tipAreaWidth/3) +"," + tipAreaHeight)
+
+                 otherTermsTip.show(hourlyTerms.neg[hours].mostFreqTerm, this);
+                      console.log(hourlyTerms.neg[hours].mostFreqTerm)
+                  
+                }
+                if(d.term == otherPosTerms){
+                  mousex = d3.mouse(this);
+                  var invertedx = timelineX.invert(mousex[0]);
+                  var invertedy = timelineY.invert(mousex[1]);
+                  invertedx = invertedx.getTime();
+                  var time = new Date(invertedx);
+                  var hours = parse2(time);
+                 
+                 /* console.log(hours)
+                  console.log(hourlyTerms)
+                 */
+                      otherTermsTip.show(hourlyTerms.pos[hours].mostFreqTerm, this);
+                      console.log(hourlyTerms.pos[hours].mostFreqTerm)
+                  
+                }
+
             })
             .on("mouseout", function () {
               unhighlightLayer();
               unHighlightWord();
+              otherTermsTip.hide();
             });
 
     // Lines separating stacked layers.
