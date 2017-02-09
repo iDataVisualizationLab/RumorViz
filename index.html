@@ -159,6 +159,13 @@
  var hourlyTerms = new Object();
 
 var c20 = d3.scale.category20();
+
+// Var for positive and neg Terms
+var otherPosTerms = "Other Pos Terms";
+var otherNegTerms = "Other Neg Terms";
+var otherPosTermsColor = "#888";
+
+//
   var source = "wn";
   var topTermsCount = 50;
   function setSource(s) {
@@ -838,10 +845,9 @@ var c20 = d3.scale.category20();
               })
               .style("font-family", "Impact")
               .style("fill", function(d, i) { 
-                console.log(d.text);
-                if(d.text == "Other Pos Terms" || d.text == "Other Neg Terms"){
+                if(d.text == otherPosTerms || d.text == otherNegTerms){
                    i = 0;
-                   return "#a8a8a8";
+                   return otherPosTermsColor;
                  }
                 else
                    return c20(i); })
@@ -874,9 +880,9 @@ var c20 = d3.scale.category20();
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
                             .style("fill", function(d, i) {
-                              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+                              if(d.term == otherPosTerms || d.term == otherNegTerms){
                                    i = 0;
-                                   return "#a8a8a8";
+                                   return otherPosTermsColor;
                                  }
 
                                 else
@@ -968,6 +974,7 @@ var c20 = d3.scale.category20();
   //  console.log(words);
         //words = words.reverse();
         var newHighRange;
+        console.log($("#tagCloud").width())
         if ($("#tagCloud").width() > 430)
           newHighRange = 80;
         else
@@ -975,7 +982,7 @@ var c20 = d3.scale.category20();
         sizeScale.domain([d3.min(words, function (d) {
           return d.freq
         }), d3.max(words, function (d) {
-                    if(d.term != "Other Pos Terms" && d.term != "Other Neg Terms")
+                    if(d.term != otherPosTerms && d.term != otherNegTerms)
                      return d.freq;
         })])
 
@@ -987,7 +994,7 @@ var c20 = d3.scale.category20();
         d3.layout.cloud().size([cloudWidth, cloudHeight])
                 .timeInterval(Infinity)
                 .words(words.map(function (d) {
-                    if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+                    if(d.term == otherPosTerms || d.term == otherNegTerms){
                       fontSize = 40;
                    //   console.log("Yes!")
                     }
@@ -1189,9 +1196,9 @@ var c20 = d3.scale.category20();
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) {
-              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+              if(d.term == otherPosTerms || d.term == otherNegTerms){
                    i = 0;
-                   return "#a8a8a8";
+                   return otherPosTermsColor;
                  }
               else
              return c20(i); })
@@ -1341,9 +1348,9 @@ var c20 = d3.scale.category20();
             .attr("class", "layer")
             .call(updateLayer)
             .style("fill", function(d, i) { 
-              if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+              if(d.term == otherPosTerms || d.term == otherNegTerms){
                    i = 0;
-                   return "#a8a8a8";
+                   return otherPosTermsColor;
                  }
               else
               return c20(i); })
@@ -1369,9 +1376,9 @@ var c20 = d3.scale.category20();
               .transition()
               .call(updateLayer)
               .style("fill", function(d, i) {
-               if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+               if(d.term == otherPosTerms || d.term == otherNegTerms){
                i = 0;
-                return "#a8a8a8";
+                return otherPosTermsColor;
               }
                 else
                  return c20(i); });
@@ -1413,9 +1420,9 @@ var c20 = d3.scale.category20();
       return area(d.monthfreq);
     })
             .style("fill", function(d, i) {
-             if(d.term == "Other Pos Terms" || d.term == "Other Neg Terms"){
+             if(d.term == otherPosTerms || d.term == otherNegTerms){
                i = 0;
-                return "#a8a8a8";
+                return otherPosTermsColor;
               }
                 else
                  return c20(i); })
