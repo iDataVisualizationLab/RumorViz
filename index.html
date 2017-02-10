@@ -923,10 +923,10 @@ words.sort(function(a, b){
                 return d.text;
               })
 
-console.log("hi")     
       //Entering words
        var l = 0;
        var m = 0;
+
       cloud.enter().append("text")
               .style("font-size", function (d) {
                 return d.size + "px";
@@ -975,7 +975,6 @@ console.log("hi")
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
                             .style("fill", function(d, i) {
-                              console.log("hi") 
                               if(d.term == otherPosTerms || d.term == otherNegTerms){
                                    i = 0;
                                    return otherPosTermsColor;
