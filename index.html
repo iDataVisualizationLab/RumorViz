@@ -560,6 +560,10 @@ var otherPosTermsColor = "#888";
    for(var i = 0; i<topTerms.length; i++){
         topTerms[i].color = c20(i);
    }
+
+   console.log(topTerms)
+
+
     return topTerms;
   }
 
@@ -902,6 +906,7 @@ d3.selectAll("g text").remove();
    // console.log(endDate)
     layers = stack(topTerms);
 
+
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
@@ -955,6 +960,7 @@ d3.selectAll("g text").remove();
                  
                  var tipAreaWidth = $("#timeline").width();
                  var tipAreaHeight = $("#timeline").height();
+                 var coordinate = "x: " + mousex[0] + " Y: " + mousex[1];
 
                  otherTermsTip.show(hourlyTerms.neg[hours].mostFreqTerm, this);
 
@@ -1028,7 +1034,7 @@ d3.selectAll("g text").remove();
         .text("Frequency");
         //text for Y axis frequency
     timeline.append("text")
-        .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
+        .attr("transform", "translate(" + ((width / 2)+20) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
         .text("Date")
         .attr("class", "axis-label")
@@ -1045,6 +1051,32 @@ d3.selectAll("g text").remove();
       { category: "Location", color: "rgb(255, 120, 44)" }
     ];
 
+      timeline.selectAll(".layerLine")
+            .data(layers)
+            .enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layerLine")
+         //   .style("stroke", function(d, i) { return c20(i); })
+            .call(updateLayerLine);
+
+
+    timeline.selectAll("text").data(layers).enter()
+              .append("text")
+              .attr("x",345).attr("y",240).text("Test Text")
+
+
+   /*  timeline.data(layers)
+              .enter()
+              .append("text")
+              .attr("x",function(d){
+                    return 200;
+              })
+              .attr("y",function(d){
+                    return 200;
+              })
+              .text(function(d){
+                return d.text;
+              })*/
 
     
  /*   legend.append("rect")
@@ -1243,7 +1275,7 @@ d3.selectAll("g text").remove();
         .text("Frequency");
         //text for Y axis frequency
     timeline.append("text")
-        .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
+        .attr("transform", "translate(" + ((width / 2)+20) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
         .text("Date")
         .attr("class", "axis-label")
