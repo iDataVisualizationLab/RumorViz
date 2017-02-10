@@ -58,7 +58,7 @@ function columnChart() {
       var gEnter = svg.enter().append("svg").append("g");
       gEnter.append("g").attr("class", "bars");
       gEnter.append("g").attr("class", "y axis");
-      gEnter.append("g").attr("class", "x axis");
+      gEnter.append("g").attr("class", "x axis lineXAxis");
       gEnter.append("g").attr("class", "x axis zero");
 
       // Update the outer dimensions.
@@ -113,11 +113,11 @@ function columnChart() {
 
           .attr("x", function(d) { return X(d); })
           .attr("y", function(d, i) {   return d[1] < 0 ? Y0() : "0"; })
-          .attr("width", (svgWidth/24)-2)
+          .attr("width", (svgWidth/24) -2)
           .attr("height", function(d, i) { return 225; });
 
     // x axis at the bottom of the chart
-     g.select(".x.axis")
+     g.select(".x.axis.lineXAxis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
             .selectAll("text")  

@@ -86,6 +86,7 @@ h5 {
   margin: 0px;
   padding: 1%;
   background: #ddd;
+  max-width: 710px;
 }
 
 #relationshipChart {
@@ -154,4 +155,12 @@ h5 {
     border: 0px;    
     border-radius: 8px;     
     pointer-events: none;     
+}
+.layerTerm{
+  font-size: 10px;
+  color: red;
+
+}
+.lineXAxis{
+  visibility: hidden;
 }
