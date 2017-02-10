@@ -35,7 +35,7 @@
 <div id="visualizations" style="">
   <div id="left">
        <div id="numberTermsSelection">
-        <h5 style="display: inline">Number of Terms Displayed (Minimum 20): </h5>
+        <h5 style="display: inline">Number of Terms Displayed: </h5>
         &ensp;<input type="text" style="width: 40px" id="texttermscount" placeholder="count" value="50">
       </div>
       <div id="updateButtonContainer">
@@ -330,11 +330,7 @@ var otherPosTermsColor = "#888";
   }
 
   function frequentTermsInSpecificTime(data){
-/*        console.log(data);
-        console.log(data.pos['2014 09 27 19'].termsArray[0].term);
-        console.log(topTerms);*/
-
-        mostFreqTerm = "none";
+       mostFreqTerm = "none";
         mostFreqTermFrequency = 0;
 
         
@@ -600,6 +596,7 @@ var otherPosTermsColor = "#888";
                return a.freq-b.freq;
       })
 
+  console.log(topTerms);
    var sliceArrOne;
    var sliceArrTwo;
    var sliceArrThree;
@@ -614,13 +611,11 @@ var otherPosTermsColor = "#888";
       }
    }
    sliceArrFour = topTerms.slice(topTermsCount-1, topTermsCount);
-
+   console.log(sliceArrThree)
 
    topTerms = sliceArrFour.concat(sliceArrThree).concat(sliceArrTwo).concat(sliceArrOne);
 
-   for(var i = 0; i<topTerms.length; i++){
-        topTerms[i].color = c20(i);
-   }
+
     return topTerms;
   }
 
@@ -875,6 +870,8 @@ var otherPosTermsColor = "#888";
 
   function showNewWords(vis, words) {
 
+
+
     vis.update(words)
 
   }
@@ -885,15 +882,42 @@ var otherPosTermsColor = "#888";
     //Draw the word cloud
     function draw(words) {
 
+words.sort(function(a, b){
+                if(a.text < b.text) return -1;
+                if(a.text > b.text) return 1;
+                return 0;
+      })
+
+  words.sort(function(a, b){
+               return a.frequency-b.frequency;
+      })
+ var sliceArrOne;
+   var sliceArrTwo;
+   var sliceArrThree;
+   var sliceArrFour;
+  
+
+   for(var i = 0; i<words.length; i++){
+      if(words[i].text == "Other Pos Terms"){
+        console.log(i)
+
+        sliceArrOne = words.slice(i,i+1);
+        sliceArrThree = words.slice(0,i)
+        sliceArrTwo = words.slice(i+1,topTermsCount-1);
+      }
+   }
+   sliceArrFour = words.slice(topTermsCount-1, topTermsCount);
+   console.log(sliceArrThree)
 
  //  words = sliceArrFour.concat(sliceArrThree).concat(sliceArrTwo).concat(sliceArrOne);
-d3.selectAll("g text").remove();
+
+  console.log(words);
+
+
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
               })
-
-      
 
       //Entering words
        var l = 0;
@@ -904,12 +928,19 @@ d3.selectAll("g text").remove();
                 return d.size + "px";
               })
               .style("font-family", "Impact")
-              .style("fill", function(d, i) {    
+              .style("fill", function(d, i) {     
+
                 if(d.text == otherNegTerms ||d.text == otherPosTerms){
                    return otherPosTermsColor;
                  }
                   else{
-                      return d.color; }
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.text);
+                   return c20(k); }
                  })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
@@ -945,8 +976,12 @@ d3.selectAll("g text").remove();
                                    return otherPosTermsColor;
                                  }
                                else{
-                               return d.color; }
-                         })
+                                  if(m%10 == 0){
+                                    m = 0;
+                                  }
+                                 var k = m;
+                                 m++;
+                               return c20(k); } })
 
                     stack = stack.offset("silhouette");
 
@@ -1031,6 +1066,7 @@ d3.selectAll("g text").remove();
 
     return {
       update: function (words) {
+       console.log(words);
         //words = words.reverse();
         var newHighRange;
       //  console.log($("#tagCloud").width())
@@ -1045,7 +1081,7 @@ d3.selectAll("g text").remove();
                      return d.freq;
         })])
 
-   
+
         var newLowRange = Math.floor((newHighRange) / words.length) + 9;
         sizeScale.range([15, 35]);
 
@@ -1055,12 +1091,11 @@ d3.selectAll("g text").remove();
                 .words(words.map(function (d) {
                     if(d.term == otherPosTerms || d.term == otherNegTerms){
                       fontSize = 40;
-
                    //   console.log("Yes!")
                     }
                     else
                       fontSize = sizeScale(d.freq)
-                  return {text: d.term, size: fontSize, frequency: d.freq, active: true, category: d.category, color: d.color};
+                  return {text: d.term, size: fontSize, frequency: d.freq, active: true, category: d.category};
                 }))
                 .padding(3)
                 .rotate(function () {
@@ -1104,7 +1139,6 @@ d3.selectAll("g text").remove();
 
       }
       else {
-
         $("#tagCloud").addClass("loading");
         setTimeout(function () {
 
@@ -1140,7 +1174,6 @@ d3.selectAll("g text").remove();
   }
 
   function updateVisualization() {
-
 
     $("#range").text(start.getMonth() + " " + start.getFullYear() + " TO " + end.getMonth() + " " + end.getFullYear());
     topTerms = getTopTerms(allTermsArray);
@@ -1233,6 +1266,7 @@ d3.selectAll("g text").remove();
    /*  var hoursDigit = startDate.getHours();
       startDate = new Date(startDate.setHours(hoursDigit - 1));*/
    // console.log(endDate)
+   console.log(topTerms);
     layers = stack(topTerms);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1261,6 +1295,7 @@ d3.selectAll("g text").remove();
 
     // Stacked layers.
     var l = 0;
+    console.log(layers)
     timeline.selectAll(".layer")
             .data(layers)
             .enter().append("path")
@@ -1272,7 +1307,13 @@ d3.selectAll("g text").remove();
                    return otherPosTermsColor;
                  }
               else{
-                      return d.color; }
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                   return c20(k); }
                  })
             .on("mouseover", function (d) {
               highlightLayer(d);
@@ -1423,6 +1464,7 @@ d3.selectAll("g text").remove();
   }
 
   function updateStreamGraph(topTerms, hasTransition) {
+    console.log(topTerms);
      frequentTermsInSpecificTime(hourlyTerms);
     startDate = maxDate(topTerms);
 
@@ -1458,7 +1500,14 @@ d3.selectAll("g text").remove();
                    return otherPosTermsColor;
                  }
               else{
-                      return d.color; }
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.term);
+                   return c20(k); }
                  })
             .on("mouseover", function (d) {
               highlightLayer(d);
@@ -1487,7 +1536,14 @@ d3.selectAll("g text").remove();
                    return otherPosTermsColor;
                  }
               else{
-                      return d.color; }
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.term);
+                   return c20(k); }
                  })
 
       timeline.selectAll(".layerLine")
@@ -1533,7 +1589,14 @@ d3.selectAll("g text").remove();
                    return otherPosTermsColor;
                  }
               else{
-                      return d.color; }
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                    
+                   return c20(k); }
                  })
   }
 
