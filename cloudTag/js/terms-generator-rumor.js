@@ -207,7 +207,6 @@ var posCount = 0;
               }
               // allOtherTerms
               if (allOtherTerms[otherTerms][month]) {
-
                 allOtherTerms[otherTerms][month].freq = allOtherTerms[otherTerms][month].freq + 1;
                 allOtherTerms[otherTerms][month].blogs.push(lines);
               }
