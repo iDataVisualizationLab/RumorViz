@@ -158,7 +158,7 @@
  var sentimentsForChart = [];
  var hourlyTerms = new Object();
 
-var c20 = d3.scale.category20();
+var c20 = d3.scale.category10();
 
 // Var for positive and neg Terms
 var otherPosTerms = "Other Pos Terms";
@@ -167,7 +167,7 @@ var otherPosTermsColor = "#888";
 
 //
   var source = "wn";
-  var topTermsCount = 50;
+  var topTermsCount = 52;
   function setSource(s) {
     if (s == "wiki") {
       source = "wn";
@@ -588,15 +588,37 @@ var otherPosTermsColor = "#888";
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
-   //console.log(topTerms);
-   sliceArrOne = topTerms.slice(0, topTermsCount-1);
-   sliceArrTwo = topTerms.slice(topTermsCount-1, topTermsCount);
-/*   console.log(sliceArrOne);
-   console.log(sliceArrTwo);
-   console.log(topTerms);*/
 
-   topTerms = sliceArrTwo.concat(sliceArrOne);
- //  console.log(topTerms);
+    // Sorting Top Terms 
+      topTerms.sort(function(a, b){
+               
+               if(a.term < b.term) return -1;
+                if(a.term > b.term) return 1;
+                return 0;
+      })
+       topTerms.sort(function(a, b){
+               return a.freq-b.freq;
+      })
+
+  console.log(topTerms);
+   var sliceArrOne;
+   var sliceArrTwo;
+   var sliceArrThree;
+   var sliceArrFour;
+   
+
+   for(var i = 0; i<topTerms.length; i++){
+      if(topTerms[i].term == "Other Pos Terms"){
+        sliceArrOne = topTerms.slice(i,i+1);
+        sliceArrThree = topTerms.slice(0,i)
+        sliceArrTwo = topTerms.slice(i+1,topTermsCount-1);
+      }
+   }
+   sliceArrFour = topTerms.slice(topTermsCount-1, topTermsCount);
+   console.log(sliceArrThree)
+
+   topTerms = sliceArrFour.concat(sliceArrThree).concat(sliceArrTwo).concat(sliceArrOne);
+
 
     return topTerms;
   }
@@ -853,7 +875,9 @@ var otherPosTermsColor = "#888";
   function showNewWords(vis, words) {
 
 
+
     vis.update(words)
+
   }
 
   // Encapsulate the word cloud functionality
@@ -861,16 +885,37 @@ var otherPosTermsColor = "#888";
 
     //Draw the word cloud
     function draw(words) {
- words = words.reverse();
 
-   sliceArrOne = words.slice(0, topTermsCount-1);
-   sliceArrTwo = words.slice(topTermsCount-1, topTermsCount);
-/*   console.log(sliceArrOne);
-   console.log(sliceArrTwo);
-   console.log(words);*/
+words.sort(function(a, b){
+                if(a.text < b.text) return -1;
+                if(a.text > b.text) return 1;
+                return 0;
+      })
 
-   words = sliceArrTwo.concat(sliceArrOne);
-  // console.log(words);
+  words.sort(function(a, b){
+               return a.frequency-b.frequency;
+      })
+ var sliceArrOne;
+   var sliceArrTwo;
+   var sliceArrThree;
+   var sliceArrFour;
+  
+
+   for(var i = 0; i<words.length; i++){
+      if(words[i].text == "Other Pos Terms"){
+        console.log(i)
+
+        sliceArrOne = words.slice(i,i+1);
+        sliceArrThree = words.slice(0,i)
+        sliceArrTwo = words.slice(i+1,topTermsCount-1);
+      }
+   }
+   sliceArrFour = words.slice(topTermsCount-1, topTermsCount);
+   console.log(sliceArrThree)
+
+ //  words = sliceArrFour.concat(sliceArrThree).concat(sliceArrTwo).concat(sliceArrOne);
+
+  console.log(words);
 
 
       var cloud = svg.selectAll("g text")
@@ -878,19 +923,29 @@ var otherPosTermsColor = "#888";
                 return d.text;
               })
 
+console.log("hi")     
       //Entering words
+       var l = 0;
+       var m = 0;
       cloud.enter().append("text")
               .style("font-size", function (d) {
                 return d.size + "px";
               })
               .style("font-family", "Impact")
-              .style("fill", function(d, i) { 
-                if(d.text == otherPosTerms || d.text == otherNegTerms){
-                   i = 0;
+              .style("fill", function(d, i) {     
+
+                if(d.text == otherNegTerms ||d.text == otherPosTerms){
                    return otherPosTermsColor;
                  }
-                else
-                   return c20(i); })
+                  else{
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.text);
+                   return c20(k); }
+                 })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
               .attr("text-anchor", "middle")
@@ -920,13 +975,18 @@ var otherPosTermsColor = "#888";
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
                             .style("fill", function(d, i) {
+                              console.log("hi") 
                               if(d.term == otherPosTerms || d.term == otherNegTerms){
                                    i = 0;
                                    return otherPosTermsColor;
                                  }
-
-                                else
-                                   return c20(i); })
+                               else{
+                                  if(m%10 == 0){
+                                    m = 0;
+                                  }
+                                 var k = m;
+                                 m++;
+                               return c20(k); } })
 
                     stack = stack.offset("silhouette");
 
@@ -1011,12 +1071,12 @@ var otherPosTermsColor = "#888";
 
     return {
       update: function (words) {
-  //  console.log(words);
+       console.log(words);
         //words = words.reverse();
         var newHighRange;
       //  console.log($("#tagCloud").width())
         if ($("#tagCloud").width() > 430)
-          newHighRange = 80;
+          newHighRange = 90;
         else
           newHighRange = 60;
         sizeScale.domain([d3.min(words, function (d) {
@@ -1028,7 +1088,7 @@ var otherPosTermsColor = "#888";
 
 
         var newLowRange = Math.floor((newHighRange) / words.length) + 9;
-        sizeScale.range([18, 40]);
+        sizeScale.range([15, 35]);
 
 
         d3.layout.cloud().size([cloudWidth, cloudHeight])
@@ -1063,6 +1123,11 @@ var otherPosTermsColor = "#888";
       setSource("wiki");
     }
     topTermsCount = $('#texttermscount').val();
+    var number = Number(topTermsCount) + 2;
+    if(number<22)
+      number = 22;
+    topTermsCount = number.toString();
+    
     start = parse.parse($('#fromYear').val() + " " + $('#fromMonth').val());
     end = parse.parse($('#toYear').val() + " " + $('#toMonth').val());
     if (source == "hp" && hpallTermsArray.length == 0) {
@@ -1121,6 +1186,7 @@ var otherPosTermsColor = "#888";
     showNewWords(myWordCloud, topTerms);
     //update stream graph, topterms.monthfreq contains monthly frequency
     updateStreamGraph(topTerms, false);
+
     if ($("#relationships").is(":checked")) {
       $("#tagCloud").removeClass("active").addClass("inactive");
       $("#relationshipChart").addClass("active").removeClass("inactive");
@@ -1205,6 +1271,7 @@ var otherPosTermsColor = "#888";
    /*  var hoursDigit = startDate.getHours();
       startDate = new Date(startDate.setHours(hoursDigit - 1));*/
    // console.log(endDate)
+   console.log(topTerms);
     layers = stack(topTerms);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1232,6 +1299,8 @@ var otherPosTermsColor = "#888";
             .attr("height", height + margin.top);
 
     // Stacked layers.
+    var l = 0;
+    console.log(layers)
     timeline.selectAll(".layer")
             .data(layers)
             .enter().append("path")
@@ -1240,11 +1309,17 @@ var otherPosTermsColor = "#888";
             .call(updateLayer)
             .style("fill", function(d, i) {
               if(d.term == otherPosTerms || d.term == otherNegTerms){
-                   i = 0;
                    return otherPosTermsColor;
                  }
-              else
-             return c20(i); })
+              else{
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                   return c20(k); }
+                 })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1256,15 +1331,11 @@ var otherPosTermsColor = "#888";
                   var time = new Date(invertedx);
                   var hours = parse2(time);
                  
-                  console.log(mousex);
-                 
                  var tipAreaWidth = $("#timeline").width();
                  var tipAreaHeight = $("#timeline").height();
 
-                 console.log( -1 * (tipAreaWidth/3) +"," + tipAreaHeight)
-
                  otherTermsTip.show(hourlyTerms.neg[hours].mostFreqTerm, this);
-                      console.log(hourlyTerms.neg[hours].mostFreqTerm)
+
                   
                 }
                 if(d.term == otherPosTerms){
@@ -1398,6 +1469,7 @@ var otherPosTermsColor = "#888";
   }
 
   function updateStreamGraph(topTerms, hasTransition) {
+    console.log(topTerms);
      frequentTermsInSpecificTime(hourlyTerms);
     startDate = maxDate(topTerms);
 
@@ -1408,7 +1480,7 @@ var otherPosTermsColor = "#888";
     });
 
     layers = stack(topTerms);
-    stack = stack.offset("silhouette");
+
     
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -1420,19 +1492,28 @@ var otherPosTermsColor = "#888";
     })]);
 
     // Stacked layers.
+    var l = 0;
+
     var stackLayers = timeline.selectAll(".layer")
             .data(layers);
     stackLayers.enter().append("path")
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
-            .style("fill", function(d, i) { 
+            .style("fill", function(d, i) {
               if(d.term == otherPosTerms || d.term == otherNegTerms){
-                   i = 0;
                    return otherPosTermsColor;
                  }
-              else
-              return c20(i); })
+              else{
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.term);
+                   return c20(k); }
+                 })
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
@@ -1443,6 +1524,7 @@ var otherPosTermsColor = "#888";
             });
 
     // Lines separating stacked layers.
+    var l = 0;
     var layerLines = timeline.selectAll(".layerLine")
             .data(layers);
     layerLines.enter().append("path")
@@ -1454,13 +1536,20 @@ var otherPosTermsColor = "#888";
       timeline.selectAll(".layer")
               .transition()
               .call(updateLayer)
-              .style("fill", function(d, i) {
-               if(d.term == otherPosTerms || d.term == otherNegTerms){
-               i = 0;
-                return otherPosTermsColor;
-              }
-                else
-                 return c20(i); });
+               .style("fill", function(d, i) {
+              if(d.term == otherPosTerms || d.term == otherNegTerms){
+                   return otherPosTermsColor;
+                 }
+              else{
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                     console.log(k + " " + d.term);
+                   return c20(k); }
+                 })
 
       timeline.selectAll(".layerLine")
               .transition()
@@ -1492,19 +1581,28 @@ var otherPosTermsColor = "#888";
   }
 
   // Updates the stacked layers with their current data.
+  
   function updateLayer() {
+    var l = 0;
     this.attr("d", function (d) {
      // console.log(d.monthfreq)
 
       return area(d.monthfreq);
     })
             .style("fill", function(d, i) {
-             if(d.term == otherPosTerms || d.term == otherNegTerms){
-               i = 0;
-                return otherPosTermsColor;
-              }
-                else
-                 return c20(i); })
+              if(d.term == otherPosTerms || d.term == otherNegTerms){
+                   return otherPosTermsColor;
+                 }
+              else{
+                      if(l%10 == 0){
+                        l = 0;
+                      }
+
+                     var k = l;
+                     l++;
+                    
+                   return c20(k); }
+                 })
   }
 
   // Updates the lines with their current data.
