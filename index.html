@@ -638,52 +638,25 @@ d3.selectAll("g text").remove();
                 //  d3.select(this).attr("opacity", "0.6");
                 wordTip.show(d, this);
                 highlightLayer({term: d.text});
+                highlightWord(d);
               })
               .on("mouseout", function (d) {
                 d3.select(this).attr("opacity", "1");
                 wordTip.hide();
                 unhighlightLayer();
+                unHighlightWord();
               })
               //handle single and double clicks
               .on("click", function (d) {
+                console.log("Here");
+
                 clicks++;  //count clicks to know the double click
                 if (clicks === 1) {
                   timer = setTimeout(function () {
                     //perform single-click action
                     //Click Logic goes here
                     svg.selectAll(".cloud-terms")
-                            .style("fill", function(d, i) {
-                              if(d.term == otherPosTerms || d.term == otherNegTerms){
-                                   i = 0;
-                                   return otherPosTermsColor;
-                                 }
-                               else{
-                               return d.color; }
-                         })
-
-                    stack = stack.offset("silhouette");
-
-                    var startDate = minDate(topTerms);
-
-                    var endDate = maxDate(topTerms);
-
-                    // Hide/show the corresponding layer in the timeline.
-                    topTerms.forEach(function (d1) {
-                      if (d1.tempValues == undefined) {
-                        d1.tempValues = d1.monthfreq;
-                      }
-                      if (d1.term == d.text) {
-                        // If this element is the one that needs to be changed.
-                        if (d.active == false) {
-                          d1.monthfreq = fillData([{freq: 0, month: startDate}], endDate, startDate);
-                        } else {
-                          d1.monthfreq = d1.tempValues;
-                        }
-                      }
-                    });
-
-                    updateStreamGraph(topTerms, true);
-
+                        
                     clicks = 0;             //after action performed, reset counter
 
                   }, DELAY);
@@ -692,29 +665,6 @@ d3.selectAll("g text").remove();
                   clearTimeout(timer);    //prevent single-click action
                   //perform double-click action
                   svg.selectAll(".cloud-terms")
-
-                           .style("fill", function(d, i) { return c20(i); })
-
-                  stack = stack.offset("silhouette");
-
-                  var startDate = minDate(topTerms);
-
-                  var endDate = maxDate(topTerms);
-
-                  // Hide/show the corresponding layer in the timeline.
-                  topTerms.forEach(function (d1) {
-                    if (d1.tempValues == undefined) {
-                      d1.tempValues = d1.monthfreq;
-                    }
-                    if (d1.term != d.text) {
-                      d1.monthfreq = fillData([{freq: 0, month: minDate}], endDate, startDate);
-                    } else {
-                      d1.monthfreq = d1.tempValues;
-                    }
-                  });
-
-                  updateStreamGraph(topTerms, true);
-
                   clicks = 0;             //after action performed, reset counter
                 }
 
@@ -1337,44 +1287,12 @@ d3.selectAll("g text").remove();
                 currentText.attr("opacity", "0.1");
               }
             });
-    if ($("#relationshipChart").hasClass("active")) {
-      wordTip.hide();
-
-      container.selectAll("path.chord").style("opacity", function (p) {
-        // COMPARE CHORD IDS
-        return (p.source._id === d.term || p.target._id == d.term) ? 1 : 0.1;
-
-
-      });
-      container.selectAll(".group").select("path").style("opacity", function (p) {
-        if (p._id == d.term)
-          return 1
-        else
-          return 0.1
-
-      });
-
-    }
   }
 
   function unHighlightWord() {
     svg.selectAll("g text")
             .attr("opacity", "1")
             .call(wordTip.hide);
-    if ($("#relationshipChart").hasClass("active")) {
-
-      container.selectAll("path.chord").style("opacity", function (p) {
-        // COMPARE CHORD IDS
-        return 1;
-
-
-      });
-      container.selectAll(".group").select("path").style("opacity", function (p) {
-        return 1;
-
-      });
-
-    }
   }
 
   function unhighlightLayer() {
