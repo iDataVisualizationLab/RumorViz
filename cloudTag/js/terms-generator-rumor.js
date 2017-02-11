@@ -181,7 +181,7 @@ var posCount = 0;
         personsArray.forEach(function (d) {
 
 
-          if (d != "") {
+          if (d != "" && d.length>2) {
             //allTerms consideration.
 
             if (allTerms[d]) {
