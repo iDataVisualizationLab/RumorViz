@@ -358,7 +358,7 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
             var lines = 0;
           var terms = hourlyTerms.pos[hour].terms;
           terms.forEach(function (d) {
-               if (d != "") {
+               if (d != "" && d.length>2) {
 
             if (allTerms[d]) {
               var freq = allTerms[d].frequency;
@@ -390,7 +390,7 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
             var lines = 0;
           var terms = hourlyTerms.neg[hour].terms;
           terms.forEach(function (d) {
-               if (d != "") {
+               if (d != "" && d.length>2) {
 
             if (allTerms[d]) {
               var freq = allTerms[d].frequency;

@@ -786,9 +786,11 @@ d3.selectAll("g text").remove();
     //console.log(topTerms);
     // Ploting Sentiments
     sentimentBar();
+
+ frequentTermsInSpecificTime(hourlyTerms);
     // TODO(manorepo): Remove below comment.
     // stream code change - Moved the sub functions out of this function to make available for update.
-//console.log(topTerms)
+//console.log(topTerms)s
     startDate = maxDate(topTerms);
    /* start = startDate;*/
 
@@ -885,6 +887,10 @@ d3.selectAll("g text").remove();
             .attr("height", height + margin.top);
 
     // Stacked layers.
+
+
+console.log(hourlyTerms.pos["2014 09 27 20"]);
+
     var l = 0;
     timeline.selectAll(".layer")
             .data(layers)
@@ -1011,10 +1017,32 @@ d3.selectAll("g text").remove();
          //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
+console.log(hourlyTerms.pos["2014 09 27 20"].mostFreqTerm);
+var a = 0;
+var z = 0;
+   var termTextNeg =  timeline.selectAll("text .negTerm")
+              .data(layers[0].monthfreq)
+              .enter()     
+              .append("text")      
+              .attr("x",function(d){ a = a + z; z = (svgWidth/24)-2; return a; })
+              .attr("y",240)
+              .attr("style", "fill: white; writing-mode: tb; glyph-orientation-vertical: 0")
+              // .attr("transform", "translate(0,0) rotate(-90)")
+              .text(function(d){  
+                                  var hours = parse2(d.month);
+                                  return hourlyTerms.neg[hours].mostFreqTerm; 
+                                })
 
-    timeline.selectAll("text").data(layers).enter()
+
+var lengthPos = layers.length;
+  console.log(layers[lengthPos-1].monthfreq);
+   var termTextPos =  timeline.selectAll("text .posTerm")
+              .data(layers[lengthPos-1].monthfreq)
+              .enter()
               .append("text")
-              .attr("x",345).attr("y",240).text("Test Text")
+              .attr("x",145)
+              .attr("y",140)
+              .text("Texas")
 
 
    /*  timeline.data(layers)
@@ -1055,7 +1083,6 @@ d3.selectAll("g text").remove();
               .style("fill", d.color)
               .text(d.category);
         });*/
- frequentTermsInSpecificTime(hourlyTerms);
   }
 
   // Fills in missing dates in 'data'. 'data' must be non-empty.
