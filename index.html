@@ -112,7 +112,7 @@ var otherPosTermsColor = "#888";
           });
 
   //Mouse click delay variables
-  var DELAY = 300, clicks = 0, timer = null;
+  var DELAY = 2000, clicks = 0, timer = null;
   //Global Variable to hold the data
   var allTermsMap;
   var allTermsArray = [];
@@ -561,8 +561,6 @@ var otherPosTermsColor = "#888";
         topTerms[i].color = c20(i);
    }
 
-   console.log(topTerms)
-
 
     return topTerms;
   }
@@ -635,26 +633,28 @@ d3.selectAll("g text").remove();
                 return d.text;
               })
               .on("mousemove", function (d) {
-                //  d3.select(this).attr("opacity", "0.6");
+                d3.selectAll(".cloud-terms").attr("opacity", "0.1");
+                d3.select(this).attr("opacity", "1");
                 wordTip.show(d, this);
                 highlightLayer({term: d.text});
-                highlightWord(d);
+                
               })
               .on("mouseout", function (d) {
+                 d3.selectAll(".cloud-terms").attr("opacity", "1");
                 d3.select(this).attr("opacity", "1");
                 wordTip.hide();
                 unhighlightLayer();
-                unHighlightWord();
+                
               })
               //handle single and double clicks
               .on("click", function (d) {
-                console.log("Here");
-
+                d3.selectAll(".cloud-terms").attr("opacity", "0.1");
+                d3.select(this).attr("opacity", "1");
                 clicks++;  //count clicks to know the double click
                 if (clicks === 1) {
                   timer = setTimeout(function () {
                     //perform single-click action
-                    //Click Logic goes here
+                    //Click Logic goesetTimeouts here
                     svg.selectAll(".cloud-terms")
                         
                     clicks = 0;             //after action performed, reset counter
@@ -663,6 +663,8 @@ d3.selectAll("g text").remove();
 
                 } else {
                   clearTimeout(timer);    //prevent single-click action
+                    d3.selectAll(".cloud-terms").attr("opacity", "1");
+                    d3.select(this).attr("opacity", "1");
                   //perform double-click action
                   svg.selectAll(".cloud-terms")
                   clicks = 0;             //after action performed, reset counter
@@ -1279,7 +1281,7 @@ d3.selectAll("g text").remove();
   function highlightWord(d) {
     var cloudText = svg.selectAll("g text")
             .each(function (d1) {
-              var currentText = d3.select(this);
+              var currentText = d3.select(this);            
               if (d1.text == d.term) {
                 wordTip.show(d1, this);
                 currentText.attr("opacity", "1");
