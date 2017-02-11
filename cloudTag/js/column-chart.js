@@ -31,8 +31,8 @@ function columnChart() {
 
   function chart(selection) {
     selection.each(function(data) {
-      var colorScale = d3.scale.linear().domain([0,1]).range(["white","#00FF00"]);
-      var colorScaleRed = d3.scale.linear().domain([0,-1]).range(["white","#FF0000"]);
+      var colorScale = d3.scale.linear().domain([0,1]).range(["white","#88FF88"]);
+      var colorScaleRed = d3.scale.linear().domain([0,-1]).range(["white","#FF8888"]);
  
 
       // Convert data to standard representation greedily;
