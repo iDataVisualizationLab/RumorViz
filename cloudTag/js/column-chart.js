@@ -77,19 +77,8 @@ function columnChart() {
       bar.exit().remove();
       bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
           .attr("fill", function(d){ 
-                                         /*var c = Math.floor((255 * d[1])*2) ;
-                                         if(d[1] == -0.7575757575757576){
-                                            c = 1000;
-                                          }
-                                        if(d[1]>0 && d[1]<1)
-                                          return "rgb("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ")";
-                                          //    return "rgba("+ Math.floor(c*.75) + ", 180, " + Math.floor(c*.75) + ",0.7)";
-                                        else if(d[1]<0 && d[1]>-1)
-                                          return "rgb("+ 255 + ", "+ Math.floor((c*-1)/4) + ", "+ Math.floor((c*-1)/4) + ")";
-                                        else if(d[1]==0)
-                                          return "#ffffff";
-                                          else
-                                            return "none";*/
+                                     
+                                          //counter!=23
                                         if(counter!=23){
                                           counter++;
                                           if(d[1]<0){

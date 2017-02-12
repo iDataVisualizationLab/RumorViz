@@ -166,6 +166,7 @@ var otherPosTermsColor = "#888";
           .html("Updating...");
   var parse = d3.time.format("%Y %m");
   var parse2 = d3.time.format("%Y %m %d %H");
+  var parseMin = d3.time.format("%M");
   var start = parse2.parse("2014 09 27 0");
   var end = parse2.parse("2014 09 29 0");
   var topTerms;
@@ -908,7 +909,8 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
             .on("mouseover", function (d) {
               highlightLayer(d);
               highlightWord(d);
-                if(d.term == otherNegTerms){
+
+/*                if(d.term == otherNegTerms){
                   mousex = d3.mouse(this);
                   var invertedx = timelineX.invert(mousex[0]);
                   var invertedy = timelineY.invert(mousex[1]);
@@ -931,19 +933,16 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
                   invertedx = invertedx.getTime();
                   var time = new Date(invertedx);
                   var hours = parse2(time);
-                 
-                 /* console.log(hours)
-                  console.log(hourlyTerms)
-                 */
+
                       otherTermsTip.show(hourlyTerms.pos[hours].mostFreqTerm, this);
                   
                 }
-
+*/
             })
             .on("mouseout", function (d) {
               unhighlightLayer();
               unHighlightWord();
-              otherTermsTip.hide();
+              // otherTermsTip.hide();
             });
 
     // Lines separating stacked layers.
@@ -1017,19 +1016,19 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
          //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
-console.log(hourlyTerms.pos["2014 09 27 20"].mostFreqTerm);
-var a = 0;
+var a = -13;
 var z = 0;
    var termTextNeg =  timeline.selectAll("text .negTerm")
               .data(layers[0].monthfreq)
               .enter()     
               .append("text")      
-              .attr("x",function(d){ a = a + z; z = (svgWidth/24)-2; return a; })
+              .attr("x",function(d){ a = a + z; z = (svgWidth/25); return a; })
               .attr("y",240)
               .attr("style", "fill: #000; writing-mode: tb; glyph-orientation-vertical: 0")
               // .attr("transform", "translate(0,0) rotate(-90)")
               .text(function(d){  
                                   var hours = parse2(d.month);
+                                  if(hours!="2014 09 27 18" && hours!="2014 09 28 18")
                                   return hourlyTerms.neg[hours].mostFreqTerm; 
                                 })
 
@@ -1042,7 +1041,9 @@ var lengthPos = layers.length;
               .append("text")
               .attr("x",145)
               .attr("y",140)
-              .text("Texas")
+              .text(" ")
+
+              // for positive terms
 
 
    /*  timeline.data(layers)

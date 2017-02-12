@@ -20,19 +20,16 @@ function preProcessData() {
  var allOtherTerms = new Object();
       var otherPosTerms = "Others Pos";
      allOtherTerms[otherPosTerms] = new Object();
-     allOtherTerms[otherPosTerms].category = "Person";
  allOtherTerms[otherPosTerms].frequency = 0;
 
 
       var otherNegTerms = "Others Neg";
      allOtherTerms[otherNegTerms] = new Object();
-     allOtherTerms[otherNegTerms].category = "Person";
  allOtherTerms[otherNegTerms].frequency = 0;
 
 
  var otherNonSentimentTerms = "Others Non Sentiment"
  allOtherTerms[otherNonSentimentTerms] = new Object();
-     allOtherTerms[otherNonSentimentTerms].category = "Person";
  allOtherTerms[otherNonSentimentTerms].frequency = 0;
 
 
@@ -170,7 +167,7 @@ var posCount = 0;
 
       
         // Here month represent the hours slot actually
-        var month = parse2(d.newDate);
+        var hour = parse2(d.newDate);
 
     
       //var month = time.substring(0, 4) + " " + time.substring(5, 7);
@@ -194,27 +191,27 @@ var posCount = 0;
                // End of allOtherTerms
 
 
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
+              if (allTerms[d][hour]) {
+                allTerms[d][hour].freq = allTerms[d][hour].freq + 1;
+                allTerms[d][hour].blogs.push(lines);
               }
               else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
+                allTerms[d][hour] = new Object();
+                allTerms[d][hour].freq = 1;
+                allTerms[d][hour].blogs = [];
+                allTerms[d][hour].blogs.push(lines);
 
               }
               // allOtherTerms
-              if (allOtherTerms[otherTerms][month]) {
-                allOtherTerms[otherTerms][month].freq = allOtherTerms[otherTerms][month].freq + 1;
-                allOtherTerms[otherTerms][month].blogs.push(lines);
+              if (allOtherTerms[otherTerms][hour]) {
+                allOtherTerms[otherTerms][hour].freq = allOtherTerms[otherTerms][hour].freq + 1;
+                allOtherTerms[otherTerms][hour].blogs.push(lines);
               }
               else {
-                allOtherTerms[otherTerms][month] = new Object();
-                allOtherTerms[otherTerms][month].freq = 1;
-                allOtherTerms[otherTerms][month].blogs = [];
-                allOtherTerms[otherTerms][month].blogs.push(lines);
+                allOtherTerms[otherTerms][hour] = new Object();
+                allOtherTerms[otherTerms][hour].freq = 1;
+                allOtherTerms[otherTerms][hour].blogs = [];
+                allOtherTerms[otherTerms][hour].blogs.push(lines);
 
               }
 
@@ -224,38 +221,41 @@ var posCount = 0;
             else {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
-              allTerms[d].category = "Person";
-           
               // allOtherTerms
                 allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
                
 
                // End of allOtherTerms
 
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
+              if (allTerms[d][hour]) {
+                allTerms[d][hour].freq = allTerms[d][hour].freq + 1;
+                allTerms[d][hour].blogs.push(lines);
               }
               else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
+                allTerms[d]["2014 09 27 18"] = new Object();
+                allTerms[d]["2014 09 27 18"].freq = 1;
+                allTerms[d]["2014 09 27 18"].blogs = [];
+                allTerms[d]["2014 09 27 18"].blogs.push(lines);
+
+                allTerms[d][hour] = new Object();
+                allTerms[d][hour].freq = 1;
+                allTerms[d][hour].blogs = [];
+                allTerms[d][hour].blogs.push(lines);
 
 
               }
 
                // allOtherTerms
 
-               if (allOtherTerms[otherTerms][month]) {
-                allOtherTerms[otherTerms][month].freq = allOtherTerms[otherTerms][month].freq + 1;
-                allOtherTerms[otherTerms][month].blogs.push(lines);
+               if (allOtherTerms[otherTerms][hour]) {
+                allOtherTerms[otherTerms][hour].freq = allOtherTerms[otherTerms][hour].freq + 1;
+                allOtherTerms[otherTerms][hour].blogs.push(lines);
               }
               else {
-                allOtherTerms[otherTerms][month] = new Object();
-                allOtherTerms[otherTerms][month].freq = 1;
-                allOtherTerms[otherTerms][month].blogs = [];
-                allOtherTerms[otherTerms][month].blogs.push(lines);
+                allOtherTerms[otherTerms][hour] = new Object();
+                allOtherTerms[otherTerms][hour].freq = 1;
+                allOtherTerms[otherTerms][hour].blogs = [];
+                allOtherTerms[otherTerms][hour].blogs.push(lines);
               }
 
               // End of allOtherTerms
@@ -298,18 +298,7 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
     console.log(result);
     return result;
   }
-  this.getPersonTerms = function () {
-    return personsTerms.entries();
-  }
-  this.getOrganizationTerms = function () {
-    return orgTerms.entries();
-  }
-  this.getMiscTerms = function () {
-    return miscTerms.entries();
-  }
-  this.getLocationTerms = function () {
-    return locationTerms.entries();
-  }
+
   this.getTerm = function (iterm) {
     return allTerms.get('gop');
   }
@@ -367,7 +356,6 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
             else {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
-              allTerms[d].category = "Person";
             }
             
 
@@ -399,7 +387,6 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
             else {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
-              allTerms[d].category = "Person";
             }
             
 
