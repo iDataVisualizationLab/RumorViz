@@ -1019,7 +1019,7 @@ d3.selectAll("g text").remove();
 
 console.log(timelineY(0));
 console.log(timelineY(773.5));
-var a = -width/36 +4;
+var a = -5 ;
 var z = 0;
    var termTextNeg =  timeline.append("g")              
               .attr("class", "termsText")
@@ -1027,7 +1027,7 @@ var z = 0;
               .data(layers[0].monthfreq)
               .enter()     
               .append("text")   
-              .attr("text-anchor", "middle")   
+              .attr("text-anchor",  "middle")   
               .attr("x",function(d){ a = a + z; z = (width/23); return a; })
               .attr("y",function(d){ console.log("y1= "+ timelineY(d.y + d.y0) + ", y0= " + timelineY(d.y0))
                                       
