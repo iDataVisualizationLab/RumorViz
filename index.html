@@ -807,7 +807,7 @@ d3.selectAll("g text").remove();
 
     // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
-    var svgWidth = $("#timeline").width();
+    var svgWidth = $("#timeline").width()-20;
     var svgHeight = $("#timeline").height();
     svgWidth = svgWidth + (svgWidth * 0.98 - margin.left - margin.right)/24;
     var width = svgWidth * 0.98 - margin.left - margin.right;
@@ -1019,36 +1019,51 @@ d3.selectAll("g text").remove();
 
 console.log(timelineY(0));
 console.log(timelineY(773.5));
-var a = -8;
+var a = -width/36 +4;
 var z = 0;
-   var termTextNeg =  timeline.selectAll("text .negTerm")
+   var termTextNeg =  timeline.append("g")              
+              .attr("class", "termsText")
+              .selectAll("text .negTerm")
               .data(layers[0].monthfreq)
               .enter()     
-              .append("text")      
-              .attr("x",function(d){ a = a + z; z = (svgWidth/25); return a; })
-              .attr("y",function(d){ console.log("y= "+ timelineY(d.y) + " , y0= " + timelineY(d.y0))
-                                      if(d.y0>d.y) {
-                                       
-                                        var yVal =  timelineY(d.y0);
-                                      }
-                                      else {
-                                        
-                                         var yVal = timelineY(d.y); 
-                                      }
-                                          if(yVal > 233)
-                                            return 240;
-                                          else
-                                            return yVal;
+              .append("text")   
+              .attr("text-anchor", "middle")   
+              .attr("x",function(d){ a = a + z; z = (width/23); return a; })
+              .attr("y",function(d){ console.log("y1= "+ timelineY(d.y + d.y0) + ", y0= " + timelineY(d.y0))
+                                      
+                                      yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
+
+                                      console.log(yVal)
+
+                                      return  (timelineY(d.y + d.y0)+ timelineY(d.y0))/2;
                                           
                                       })
-              .attr("style", "fill: #000; font-size: 10px;")
+              .attr("style", function(d){
+                                  var textWidth = width/24;
+                                  var hours = parse2(d.month);
+                                  if(hourlyTerms.neg[hours])
+                                     var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
+                                 else
+                                  var termLength = 0;
+
+                                yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
+
+                        var fontSize = 1;;
+                        if(yVal > 10 && termLength <6)
+                           fontSize = 13;
+                         else
+                          fontSize = textWidth/termLength + 3;
+
+                        styleList = "width:" + textWidth + "px; font-size:" + fontSize + "px";
+                        return styleList;
+              })
               .text(function(d){  
               
                                   var hours = parse2(d.month);
-                                  if(hours!="2014 09 27 18" && hours!="2014 09 28 19" && hours!="2014 09 28 18" )
+                                 if(hourlyTerms.neg[hours] && hours!="2014 09 28 18")
                                   return hourlyTerms.neg[hours].mostFreqTerm; 
                                 else
-                                  return " "
+                                  return "";
                                 })
 
 
@@ -1250,7 +1265,6 @@ var lengthPos = layers.length;
   function updateLayer() {
     var l = 0;
     this.attr("d", function (d) {
-     // console.log(d.monthfreq)
 
       return area(d.monthfreq);
     })

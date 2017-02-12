@@ -6,7 +6,7 @@ function columnChart() {
          
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
-    var svgWidth = $("#timeline").width();
+    var svgWidth = $("#timeline").width()-20;
     // var svgWidth = (svgWidth - svgWidth/28)
     var svgHeight = $("#timeline").height();
     var width = (svgWidth) * 0.98 - margin.left - margin.right;
@@ -82,22 +82,22 @@ var xStartRed = 0;
           .attr("fill", function(d){ 
                                      
                                           //counter!=23
-                                        if(1){
-                                          counter++;
+                                        /*if(1){
+                                          counter++;*/
                                           if(d[1]<0){
                                             
                                          return colorScaleRed(d[1]);
                                             }
                                           else 
                                             return colorScale(d[1]);
-                                          }
-                                          else {
+                                          
+                                         /* else {
                                          
                                             counter = -1;
                                             counter++;
                                             return "#fff";
                                           }
-
+*/
                                          
                                           
 

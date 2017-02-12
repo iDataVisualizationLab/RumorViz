@@ -82,7 +82,7 @@ h5 {
 #timeline {
   float: right;
   height: 600px;
-  width: 50%;
+  width: 52%;
   margin: 0px;
   padding: 1%;
   background: #ddd;
@@ -163,4 +163,7 @@ h5 {
 }
 .lineXAxis{
   visibility: hidden;
+}
+.termsText:hover{
+  font-size: 15px;
 }
