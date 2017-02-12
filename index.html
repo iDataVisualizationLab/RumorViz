@@ -809,6 +809,7 @@ d3.selectAll("g text").remove();
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
     var svgHeight = $("#timeline").height();
+    svgWidth = svgWidth + (svgWidth * 0.98 - margin.left - margin.right)/24;
     var width = svgWidth * 0.98 - margin.left - margin.right;
     var height = svgHeight - margin.bottom - margin.top - 100;
 
@@ -824,7 +825,7 @@ d3.selectAll("g text").remove();
     xAxis = d3.svg.axis()
             .scale(timelineX)
             .orient("bottom")
-            .ticks(12)
+            .ticks(6)
             .tickFormat(d3.time.format("%m-%d-%Y, %H:%M"));
 
     yAxis = d3.svg.axis()
@@ -845,6 +846,9 @@ d3.selectAll("g text").remove();
               return timelineY(d.y0 + d.y);
             });
 
+
+
+
     line = d3.svg.line()
             .interpolate("cardinal")
             .x(function (d) {
@@ -860,7 +864,6 @@ d3.selectAll("g text").remove();
       startDate = new Date(startDate.setHours(hoursDigit - 1));*/
    // console.log(endDate)
     layers = stack(topTerms);
-
 
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
@@ -889,10 +892,8 @@ d3.selectAll("g text").remove();
 
     // Stacked layers.
 
-
-console.log(hourlyTerms.pos["2014 09 27 20"]);
-
     var l = 0;
+    console.log(layers)
     timeline.selectAll(".layer")
             .data(layers)
             .enter().append("path")
@@ -910,7 +911,7 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
               highlightLayer(d);
               highlightWord(d);
 
-/*                if(d.term == otherNegTerms){
+               /* if(d.term == otherNegTerms){
                   mousex = d3.mouse(this);
                   var invertedx = timelineX.invert(mousex[0]);
                   var invertedy = timelineY.invert(mousex[1]);
@@ -922,7 +923,7 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
                  var tipAreaHeight = $("#timeline").height();
                  var coordinate = "x: " + mousex[0] + " Y: " + mousex[1];
 
-                 otherTermsTip.show(hourlyTerms.neg[hours].mostFreqTerm, this);
+                 otherTermsTip.show(coordinate, this);
 
                   
                 }
@@ -936,8 +937,8 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
 
                       otherTermsTip.show(hourlyTerms.pos[hours].mostFreqTerm, this);
                   
-                }
-*/
+                }*/
+
             })
             .on("mouseout", function (d) {
               unhighlightLayer();
@@ -991,9 +992,9 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
         .text("Frequency");
         //text for Y axis frequency
     timeline.append("text")
-        .attr("transform", "translate(" + ((width / 2)+20) + " ," + (height+margin.bottom) + ")")
+        .attr("transform", "translate(" + ((width / 2)+30) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
-        .text("Date")
+        .text("Time")
         .attr("class", "axis-label")
     
     // Create legend.
@@ -1016,25 +1017,46 @@ console.log(hourlyTerms.pos["2014 09 27 20"]);
          //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
-var a = -13;
+console.log(timelineY(0));
+console.log(timelineY(773.5));
+var a = -8;
 var z = 0;
    var termTextNeg =  timeline.selectAll("text .negTerm")
               .data(layers[0].monthfreq)
               .enter()     
               .append("text")      
               .attr("x",function(d){ a = a + z; z = (svgWidth/25); return a; })
-              .attr("y",240)
-              .attr("style", "fill: #000; writing-mode: tb; glyph-orientation-vertical: 0")
-              // .attr("transform", "translate(0,0) rotate(-90)")
+              .attr("y",function(d){ console.log("y= "+ timelineY(d.y) + " , y0= " + timelineY(d.y0))
+                                      if(d.y0>d.y) {
+                                       
+                                        var yVal =  timelineY(d.y0);
+                                      }
+                                      else {
+                                        
+                                         var yVal = timelineY(d.y); 
+                                      }
+                                          if(yVal > 233)
+                                            return 240;
+                                          else
+                                            return yVal;
+                                          
+                                      })
+              .attr("style", "fill: #000; font-size: 10px;")
               .text(function(d){  
+              
                                   var hours = parse2(d.month);
-                                  if(hours!="2014 09 27 18" && hours!="2014 09 28 18")
+                                  if(hours!="2014 09 27 18" && hours!="2014 09 28 19" && hours!="2014 09 28 18" )
                                   return hourlyTerms.neg[hours].mostFreqTerm; 
+                                else
+                                  return " "
                                 })
 
 
+              //writing-mode: tb; glyph-orientation-vertical: 0"
+
+  // for positive terms
 var lengthPos = layers.length;
-  console.log(layers[lengthPos-1].monthfreq);
+  // console.log(layers[lengthPos-1].monthfreq);
    var termTextPos =  timeline.selectAll("text .posTerm")
               .data(layers[lengthPos-1].monthfreq)
               .enter()
@@ -1043,47 +1065,8 @@ var lengthPos = layers.length;
               .attr("y",140)
               .text(" ")
 
-              // for positive terms
+            
 
-
-   /*  timeline.data(layers)
-              .enter()
-              .append("text")
-              .attr("x",function(d){
-                    return 200;
-              })
-              .attr("y",function(d){
-                    return 200;
-              })
-              .text(function(d){
-                return d.text;
-              })*/
-
-    
- /*   legend.append("rect")
-        .attr("width", 110)
-        .attr("height", 100)
-        .attr("fill", "#FFF")
-        .style("stroke", "#000")
-        .style("stroke-width", "2");*/
-    
- /*   legend.selectAll("g").data(categoryColors)
-        .enter()
-        .append("g")
-        .each(function(d, i) {
-          var g = d3.select(this);
-          g.append("circle")
-              .attr("cx", 10)
-              .attr("cy", i * 25 + 10)
-              .attr("r", 6)
-              .style("fill", d.color);
-          
-          g.append("text")
-              .attr("x", 22)
-              .attr("y", i * 25 + 16)
-              .style("fill", d.color)
-              .text(d.category);
-        });*/
   }
 
   // Fills in missing dates in 'data'. 'data' must be non-empty.
@@ -1234,7 +1217,7 @@ var lengthPos = layers.length;
     // Add axes.
 
  timeline.append("g")
-            .attr("class", "x axis")
+            .attr("class", "x axis ")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .selectAll("text")  
@@ -1255,9 +1238,9 @@ var lengthPos = layers.length;
         .text("Frequency");
         //text for Y axis frequency
     timeline.append("text")
-        .attr("transform", "translate(" + ((width / 2)+20) + " ," + (height+margin.bottom) + ")")
+        .attr("transform", "translate(" + ((width / 2)+30) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
-        .text("Date")
+        .text("Time")
         .attr("class", "axis-label")
 
   }

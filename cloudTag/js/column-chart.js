@@ -7,16 +7,18 @@ function columnChart() {
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
     var svgWidth = $("#timeline").width();
+    // var svgWidth = (svgWidth - svgWidth/28)
     var svgHeight = $("#timeline").height();
-    var width = svgWidth * 0.98 - margin.left - margin.right;
+    var width = (svgWidth) * 0.98 - margin.left - margin.right;
     var height = svgHeight - margin.bottom - margin.top - 100      
 
-
+console.log(x_domain)
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; };
       xScale = d3.time.scale()
             .domain(x_domain)
-            .range([0, width]);
+            .range([width/36, width]);
+            //width/48, (width*46)/49
 
 
       yScale = d3.scale.linear(),
@@ -58,7 +60,7 @@ function columnChart() {
       var gEnter = svg.enter().append("svg").append("g");
       gEnter.append("g").attr("class", "bars");
       gEnter.append("g").attr("class", "y axis");
-      gEnter.append("g").attr("class", "x axis lineXAxis");
+      gEnter.append("g").attr("class", "x axis lineXAxis"); //"x axis lineXAxis"
       gEnter.append("g").attr("class", "x axis zero");
 
       // Update the outer dimensions.
@@ -70,7 +72,8 @@ function columnChart() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
           counter = 0;
-
+var xStart = 0;
+var xStartRed = 0;
      // Update the bars.
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect");
@@ -79,7 +82,7 @@ function columnChart() {
           .attr("fill", function(d){ 
                                      
                                           //counter!=23
-                                        if(counter!=23){
+                                        if(1){
                                           counter++;
                                           if(d[1]<0){
                                             
@@ -92,7 +95,7 @@ function columnChart() {
                                          
                                             counter = -1;
                                             counter++;
-                                            return "none";
+                                            return "#fff";
                                           }
 
                                          
@@ -100,13 +103,22 @@ function columnChart() {
 
                                       })
 
-          .attr("x", function(d) { return X(d); })
+          .attr("x", function(d) { /*if(d[1]<0) {
+                                      xStartRed = xStartRed + width/24;
+                                      return xScale(xStartRed);
+                                    }
+                                   else {
+                                     xStart = xStart + width/24;  
+                                      return xStart; } */
+                                       return X(d);
+                                  }) //console.log(width/36)
+
           .attr("y", function(d, i) {   return d[1] < 0 ? Y0() : "0"; })
-          .attr("width", (svgWidth/24) -2)
+          .attr("width", (svgWidth/24)-2)
           .attr("height", function(d, i) { return 225; });
 
     // x axis at the bottom of the chart
-     g.select(".x.axis.lineXAxis")
+     g.select(".x.axis.lineXAxis") //".x.axis.lineXAxis"
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
             .selectAll("text")  

@@ -61,7 +61,7 @@ var posCount = 0;
   this.startProcess = function (filename, callback) {
 
 
-
+console.log(sentiments)
   //  console.log(filename);
    // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
@@ -116,6 +116,13 @@ var posCount = 0;
                       sentiments[hours].negSentiment = 0;
                        sentiments[hours].negCount = 0;
                        sentiments[hours].totCount = 0;
+/*
+                sentiments["2014 09 27 18"] = new Object();
+                  sentiments["2014 09 27 18"].posSentiment = 0;
+                      sentiments["2014 09 27 18"].posCount = 1;
+                      sentiments["2014 09 27 18"].negSentiment = -.1;
+                       sentiments["2014 09 27 18"].negCount = 1;
+                       sentiments["2014 09 27 18"].totCount = 2;*/
 
                 if(d.topsy.document_info.sentiment != undefined){
                   if(d.topsy.document_info.sentiment > 0){
@@ -237,6 +244,12 @@ var posCount = 0;
                 allTerms[d]["2014 09 27 18"].blogs = [];
                 allTerms[d]["2014 09 27 18"].blogs.push(lines);
 
+/*
+                allTerms[d]["2014 09 28 19"] = new Object();
+                allTerms[d]["2014 09 28 19"].freq = 1;
+                allTerms[d]["2014 09 28 19"].blogs = [];
+                allTerms[d]["2014 09 28 19"].blogs.push(lines);*/
+
                 allTerms[d][hour] = new Object();
                 allTerms[d][hour].freq = 1;
                 allTerms[d][hour].blogs = [];
@@ -314,7 +327,13 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
       var startTerm = [];
       data.forEach(function (d) {
 
+        /*var time = d.newDate.setHours(d.newDate.getHours()-1);
+        var date = new Date(time);
+        var hours = parse2(date);*/
+
       var hours = parse2(d.newDate);
+
+
 
         if(d.topsy.document_info.sentiment >= 0){
               if (hourlyTerms.pos[hours]) {
@@ -403,9 +422,6 @@ allTerms["Other Neg Terms"] = allOtherTerms["Others Neg"];
               hourlyTerms.neg[hour].termsArray.push(arr);
           }
       }
-
-      
-   // console.log(hourlyTerms)
       
 
   }
