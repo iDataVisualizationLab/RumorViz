@@ -1019,7 +1019,7 @@ d3.selectAll("g text").remove();
 
 console.log(timelineY(0));
 console.log(timelineY(773.5));
-var a = -12 ;
+var a = 0 ;
 var z = 0;
 
 var fontSizeScale = d3.scale.linear()
@@ -1033,7 +1033,7 @@ var fontSizeScale = d3.scale.linear()
               .enter()     
               .append("text")   
               .attr("text-anchor",  "middle")   
-              .attr("x",function(d){ a = a + z; z = (width/23.5);
+              .attr("x",function(d){ /*a = a + z; z = (width/23.5);
                                     var hours = parse2(d.month);
                                     if(hourlyTerms.neg[hours]){
                                        var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
@@ -1049,7 +1049,9 @@ var fontSizeScale = d3.scale.linear()
                                         return a-termLength;
 
 
-                                        return a; })
+                                        return a;*/ 
+
+                                        return timelineX(d.month); })
               .attr("y",function(d){                                       
                                       yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
 
@@ -1079,7 +1081,7 @@ var fontSizeScale = d3.scale.linear()
               .text(function(d){  
               
                                   var hours = parse2(d.month);
-                                 if(hourlyTerms.neg[hours] && hours!="2014 09 28 18")
+                                 if(hourlyTerms.neg[hours])
                                   return hourlyTerms.neg[hours].mostFreqTerm; 
                                 else
                                   return "";
