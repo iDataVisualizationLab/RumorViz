@@ -67,10 +67,6 @@ var posCount = 0;
 
   this.startProcess = function (filename, callback) {
 
-
-console.log(sentiments)
-  //  console.log(filename);
-   // d3.tsv("data/wikinews.tsv", function (data) {
       d3.json("data/rumor600.json", function(error, data) {
       
       // console.log(data);
