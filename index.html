@@ -1019,8 +1019,13 @@ d3.selectAll("g text").remove();
 
 console.log(timelineY(0));
 console.log(timelineY(773.5));
-var a = -5 ;
+var a = -12 ;
 var z = 0;
+
+var fontSizeScale = d3.scale.linear()
+                        .domain([0, 210])
+                        .range([7, 14]);
+
    var termTextNeg =  timeline.append("g")              
               .attr("class", "termsText")
               .selectAll("text .negTerm")
@@ -1028,9 +1033,24 @@ var z = 0;
               .enter()     
               .append("text")   
               .attr("text-anchor",  "middle")   
-              .attr("x",function(d){ a = a + z; z = (width/23); return a; })
-              .attr("y",function(d){ console.log("y1= "+ timelineY(d.y + d.y0) + ", y0= " + timelineY(d.y0))
-                                      
+              .attr("x",function(d){ a = a + z; z = (width/23.5);
+                                    var hours = parse2(d.month);
+                                    if(hourlyTerms.neg[hours]){
+                                       var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
+                                       var term = hourlyTerms.neg[hours].mostFreqTerm;
+                                      }
+                                    else
+                                      var termLength = 0;
+
+                                      if(term=="dod")
+                                        return 20;
+
+                                      if(termLength>10)
+                                        return a-termLength;
+
+
+                                        return a; })
+              .attr("y",function(d){                                       
                                       yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
 
                                       console.log(yVal)
@@ -1048,13 +1068,12 @@ var z = 0;
 
                                 yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
 
-                        var fontSize = 1;;
-                        if(yVal > 45)
-                           fontSize = 13;
-                         else
-                          fontSize = textWidth/termLength + 3;
+                        var fontSize = fontSizeScale(yVal);
 
                         styleList = "width:" + textWidth + "px; font-size:" + fontSize + "px";
+                        if(fontSize < 8){
+                          styleList = "width:" + textWidth + "px; font-size:" + fontSize + "px; display: none;";
+                        }
                         return styleList;
               })
               .text(function(d){  

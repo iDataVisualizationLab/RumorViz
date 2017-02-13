@@ -244,11 +244,11 @@ console.log(sentiments)
                 allTerms[d]["2014 09 27 18"].blogs = [];
                 allTerms[d]["2014 09 27 18"].blogs.push(lines);
 
-/*
+
                 allTerms[d]["2014 09 28 19"] = new Object();
                 allTerms[d]["2014 09 28 19"].freq = 1;
                 allTerms[d]["2014 09 28 19"].blogs = [];
-                allTerms[d]["2014 09 28 19"].blogs.push(lines);*/
+                allTerms[d]["2014 09 28 19"].blogs.push(lines);
 
                 allTerms[d][hour] = new Object();
                 allTerms[d][hour].freq = 1;
