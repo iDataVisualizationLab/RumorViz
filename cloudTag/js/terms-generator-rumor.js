@@ -1,6 +1,13 @@
 /**
  * Created by Manohar on 25-Oct-16.
  */
+ function formattingData(data){  
+  data.forEach(function (d) {
+        d.date = Date.parse(d.created_at);
+        d.newDate = new Date(d.date);
+  });
+  return data;
+ }
 function preProcessData() {
   var topTerms = new Hashtable();
   //var allTerms = new Hashtable();
@@ -67,15 +74,31 @@ console.log(sentiments)
       d3.json("data/rumor600.json", function(error, data) {
       
       // console.log(data);
-        
+          data = formattingData(data);
+
+
+  var startTime = (d3.min(data, function(d) { return d.newDate; }));
+  var endTime =   (d3.max(data, function(d) { return d.newDate; }));
+
+   noOfHours = Math.ceil(Math.abs(endTime - startTime) / 36e5);
+
+// Code for adding two extra hour. One is at beginning and one is after
+    var startHourToString = parse2(startTime); // Need to do that so that original startTime does not change
+    var parsingStart = parse2.parse(startHourToString);
+    var biginningHour = parse2(new Date(parsingStart.setHours(parsingStart.getHours()-1)));
+
+    var endHourToString = parse2(endTime); // Need to do that so that original endTime does not change
+    var parsingEnd = parse2.parse(endHourToString);
+    var endingHour = parse2(new Date(parsingEnd.setHours(parsingEnd.getHours()+1)));
+
+
+
       data.forEach(function (d) {
-        d.date = Date.parse(d.created_at);
-        d.newDate = new Date(d.date);
        // console.log(formatDate(d.newDate));
 
         var time = formatDate(d.newDate);
 
-        // Code start for Sentiments data
+     // Code start for Sentiments data
         var hours = parse2(d.newDate);
 
       //  console.log(d.topsy.document_info.sentiment);
@@ -116,13 +139,6 @@ console.log(sentiments)
                       sentiments[hours].negSentiment = 0;
                        sentiments[hours].negCount = 0;
                        sentiments[hours].totCount = 0;
-/*
-                sentiments["2014 09 27 18"] = new Object();
-                  sentiments["2014 09 27 18"].posSentiment = 0;
-                      sentiments["2014 09 27 18"].posCount = 1;
-                      sentiments["2014 09 27 18"].negSentiment = -.1;
-                       sentiments["2014 09 27 18"].negCount = 1;
-                       sentiments["2014 09 27 18"].totCount = 2;*/
 
                 if(d.topsy.document_info.sentiment != undefined){
                   if(d.topsy.document_info.sentiment > 0){
@@ -228,37 +244,38 @@ console.log(sentiments)
             else {
               allTerms[d] = new Object();
               allTerms[d].frequency = 1;
+
               // allOtherTerms
                 allOtherTerms[otherTerms].frequency = allOtherTerms[otherTerms].frequency + 1;
-               
-
-               // End of allOtherTerms
+             
+              // End of allOtherTerms
 
               if (allTerms[d][hour]) {
                 allTerms[d][hour].freq = allTerms[d][hour].freq + 1;
                 allTerms[d][hour].blogs.push(lines);
               }
               else {
-                allTerms[d]["2014 09 27 18"] = new Object();
-                allTerms[d]["2014 09 27 18"].freq = 1;
-                allTerms[d]["2014 09 27 18"].blogs = [];
-                allTerms[d]["2014 09 27 18"].blogs.push(lines);
-
-
-                allTerms[d]["2014 09 28 19"] = new Object();
-                allTerms[d]["2014 09 28 19"].freq = 1;
-                allTerms[d]["2014 09 28 19"].blogs = [];
-                allTerms[d]["2014 09 28 19"].blogs.push(lines);
-
                 allTerms[d][hour] = new Object();
                 allTerms[d][hour].freq = 1;
                 allTerms[d][hour].blogs = [];
                 allTerms[d][hour].blogs.push(lines);
 
 
+                allTerms[d][biginningHour] = new Object();
+                allTerms[d][biginningHour].freq = 1;
+                allTerms[d][biginningHour].blogs = [];
+                allTerms[d][biginningHour].blogs.push(lines);
+
+
+                allTerms[d][endingHour] = new Object();
+                allTerms[d][endingHour].freq = 1;
+                allTerms[d][endingHour].blogs = [];
+                allTerms[d][endingHour].blogs.push(lines);
+
+
               }
 
-               // allOtherTerms
+              // allOtherTerms
 
                if (allOtherTerms[otherTerms][hour]) {
                 allOtherTerms[otherTerms][hour].freq = allOtherTerms[otherTerms][hour].freq + 1;
@@ -280,14 +297,9 @@ console.log(sentiments)
           }
     
         })
-
-
-
-
-     
+   
       });
 frequentTermsInHours(data);
-        
       callback(allTerms);
     });
 //console.log(allTerms);

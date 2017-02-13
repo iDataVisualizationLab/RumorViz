@@ -56,6 +56,7 @@
 </body>
 
 <script>
+  var allData;
  var sentiments = new Object();
  var sentimentsArray = [];
  var sentimentsForChart = [];
@@ -167,8 +168,13 @@ var otherPosTermsColor = "#888";
   var parse = d3.time.format("%Y %m");
   var parse2 = d3.time.format("%Y %m %d %H");
   var parseMin = d3.time.format("%M");
-  var start = parse2.parse("2014 09 27 0");
-  var end = parse2.parse("2014 09 29 0");
+
+  var start = parse2.parse("2010 0 0 0");
+  var end = parse2.parse("2017 0 0 0");
+  var startTime;
+  var endTime;
+  var noOfHours;
+
   var topTerms;
   var wnrawdata = [];
   var hprawdata = [];
@@ -955,20 +961,6 @@ d3.selectAll("g text").remove();
          //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
-/*var nodelabels = timeline.selectAll(".layerTerm") 
-       .data(layers)
-       .enter()
-       .append("text")
-       .attr({"x":function(d){ return d.x;},
-              "y":function(d){return d.y;},
-              "class":"layerTerm"})
-       .text(function(d){
-          if(d.term == otherNegTerms){
-                  return d.term;
-
-                  
-                }
-       });*/
 
     // Add axes.
     timeline.append("g")
@@ -1017,8 +1009,6 @@ d3.selectAll("g text").remove();
          //   .style("stroke", function(d, i) { return c20(i); })
             .call(updateLayerLine);
 
-console.log(timelineY(0));
-console.log(timelineY(773.5));
 var a = 0 ;
 var z = 0;
 
@@ -1033,50 +1023,29 @@ var fontSizeScale = d3.scale.linear()
               .enter()     
               .append("text")   
               .attr("text-anchor",  "middle")   
-              .attr("x",function(d){ /*a = a + z; z = (width/23.5);
-                                    var hours = parse2(d.month);
-                                    if(hourlyTerms.neg[hours]){
-                                       var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
-                                       var term = hourlyTerms.neg[hours].mostFreqTerm;
-                                      }
-                                    else
-                                      var termLength = 0;
-
-                                      if(term=="dod")
-                                        return 20;
-
-                                      if(termLength>10)
-                                        return a-termLength;
-
-
-                                        return a;*/ 
+              .attr("x",function(d){ 
 
                                         return timelineX(d.month); })
               .attr("y",function(d){                                       
                                       yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
-
-                                      console.log(yVal)
-
-                                      return  (timelineY(d.y + d.y0)+ timelineY(d.y0))/2;
-                                          
+                                      return  (timelineY(d.y + d.y0)+ timelineY(d.y0))/2;                                        
                                       })
-              .attr("style", function(d){
-                                  var textWidth = width/24;
+              .attr("style", function(d){                                  
                                   var hours = parse2(d.month);
                                   if(hourlyTerms.neg[hours])
                                      var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
                                  else
                                   var termLength = 0;
 
-                                yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
+                                   yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
 
-                        var fontSize = fontSizeScale(yVal);
+                                var fontSize = fontSizeScale(yVal);
 
-                        styleList = "width:" + textWidth + "px; font-size:" + fontSize + "px";
-                        if(fontSize < 8){
-                          styleList = "width:" + textWidth + "px; font-size:" + fontSize + "px; display: none;";
-                        }
-                        return styleList;
+                                styleList = "font-size:" + fontSize + "px";
+                                if(fontSize < 8){
+                                  styleList = "font-size:" + fontSize + "px; display: none;";
+                                }
+                                return styleList;
               })
               .text(function(d){  
               

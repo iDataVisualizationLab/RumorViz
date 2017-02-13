@@ -12,7 +12,8 @@ function columnChart() {
     var width = (svgWidth) * 0.98 - margin.left - margin.right;
     var height = svgHeight - margin.bottom - margin.top - 100      
 
-console.log(x_domain)
+
+
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; };
       xScale = d3.time.scale()
@@ -114,7 +115,7 @@ var xStartRed = 0;
                                   }) //console.log(width/36)
 
           .attr("y", function(d, i) {   return d[1] < 0 ? Y0() : "0"; })
-          .attr("width", (svgWidth/24)-2)
+          .attr("width", (svgWidth/noOfHours)-2)
           .attr("height", function(d, i) { return 225; });
 
     // x axis at the bottom of the chart
