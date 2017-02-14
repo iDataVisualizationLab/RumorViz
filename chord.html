@@ -44,18 +44,45 @@
       //*******************************************************************
       //  CREATE MATRIX AND MAP
       //*******************************************************************
-     d3.json('data/data.json', function (error, data) {
+     d3.json('data/rumor600.json', function (error, data) {
         var termsObj = [];
-        dataArray = [];
-        data.forEach(function(d) {
-
-                  dataArray.push(d.topsy.terms);
-            });
-
+        dataArray = [];        
          var relationshipsArr = [];
          var terms = {};
+
+        data.forEach(function(d) {
+                  /*console.log(d.topsy.terms)
+                  dataArray.push(d.topsy.terms);*/
+                   for(var j = 0; j<d.topsy.terms.length;j++){
+                        if(d.topsy.terms[j].length<3)
+                            continue;
+                      for(var k = 1; k<d.topsy.terms.length;k++){
+                          if(d.topsy.terms[j].length<3 || d.topsy.terms[k].length<3)
+                            continue;
+                          var term1 = d.topsy.terms[j];
+                          var term2 = d.topsy.terms[k];
+                          if(term1==term2)
+                            continue;
+                          var term = term1 + "__" + term2;
+                          var termMirror = term2 + "__" + term1;
+                          if(terms[term]||terms[termMirror]){
+                            if(terms[term])
+                              terms[term].count++;
+                            else
+                              terms[termMirror].count++;
+                          }
+                          else{
+                            terms[term] = new Object();
+                            terms[term].count = 1;
+                            terms[term].source = term1;
+                            terms[term].target = term2; 
+                          }
+                      }
+                    }
+            });
+
         // Code for creating Relationships
-          for(var i=0;i<dataArray.length;i++){
+         /* for(var i=0;i<dataArray.length;i++){
             for(var j = 0; j<dataArray[i].length;j++){
                 if(dataArray[i][j].length<3)
                     continue;
@@ -82,14 +109,16 @@
                   }
               }
             }
-          }
-          console.log(terms)
+          }*/
+
+
           for(var word in terms){
              var relationObj = {importer1: terms[word].source, importer2: terms[word].target, flow1: terms[word].count, flow2: terms[word].count};
             //  var relationObj = {source: terms[word].source, target: terms[word].target, freq: terms[word].count};
 
              relationshipsArr.push(relationObj);
           }
+
 
         // End of code for creating Relationships
 
@@ -104,7 +133,8 @@
                     data.push(obj);
             }
 */
-data = relationshipsArr;
+        data = relationshipsArr.slice(0, 100);
+
         var mpr = chordMpr(data);
         mpr
           .addValuesToMap('importer1')
