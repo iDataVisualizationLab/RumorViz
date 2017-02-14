@@ -1247,6 +1247,68 @@ var lengthPos = layers.length;
         .text("Time")
         .attr("class", "axis-label")
 
+
+        var a = 0 ;
+var z = 0;
+
+var fontSizeScale = d3.scale.linear()
+                        .domain([0, 210])
+                        .range([7, 14]);
+
+   var termTextNeg =  timeline.append("g")              
+              .attr("class", "termsText")
+              .selectAll("text .negTerm")
+              .data(layers[0].monthfreq)
+              .enter()     
+              .append("text")   
+              .attr("text-anchor",  "middle")   
+              .attr("x",function(d){ 
+
+                                        return timelineX(d.month); })
+              .attr("y",function(d){                                       
+                                      yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
+                                      return  (timelineY(d.y + d.y0)+ timelineY(d.y0))/2;                                        
+                                      })
+              .attr("style", function(d){                                  
+                                  var hours = parse2(d.month);
+                                  if(hourlyTerms.neg[hours])
+                                     var termLength = hourlyTerms.neg[hours].mostFreqTerm.length; 
+                                 else
+                                  var termLength = 0;
+
+                                   yVal = Math.abs(timelineY(d.y + d.y0) - timelineY(d.y0));
+
+                                var fontSize = fontSizeScale(yVal);
+
+                                styleList = "font-size:" + fontSize + "px";
+                                if(fontSize < 8){
+                                  styleList = "font-size:" + fontSize + "px; display: none;";
+                                }
+                                return styleList;
+              })
+              .text(function(d){  
+              
+                                  var hours = parse2(d.month);
+                                 if(hourlyTerms.neg[hours])
+                                  return hourlyTerms.neg[hours].mostFreqTerm; 
+                                else
+                                  return "";
+                                })
+
+
+              //writing-mode: tb; glyph-orientation-vertical: 0"
+
+          // for positive terms
+        var lengthPos = layers.length;
+          // console.log(layers[lengthPos-1].monthfreq);
+           var termTextPos =  timeline.selectAll("text .posTerm")
+                      .data(layers[lengthPos-1].monthfreq)
+                      .enter()
+                      .append("text")
+                      .attr("x",145)
+                      .attr("y",140)
+                      .text(" ")
+
   }
 
   // Updates the stacked layers with their current data.
