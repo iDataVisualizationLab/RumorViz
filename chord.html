@@ -81,60 +81,14 @@
                     }
             });
 
-        // Code for creating Relationships
-         /* for(var i=0;i<dataArray.length;i++){
-            for(var j = 0; j<dataArray[i].length;j++){
-                if(dataArray[i][j].length<3)
-                    continue;
-              for(var k = j+1; k<dataArray[i].length;k++){
-                  if(dataArray[i][j].length<3 || dataArray[i][k].length<3)
-                    continue;
-                  var term1 = dataArray[i][j];
-                  var term2 = dataArray[i][k];
-                  if(term1==term2)
-                    continue;
-                  var term = term1 + "__" + term2;
-                  var termMirror = term2 + "__" + term1;
-                  if(terms[term]||terms[termMirror]){
-                    if(terms[term])
-                      terms[term].count++;
-                    else
-                      terms[termMirror].count++;
-                  }
-                  else{
-                    terms[term] = new Object();
-                    terms[term].count = 1;
-                    terms[term].source = term1;
-                    terms[term].target = term2; 
-                  }
-              }
-            }
-          }*/
-
 
           for(var word in terms){
              var relationObj = {importer1: terms[word].source, importer2: terms[word].target, flow1: terms[word].count, flow2: terms[word].count};
-            //  var relationObj = {source: terms[word].source, target: terms[word].target, freq: terms[word].count};
-
              relationshipsArr.push(relationObj);
           }
 
-
-        // End of code for creating Relationships
-
-
-     /*   var data = [];
-        totalTermsLength = 0;
-        var obj = {};
-            for(i=0; i<relationshipsArr.length;i++){
-                    var term1 = relationshipsArr[i].source;
-                    var term2 = relationshipsArr[i].target;
-                  obj = {importer1: term1, importer2: term2, flow1: relationshipsArr[i].freq, flow2: relationshipsArr[i].freq };
-                    data.push(obj);
-            }
-*/
-        data = relationshipsArr.slice(0, 100);
-
+        data = relationshipsArr.slice(0, 10);
+console.log(data)
         var mpr = chordMpr(data);
         mpr
           .addValuesToMap('importer1')

@@ -6,7 +6,7 @@ function columnChart() {
          
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
-    var svgWidth = ($("#timeline").width()/noOfHours) * (noOfHours-1.4);
+    var svgWidth = ($("#timeline").width()/noOfHours) * (noOfHours-1.68);
     // var svgWidth = (svgWidth - svgWidth/28)
     var svgHeight = $("#timeline").height();
     var width = (svgWidth) * 0.98 - margin.left - margin.right;
