@@ -6,7 +6,7 @@ function columnChart() {
          
               // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
-    var svgWidth = $("#timeline").width()-20;
+    var svgWidth = ($("#timeline").width()/noOfHours) * (noOfHours-1.4);
     // var svgWidth = (svgWidth - svgWidth/28)
     var svgHeight = $("#timeline").height();
     var width = (svgWidth) * 0.98 - margin.left - margin.right;
@@ -18,7 +18,7 @@ function columnChart() {
       yValue = function(d) { return d[1]; };
       xScale = d3.time.scale()
             .domain(x_domain)
-            .range([width/36, width]);
+            .range([width/(noOfHours+noOfHours/2), width]);
             //width/48, (width*46)/49
 
 
@@ -46,7 +46,7 @@ function columnChart() {
     
       // Update the x-scale.
          
-
+console.log(noOfHours)
       // Update the y-scale.
       yScale
           .domain([-1,1])
