@@ -3,6 +3,8 @@ This visualization displays rumors on Twitter.
 
 ![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/Teaser.png)
 
+![ScreenShot](https://github.com/iDataVisualizationLab/RumorViz/blob/master/figures/Teaser2.png)
+
 ## References
 Related project from CS5331: Visualization and Visual Analytics - Fall 2016. [Demo](https://manorepo.github.io/Text-Visualization/index.html) [Github](https://github.com/manorepo/Text-Visualization)
 
