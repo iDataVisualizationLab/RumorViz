@@ -15,7 +15,7 @@ function preProcessData() {
 
     var lines=0;
     this.start = function (callback) {
-        d3.tsv("data/wikinews.tsv", function (data) {
+        d3.tsv("data/americablog.tsv", function (data) {
 
 
             data.forEach(function (d) {

@@ -177,7 +177,7 @@
   var xAxis, yAxis;
   var catcolors = [];
   // Method for creating stack layout.
-  stack = d3.layout.stack().offset("wiggle")
+  stack = d3.layout.stack().offset("silhouette")
           .values(function (d) {
             return d.monthfreq;
           })
@@ -244,8 +244,10 @@
     var termsData;
     //Create a new instance of the word cloud visualisation.
     myWordCloud = wordCloud('#tagCloud');
-    loadData("data/wikinews.tsv", "wn")
-    //loadData("data/huffington.tsv", "hp")
+//    loadData("data/wikinews.tsv", "wn")
+      loadData("data/americablog.tsv", "wn")
+//      loadData("data/huffington.tsv", "wn")
+//      loadData("data/americablog.tsv", "wn")
   });
 
   function loadData(filename, source) {
@@ -1000,10 +1002,10 @@
               return timelineX(d.month);
             })
             .y0(function (d) {
-              return timelineY(d.y0);
+                return timelineY(d.y0);
             })
             .y1(function (d) {
-              return timelineY(d.y0 + d.y);
+              return timelineY(d.y0+ d.y);
             });
 
     line = d3.svg.line()
@@ -1087,12 +1089,12 @@
         .style("text-anchor", "middle")
         .text("Date")
         .attr("class", "axis-label")
-    
+
     // Create legend.
     var legend = timeline.append("g")
         .attr("transform", "translate(" + (width - 100) + "," + (-margin.top + 2) + ")")
         .style("fill", "rgb(255, 142, 44)");
-    
+
     var categoryColors = [
       { category: "Person", color: "#d62728" },
         { category: "Location", color: "rgb(44, 160, 44)" },
@@ -1100,14 +1102,14 @@
       { category: "Miscellaneous", color: "#ff7f0e" }
     ];
 
-    legend.append("rect")
-        .attr("width", 110)
-        .attr("height", 100)
-        .attr("fill", "#FFF")
-        .style("stroke", "#000")
-        .style("stroke-width", "2");
-    
-    legend.selectAll("g").data(categoryColors)
+//    legend.append("rect")
+//        .attr("width", 110)
+//        .attr("height", 100)
+//        .attr("fill", "#FFF")
+//        .style("stroke", "#000")
+//        .style("stroke-width", "2");
+
+/*    legend.selectAll("g").data(categoryColors)
         .enter()
         .append("g")
         .each(function(d, i) {
@@ -1117,13 +1119,13 @@
               .attr("cy", i * 25 + 10)
               .attr("r", 6)
               .style("fill", d.color);
-          
+
           g.append("text")
               .attr("x", 22)
               .attr("y", i * 25 + 16)
               .style("fill", d.color)
               .text(d.category);
-        });
+        });*/
 
     // Zoom demo.
     /*
@@ -1384,7 +1386,7 @@
 
       }
       else {
-        d3.tsv("data/wikinews.tsv", function (data) {
+        d3.tsv("data/americablog.tsv", function (data) {
           rawdata = data;
           wnrawdata = data;
           originwords = new Object();
