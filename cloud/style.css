@@ -1,0 +1,128 @@
+body {
+  background:#ddd;
+  font: 14px Arial;
+  width: 90%;
+  height: 95%;
+  margin: auto;
+  padding-top: 1%;
+}
+
+body, table {
+  font: 12px Arial;
+}
+
+h5 {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+#visualizations {
+  height: 90%;
+  padding:15px;
+  border-radius:3px;
+  box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
+  background:#fff;
+}
+
+#options {
+  padding: 15px;
+}
+
+#topOptions {
+  display: inline-block;
+}
+
+#bottomOptions {
+  display: inline-block;
+}
+
+#sourceSelection {
+  float: left;
+  display: inline-block;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+#intervalSelection {
+  float: left;
+  display: inline-block;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+#chartSelection {
+  float: left;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+#numberTermsSelection {
+  float:left;
+  display: inline-block;
+  padding-right: 10px;
+}
+
+#updateButtonContainer {
+  float: left;
+  display: inline-block;
+}
+
+#left {
+  float: left;
+  width: 35%;
+  height: 85%;
+}
+
+#tagCloud {
+  height: 85%;
+  width: 100%;
+  padding: 1%;
+  margin: 0px;
+}
+
+#timeline {
+  float: right;
+  height: 85%;
+  width: 60%;
+  margin: 0px;
+  background: #ddd;
+  padding: 1%;
+}
+
+#relationshipChart {
+  height: 100%;
+  width: 100%;
+  /*background: #F00;*/
+  margin: 0px;
+}
+
+#intervalSlider {
+  display: flex;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1%;
+  justify-content: center;
+}
+
+.active {
+  display:inline-block;
+}
+
+.inactive {
+  display: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}  
+
+.layerLine { 
+    stroke: black;
+    stroke-width: 0.02;
+    fill: none;
+  }
