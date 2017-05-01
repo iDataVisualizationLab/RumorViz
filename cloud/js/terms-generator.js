@@ -15,15 +15,14 @@ function preProcessData() {
   var allTerms = new Object();
   var lines = 0;
   this.startProcess = function (filename, callback) {
-    d3.tsv(filename, function (data) {
-
+    d3.csv(filename, function (data) {
 
       data.forEach(function (d) {
-        var persons = d.person;
-        var time = d.time;
+        var persons = d.content;
+        var time = d.timestamp;
         var month = d.time.substring(0, 4) + " " + d.time.substring(5, 7);
         ++lines;
-        var personsArray = persons.split("|");
+        var personsArray = persons.split(",");
         personsArray.forEach(function (d) {
 
           if (d != "") {

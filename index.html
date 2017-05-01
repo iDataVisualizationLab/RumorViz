@@ -873,7 +873,7 @@ d3.selectAll("g text").remove();
       startDate = new Date(startDate.setHours(hoursDigit - 1));*/
    // console.log(endDate)
     layers = stack(topTerms);
-
+console.log(layers);
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
       var localMax = d3.max(d.monthfreq, function (d) {
