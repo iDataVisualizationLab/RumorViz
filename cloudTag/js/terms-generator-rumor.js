@@ -22,6 +22,7 @@ function preProcessData() {
   var allTerms = new Object();
   var lines = 0;
     var formatDate = d3.time.format("%Y-%m-%d %H:%M:%S");
+    
 
  // Variable for allOtherTerms
  var allOtherTerms = new Object();

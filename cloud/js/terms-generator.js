@@ -14,18 +14,26 @@ function preProcessData() {
   var wnlocationTerms = new Hashtable();
   var allTerms = new Object();
   var lines = 0;
+  var formatDate = d3.time.format("%Y-%m-%d %H:%M:%S");
+  var parse2 = d3.time.format("%Y %m %d %H");
+
   this.startProcess = function (filename, callback) {
     d3.csv(filename, function (data) {
-
+      // console.log(data);
       data.forEach(function (d) {
-        var persons = d.content;
-        var time = d.timestamp;
-        var month = d.time.substring(0, 4) + " " + d.time.substring(5, 7);
+        d.person = d.content;
+         var persons = d.person;
+        var timeStamp = d.timestamp;
+        var timeNow = new Date(Date.parse(timeStamp));
+        var time = formatDate(timeNow);
+        d.time = time;
+        var month = parse2(timeNow);
+        // var month = d.time.substring(0, 4) + " " + d.time.substring(5, 7);
         ++lines;
         var personsArray = persons.split(",");
         personsArray.forEach(function (d) {
-
-          if (d != "") {
+          // console.log(d);
+          if (d.length >2) {
             //allTerms consideration.
             if (allTerms[d]) {
               var freq = allTerms[d].frequency;
@@ -64,315 +72,15 @@ function preProcessData() {
 
         })
 
-        //Organization Terms
-        var orgs = d.organization;
-        var orgsArray = orgs.split("|");
-        orgsArray.forEach(function (d) {
 
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
 
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Organization";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        //Misc Terms
-        var misc = d.miscellaneous;
-        var miscArray = misc.split("|");
-        miscArray.forEach(function (d) {
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Misc";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        //Location Terms
-        var location = d.location;
-        var locationArray = location.split("|");
-        locationArray.forEach(function (d) {
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Location";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
 
       });
 
-      // huffingpost
-      /*  d3.tsv("data/huffington.tsv", function (data) {
-       data.forEach(function (d) {
-       var persons = d.person;
-       ++lines;
-       var personsArray = persons.split("|");
-       personsArray.forEach(function (d) {
-
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Organization Terms
-       var orgs = d.organization;
-       var orgsArray = orgs.split("|");
-       orgsArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Misc Terms
-       var misc = d.miscellaneous;
-       var miscArray = misc.split("|");
-       miscArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       //Location Terms
-       var location = d.location;
-       var locationArray = location.split("|");
-       locationArray.forEach(function (d) {
-       if (d != "") {
-       //allTerms consideration.
-       if (allTerms.containsKey(d) == true) {
-       var temp = allTerms.get(d);
-       temp.frequency = temp.frequency + 1;
-       if (temp.monthfreq.containsKey(month)) {
-       var val = temp.monthfreq.get(month);
-       temp.monthfreq.put(month, val + 1);
-       }
-       else {
-       temp.monthfreq.put(month, 1);
-       }
-       //   temp.blogs.push(lines);
-       allTerms.put(d, temp);
-       }
-       else {
-       var value = {};
-       value.frequency = 1;
-       value.monthfreq = new Hashtable();
-       value.monthfreq.put(month, 1);
-       //  value.blogs = [];
-       // value.blogs.push(lines);
-       // value.category="person"
-       allTerms.put(d, value);
-       }
-
-
-       }
-       })
-
-       });
-
-       });*/
-
-      /*  //  var allTermsEntries = allTerms.entries();
-       var allTermsJson = [];
-       for(var entry in allTerms){
-       var jsonEntry = {}
-       jsonEntry.term = entry;
-       jsonEntry.properties = {};
-       jsonEntry.properties.frequency = allTerms[entry].frequency;
-       jsonEntry.properties.monthfreq = [];
-       var month = d[1].monthfreq.entries();
-       month.forEach(function (r) {
-       jsonEntry.properties.monthfreq.push({ month: r[0], freq: r[1] })
-       })
-       allTermsJson.push(jsonEntry);
-
-       }
-       allTerms.forEach(function (d) {
-
-       })
-       var finalJson = JSON.stringify(allTerms);
-
-       */
-
-
-      //
-
-
-      /*   var url = URL.createObjectURL(new Blob([finalJson], { type: 'text/json' }));
-       var dlAnchorElem = document.createElement('a');
-       dlAnchorElem.setAttribute("href", url);
-       dlAnchorElem.setAttribute("download", "hp_termsfrequency.json");
-       dlAnchorElem.click();*/
       callback(allTerms);
       console.log(lines);
+      console.log(allTerms.chemo);
+        // debugger;
 
     });
 

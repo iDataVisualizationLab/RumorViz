@@ -176,6 +176,7 @@
   var timelineY;
   var xAxis, yAxis;
   var catcolors = [];
+  var streamColor = d3.scale.category20();
   // Method for creating stack layout.
   stack = d3.layout.stack().offset("silhouette")
           .values(function (d) {
@@ -224,9 +225,9 @@
           .attr("class", "messages")
           .attr("transform", "translate(10, 10)")
           .html("Updating...");
-  var parse = d3.time.format("%Y %m");
-  var start = parse.parse("2004 01");
-  var end = parse.parse("2015 12");
+  var parse = d3.time.format("%Y %m %d %H");
+  var start = parse.parse("2017 01 01 00");
+  var end = parse.parse("2017 02 01 00");
   var topTerms;
   var wnrawdata = [];
   var hprawdata = [];
@@ -318,6 +319,7 @@
     var currmonth;
     var blogs = [];
     var monthfreq = [];
+// console.log(allTermsArray);
     allTermsArray.forEach(function (d, i) {
       var months = d.values.monthfreq;
       var freq = 0;
@@ -431,6 +433,8 @@
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
+     console.log(topTerms);
+     // debugger;
     return topTerms;
   }
 
@@ -987,8 +991,8 @@
     xAxis = d3.svg.axis()
             .scale(timelineX)
             .orient("bottom")
-            .ticks(5)
-            .tickFormat(d3.time.format("%b '%y"));
+            .ticks(20)
+            .tickFormat(d3.time.format("%b %d"));
 
     yAxis = d3.svg.axis()
             .scale(timelineY)
@@ -1011,6 +1015,7 @@
     line = d3.svg.line()
             .interpolate("cardinal")
             .x(function (d) {
+               // console.log(d.month)
               return timelineX(d.month);
             })
             .y(function (d) {
@@ -1102,58 +1107,6 @@
       { category: "Miscellaneous", color: "#ff7f0e" }
     ];
 
-//    legend.append("rect")
-//        .attr("width", 110)
-//        .attr("height", 100)
-//        .attr("fill", "#FFF")
-//        .style("stroke", "#000")
-//        .style("stroke-width", "2");
-
-/*    legend.selectAll("g").data(categoryColors)
-        .enter()
-        .append("g")
-        .each(function(d, i) {
-          var g = d3.select(this);
-          g.append("circle")
-              .attr("cx", 10)
-              .attr("cy", i * 25 + 10)
-              .attr("r", 6)
-              .style("fill", d.color);
-
-          g.append("text")
-              .attr("x", 22)
-              .attr("y", i * 25 + 16)
-              .style("fill", d.color)
-              .text(d.category);
-        });*/
-
-    // Zoom demo.
-    /*
-     endDate.setYear(2005);
-     timelineX.domain([endDate, startDate]);
-
-     timeline.selectAll(".layer")
-     .data(layers)
-     .transition()
-     .duration(2000)
-     .call(updateLayer);
-
-     timeline.selectAll(".layerLine")
-     .data(layers)
-     .transition()
-     .duration(2000)
-     .call(updateLayerLine);
-
-     timeline.select(".x.axis")
-     .transition()
-     .duration(2000)
-     .call(xAxis);
-
-     timeline.select(".y.axis")
-     .transition()
-     .duration(2000)
-     .call(yAxis);
-     */
 
 
   }
@@ -1182,7 +1135,7 @@
         debugger;
       }
       d.push({"month": new Date(now), "freq": y});
-      now["setMonth"](now.getMonth() + 1);
+       now["setHours"](now.getHours() + 1);
     }
 
     return d;
@@ -1268,7 +1221,7 @@
       return area(d.monthfreq);
     })
             .style("fill", function (d, i) {
-              return catcolors[d.term];
+              return streamColor(i);
             });
   }
 
