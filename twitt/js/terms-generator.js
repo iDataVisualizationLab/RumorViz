@@ -71,52 +71,18 @@ function preProcessData() {
           }
 
         })
-
-
-
-
       });
 
       callback(allTerms);
       console.log(lines);
       console.log(allTerms.chemo);
-        // debugger;
-
+      
     });
-
-
   }
 
   this.getRelated = function (term) {
-    //
-    //var termDetails = allTerms.get(term);
-    //var related = [];
-    //var blogs = termDetails.blogs;
-    //allTerms.each(function (key, value) {
-    //    if (term != key) {
-    //        var count = 0;
-    //        var currblogs = value.blogs;
-    //        for (var i = 0; i < blogs.length; i++) {
-    //            if (currblogs.indexOf(blogs[i]) > -1) {
-    //                ++count;
-    //            }
-    //        }
-    //        if (count > 0) {
-    //            var term = {};
-    //            term.term = key;
-    //            term.freq = count;
-    //            related.push(term);
-    //        }
-    //    }
-    //})
-    //related.sort(function (a, b) {
-    //    return b.freq - a.freq;
-    //})
-    //return related.slice(0, 49);
-
   }
   this.getMonthFreq = function (term) {
-    //
     var termDetails = allTerms.get(term);
     var result = [];
     var Months = termDetails.monthfreq;
@@ -124,28 +90,6 @@ function preProcessData() {
       result.push({"month": key, "freq": value})
     });
     return result;
-    //allTerms.each(function (key, value) {
-    //    if (term != key) {
-    //        var count = 0;
-    //        var currblogs = value.blogs;
-    //        for (var i = 0; i < blogs.length; i++) {
-    //            if (currblogs.indexOf(blogs[i]) > -1) {
-    //                ++count;
-    //            }
-    //        }
-    //        if (count > 0) {
-    //            var term = {};
-    //            term.term = key;
-    //            term.freq = count;
-    //            related.push(term);
-    //        }
-    //    }
-    //})
-    //related.sort(function (a, b) {
-    //    return b.freq - a.freq;
-    //})
-    //return related.slice(0, 49);
-
   }
   this.getPersonTerms = function () {
     return personsTerms.entries();

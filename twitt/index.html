@@ -320,6 +320,7 @@
     for (var term in personcolor) {
       catcolors[term] = personcolor[term];
     }
+
      console.log(topTerms);
      // debugger;
     return topTerms;
@@ -582,7 +583,10 @@
 
     //Draw the word cloud
     function draw(words) {
-
+      console.log(words);
+       words.sort(function(a, b) {
+      return a.frequency -b.frequency;
+    });
       var cloud = svg.selectAll("g text")
               .data(words, function (d) {
                 return d.text;
@@ -595,10 +599,7 @@
               })
               .style("font-family", "Impact")
               .style("fill", function (d, i) {
-                if (catcolors[d.text])
-                  return catcolors[d.text]
-                else
-                  return fill(i);
+                 return streamColor(i);
               })
               .style("cursor", "pointer")
               .style("pointer-events", "all")
@@ -622,87 +623,7 @@
               })
               //handle single and double clicks
               .on("click", function (d) {
-                clicks++;  //count clicks to know the double click
-                if (clicks === 1) {
-                  timer = setTimeout(function () {
-                    //perform single-click action
-                    //Click Logic goes here
-                    svg.selectAll(".cloud-terms")
-                            .style("fill", function (d1, i) {
-                              if (d.text == d1.text)
-                                d1.active = !d1.active;
-                              if (d1.active == undefined || d1.active == false)
-                                return "grey";
-                              else
-                                return catcolors[d1.text];
-                            })
-
-                    stack = stack.offset("wiggle");
-
-                    var startDate = minDate(topTerms);
-
-                    var endDate = maxDate(topTerms);
-
-                    // Hide/show the corresponding layer in the timeline.
-                    topTerms.forEach(function (d1) {
-                      if (d1.tempValues == undefined) {
-                        d1.tempValues = d1.monthfreq;
-                      }
-                      if (d1.term == d.text) {
-                        // If this element is the one that needs to be changed.
-                        if (d.active == false) {
-                          d1.monthfreq = fillData([{freq: 0, month: startDate}], endDate, startDate);
-                        } else {
-                          d1.monthfreq = d1.tempValues;
-                        }
-                      }
-                    });
-
-                    updateStreamGraph(topTerms, true);
-
-                    clicks = 0;             //after action performed, reset counter
-
-                  }, DELAY);
-
-                } else {
-                  clearTimeout(timer);    //prevent single-click action
-                  //perform double-click action
-                  svg.selectAll(".cloud-terms")
-
-                          .style("fill", function (d1, i) {
-                            d1.active = false;
-                            if (d.text == d1.text) {
-                              d1.active = true;
-                              return catcolors[d1.text];
-                            }
-
-                            else
-                              return "grey";
-                          })
-
-                  stack = stack.offset("silhouette");
-
-                  var startDate = minDate(topTerms);
-
-                  var endDate = maxDate(topTerms);
-
-                  // Hide/show the corresponding layer in the timeline.
-                  topTerms.forEach(function (d1) {
-                    if (d1.tempValues == undefined) {
-                      d1.tempValues = d1.monthfreq;
-                    }
-                    if (d1.term != d.text) {
-                      d1.monthfreq = fillData([{freq: 0, month: minDate}], endDate, startDate);
-                    } else {
-                      d1.monthfreq = d1.tempValues;
-                    }
-                  });
-
-                  updateStreamGraph(topTerms, true);
-
-                  clicks = 0;             //after action performed, reset counter
-                }
-
+                  console.log(d);
               })
 
       //Entering and existing words
@@ -910,6 +831,9 @@
             });
 
     // TODO: Sort topTerms by category.
+    topTerms.sort(function(a, b) {
+      return parseFloat(a.freq) - parseFloat(b.freq);
+    });
 
     layers = stack(topTerms);
 
