@@ -165,6 +165,7 @@
       var monthly = [];
       var currmonth;
       for (var term in data) {
+        console.log(data)
         monthly = []
         var entry = {};
         entry.term = term;
@@ -190,6 +191,8 @@
 
         localallTermsArray.push(entry)
       }
+      console.log(localallTermsArray);
+      debugger;
 
         wnallTermsArray = localallTermsArray;
         wnallTermsMap = localallTermsMap;
@@ -202,7 +205,7 @@
        cloudmessages.attr("opacity", 0);
 
     });
-        data2.startProcess2(filename, function (data) {
+  data2.startProcess2(filename, function (data) {
            var localallTermsArray = [];
     var localallTermsMap;
       console.log(data)
