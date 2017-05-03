@@ -884,11 +884,11 @@ console.log(topTerms);
             .call(updateLayer)
             .on("mouseover", function (d) {
               highlightLayer(d);
-              // highlightWord(d);
+              highlightWord(d);
             })
             .on("mouseout", function () {
               unhighlightLayer();
-              // unHighlightWord();
+              unHighlightWord();
             });
 
     // Lines separating stacked layers.
