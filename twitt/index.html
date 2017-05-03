@@ -43,6 +43,16 @@
   </div>
   <div id="timeline">
   </div>
+
+    <div id="left2">
+
+    <div id="tagCloud2" class="active">
+    </div>
+    <div id="relationshipChart2" class="inactive">
+    </div>
+  </div>
+  <div id="timeline2">
+  </div>
 </div>
 </body>
 
@@ -78,13 +88,6 @@
 
   //Mouse click delay variables
   var DELAY = 300, clicks = 0, timer = null;
-  //Global Variable to hold the data
-  var allTermsMap;
-  var allTermsArray = [];
-  var wnallTermsMap;
-  var wnallTermsArray = [];
-  var hpallTermsMap;
-  var hpallTermsArray = [];
 
   // An array of dates in which all frequencies are zero. Used to hide a term
   // in the streamgraph (as opposed to completely deleting it).
@@ -93,8 +96,14 @@
 
   //cloud svg width and height
   var cloudWidth = $("#tagCloud").width();
-  var cloudHeight = $("#tagCloud").height();
+  var cloudHeight = 500;
   var svg = d3.select("#tagCloud").append("svg")
+          .attr("width", cloudWidth)
+          .attr("height", cloudHeight)
+          .append("g")
+          .attr("transform", "translate(" + cloudWidth / 2 + "," + cloudHeight / 2 + ")");
+
+    var svg2 = d3.select("#tagCloud2").append("svg")
           .attr("width", cloudWidth)
           .attr("height", cloudHeight)
           .append("g")
@@ -115,10 +124,11 @@
   var parse = d3.time.format("%Y %m %d %H");
   var start = parse.parse("2017 01 01 00");
   var end = parse.parse("2017 02 01 00");
-  var topTerms;
+  // var topTerms;
   var wnrawdata = [];
   var hprawdata = [];
   var myWordCloud;
+  var myWordCloud2;
   var fill = d3.scale.category20();
   var personcolor = [];
   var misccolor = [];
@@ -132,17 +142,24 @@
     var termsData;
     //Create a new instance of the word cloud visualisation.
     myWordCloud = wordCloud('#tagCloud');
+    myWordCloud2 = wordCloud2('#tagCloud2');
 //    loadData("data/wikinews.tsv", "wn")
       loadData("data/diseaseData.csv", "wn")
 //      loadData("data/huffington.tsv", "wn")
 //      loadData("data/americablog.tsv", "wn")
   });
 
+
   function loadData(filename, source) {
+   
+    var data = preProcessData();
+      console.log(data);
+     var data2 = preProcessData2();
+    console.log(data2);
+    data.startProcess(filename, function (data) {
+      console.log(data)
     var localallTermsArray = [];
     var localallTermsMap;
-    var data = preProcessData();
-    data.startProcess(filename, function (data) {
       cloudmessages.attr("opacity", 1);
       localallTermsMap = data;
       var monthly = [];
@@ -174,7 +191,6 @@
         localallTermsArray.push(entry)
       }
 
-      if (source == "wn") {
         wnallTermsArray = localallTermsArray;
         wnallTermsMap = localallTermsMap;
         allTermsArray = wnallTermsArray;
@@ -182,22 +198,57 @@
         topTerms = getTopTerms(allTermsArray);
         showNewWords(myWordCloud, topTerms);
         //Set stream graph, topterms.monthfreq contains monthly frequency
-        setStreamGraph();
-      }
-      else {
-        hpallTermsArray = localallTermsArray;
-        hpallTermsMap = localallTermsMap;
-        allTermsArray = hpallTermsArray;
-        allTermsMap = hpallTermsMap
-        topTerms = getTopTerms(allTermsArray);
-        showNewWords(myWordCloud, topTerms);
-        updateStreamGraph(topTerms,false)
-        //Set stream graph, topterms.monthfreq contains monthly frequency
-
-      }
-      cloudmessages.attr("opacity", 0);
+        setStreamGraph(topTerms);
+       cloudmessages.attr("opacity", 0);
 
     });
+        data2.startProcess2(filename, function (data) {
+           var localallTermsArray = [];
+    var localallTermsMap;
+      console.log(data)
+      cloudmessages.attr("opacity", 1);
+      localallTermsMap = data;
+      var monthly = [];
+      var currmonth;
+      for (var term in data) {
+        monthly = []
+        var entry = {};
+        entry.term = term;
+        entry.values = {};
+        for (var val in data[term]) {
+          if (val == "frequency") {
+            entry.values.frequency = data[term][val];
+          }
+          else if (val == "category") {
+            entry.values.category = data[term][val];
+          }
+          else {
+            currmonth = parse.parse(val);
+            monthly.push({
+              "month": currmonth,
+              "freq": data[term][val].freq,
+              "blogs": data[term][val].blogs
+            })
+          }
+        }
+        entry.values.monthfreq = monthly;
+
+
+        localallTermsArray.push(entry)
+      }
+
+        wnallTermsArray = localallTermsArray;
+        wnallTermsMap = localallTermsMap;
+        var allTermsArray = wnallTermsArray;
+        allTermsMap = wnallTermsMap
+        var topTerms2 = getTopTerms(allTermsArray);
+        showNewWords2(myWordCloud2, topTerms2);
+        //Set stream graph, topterms.monthfreq contains monthly frequency
+        setStreamGraph2(topTerms2);
+       cloudmessages.attr("opacity", 0);
+
+    });
+  
   }
 
   //getTopTerms based on start and end dates
@@ -294,31 +345,6 @@
         currpersinc = currpersinc + persinc;
         personcolor[topTerms[i].term] = colorP.darker(currpersinc)
       }
-      else if (cat == "Location") {
-        currlocinc = currlocinc + locinc;
-        locationcolor[topTerms[i].term] = colorL.darker(currlocinc)
-      }
-      if (cat == "Misc") {
-        currmiscinc = currmiscinc + miscinc;
-        misccolor[topTerms[i].term] = colorM.darker(currmiscinc)
-      }
-      if (cat == "Organization") {
-        currorginc = currorginc + orginc;
-        orgcolor[topTerms[i].term] = colorO.darker(currorginc)
-      }
-    }
-    catcolors = [];
-    for (var term in orgcolor) {
-      catcolors[term] = orgcolor[term];
-    }
-    for (var term in locationcolor) {
-      catcolors[term] = locationcolor[term];
-    }
-    for (var term in misccolor) {
-      catcolors[term] = misccolor[term];
-    }
-    for (var term in personcolor) {
-      catcolors[term] = personcolor[term];
     }
 
      console.log(topTerms);
@@ -326,234 +352,6 @@
     return topTerms;
   }
 
-
-  function getTopTerms_particularTerm(inputterm) {
-    var localallTermsArray = [];
-    var allTerms = new Object();
-    d3.tsv("data/wikinews.tsv", function (data) {
-      rawdata = data;
-      var blogs = []
-      for (var v in wnallTermsMap[inputterm]) {
-        if (v == "category" || v == "frequency")
-          continue;
-        wnallTermsMap[inputterm][v].blogs.forEach(function (d) {
-          blogs.push(d);
-        })
-      }
-
-      var lines = 0;
-      blogs.forEach(function (blognumber) {
-        ++lines;
-        var time = rawdata[blognumber - 1].time;
-        var month = rawdata[blognumber - 1].time.substring(0, 4) + " " + rawdata[blognumber - 1].time.substring(5, 7);
-        var words = rawdata[blognumber - 1].person.split("|")
-
-        words.forEach(function (d) {
-
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Person";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        words = rawdata[blognumber - 1].location.split("|")
-
-        words.forEach(function (d) {
-
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Location";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        words = rawdata[blognumber - 1].organization.split("|")
-        words.forEach(function (d) {
-
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Organization";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-
-        words = rawdata[blognumber - 1].miscellaneous.split("|")
-
-        words.forEach(function (d) {
-
-          if (d != "") {
-            //allTerms consideration.
-            if (allTerms[d]) {
-              var freq = allTerms[d].frequency;
-              allTerms[d].frequency = freq + 1;
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-            }
-            else {
-              allTerms[d] = new Object();
-              allTerms[d].frequency = 1;
-              allTerms[d].category = "Misc";
-              if (allTerms[d][month]) {
-                allTerms[d][month].freq = allTerms[d][month].freq + 1;
-                allTerms[d][month].blogs.push(lines);
-              }
-              else {
-                allTerms[d][month] = new Object();
-                allTerms[d][month].freq = 1;
-                allTerms[d][month].blogs = [];
-                allTerms[d][month].blogs.push(lines);
-
-              }
-
-            }
-
-          }
-
-        })
-      })
-      var monthly = [];
-      var currmonth;
-      for (var term in allTerms) {
-        monthly = []
-        var entry = {};
-        entry.term = term;
-        entry.values = {};
-        for (var val in allTerms[term]) {
-          if (val == "frequency") {
-            entry.values.frequency = allTerms[term][val];
-          }
-          else if (val == "category") {
-            entry.values.category = allTerms[term][val];
-          }
-          else {
-            currmonth = parse.parse(val);
-            monthly.push({
-              "month": currmonth,
-              "freq": allTerms[term][val].freq,
-              "blogs": allTerms[term][val].blogs
-            })
-          }
-        }
-        entry.values.monthfreq = monthly;
-
-
-        localallTermsArray.push(entry)
-      }
-
-      topTerms = getTopTerms(localallTermsArray);
-      stack = stack.offset("silhouette");
-      updateStreamGraph(topTerms, true);
-      plotRelations()
-    })
-    // return relatedwordsArray;
-
-  }
   function minDate(data) {
     return d3.min(data, function (d) {
       var localMin = d3.min(d.monthfreq, function (d) {
@@ -577,7 +375,9 @@
 
     vis.update(words)
   }
-
+function showNewWords2(vis, words) {
+    vis.update(words)
+  }
   // Encapsulate the word cloud functionality
   function wordCloud(selector) {
 
@@ -616,6 +416,10 @@
                 wordTip.show(d, this);
                 highlightLayer({term: d.text});
               })
+              .on("mouseover", function (d) {
+                 console.log(d);
+              })
+
               .on("mouseout", function (d) {
                 d3.select(this).attr("opacity", "1");
                 wordTip.hide();
@@ -651,10 +455,113 @@
     return {
       update: function (words) {
         var newHighRange;
-        if ($("#tagCloud").width() > 430)
-          newHighRange = 80;
-        else
-          newHighRange = 60;
+        
+          newHighRange = 50;
+      
+        sizeScale.domain([d3.min(words, function (d) {
+          return d.freq
+        }), d3.max(words, function (d) {
+          return d.freq
+        })])
+
+        var newLowRange = Math.floor((newHighRange) / words.length) + 9;
+        sizeScale.range([newLowRange, newHighRange]);
+
+
+        d3.layout.cloud().size([cloudWidth, cloudHeight])
+                .timeInterval(Infinity)
+                .words(words.map(function (d) {
+                  return {text: d.term, size: sizeScale(d.freq), frequency: d.freq, active: true, category: d.category};
+                }))
+                .padding(3)
+                .rotate(function () {
+                  return ~~(Math.random() * 2) * 90;
+                })
+                .font("Impact")
+                .fontSize(function (d) {
+                  return d.size
+                })
+                .on("end", draw)
+                .start();
+      }
+    }
+  }
+    function wordCloud2(selector) {
+
+    //Draw the word cloud
+    function draw(words) {
+      console.log(words);
+       words.sort(function(a, b) {
+      return a.frequency -b.frequency;
+    });
+      var cloud = svg2.selectAll("g text")
+              .data(words, function (d) {
+                return d.text;
+              })
+
+      //Entering words
+      cloud.enter().append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .style("font-family", "Impact")
+              .style("fill", function (d, i) {
+                 return streamColor(i);
+              })
+              .style("cursor", "pointer")
+              .style("pointer-events", "all")
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .attr("class", "cloud-terms")
+              .text(function (d) {
+                return d.text;
+              })
+              .on("mousemove", function (d) {
+                //  d3.select(this).attr("opacity", "0.6");
+                wordTip.show(d, this);
+                highlightLayer({term: d.text});
+              })
+              .on("mouseout", function (d) {
+                d3.select(this).attr("opacity", "1");
+                wordTip.hide();
+                unhighlightLayer();
+              })
+              //handle single and double clicks
+              .on("click", function (d) {
+                  console.log(d);
+              })
+
+
+      //Entering and existing words
+      cloud.transition()
+              .duration(100)
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .style("fill-opacity", 1);
+
+      //Exiting words
+      cloud.exit()
+              .transition()
+              .duration(100)
+              .style('fill-opacity', 1e-6)
+              .attr('font-size', 1)
+              .remove();
+
+    }
+
+
+    return {
+      update: function (words) {
+        var newHighRange;
+        
+          newHighRange = 50;
+      
         sizeScale.domain([d3.min(words, function (d) {
           return d.freq
         }), d3.max(words, function (d) {
@@ -684,61 +591,13 @@
     }
   }
 
-  function updateData() {
-    if ($("#wiki").is(":checked")) {
-      setSource("wiki");
-    } else {
-      setSource("wiki");
-    }
-    topTermsCount = $('#texttermscount').val();
-    start = parse.parse($('#fromYear').val() + " " + $('#fromMonth').val());
-    end = parse.parse($('#toYear').val() + " " + $('#toMonth').val());
-    if (source == "hp" && hpallTermsArray.length == 0) {
-
-
-      loadData("data/huffington.tsv", "hp");
-      cloudmessages.attr("opacity", 0);
-    }
-    else {
-
-
-      if ($("#relationships").is(":checked") && $("#relationshipTerm").val() != "") {
-        getTopTerms_particularTerm($("#relationshipTerm").val());
-        $("#tagCloud").removeClass("active").addClass("inactive");
-        $("#relationshipChart").addClass("active").removeClass("inactive");
-
-      }
-      else {
-        $("#tagCloud").addClass("loading");
-        setTimeout(function () {
-
-
-          updateVisualization();
-          svg.selectAll(".cloud-terms").style("fill", function (d, i) {
-            return getColor(d.category, d.text);
-          })
-          $("#tagCloud").removeClass("loading");
-        }, 0);
-
-        // If relationships are chosen, hide tag cloud and show relationships.
-        // If not, then hide relationships and show tag cloud.
-
-      }
-
-      // If relationships are chosen, hide tag cloud and show relationships.
-      // If not, then hide relationships and show tag cloud.
-
-
-    }
-  }
-
   function brushend() {
     start = brush.extent()[0];
     end = brush.extent()[1];
 
     $("#tagCloud").addClass("loading");
     setTimeout(function () {
-      updateVisualization();
+      // updateVisualization();
       svg.selectAll(".cloud-terms").style("fill", function (d, i) {
 
         return catcolors[d.term];
@@ -749,24 +608,24 @@
 
   }
 
-  function updateVisualization() {
+  // function updateVisualization() {
 
-    $("#range").text(start.getMonth() + " " + start.getFullYear() + " TO " + end.getMonth() + " " + end.getFullYear());
-    topTerms = getTopTerms(allTermsArray);
-    showNewWords(myWordCloud, topTerms);
-    //update stream graph, topterms.monthfreq contains monthly frequency
-    updateStreamGraph(topTerms, false);
-    if ($("#relationships").is(":checked")) {
-      $("#tagCloud").removeClass("active").addClass("inactive");
-      $("#relationshipChart").addClass("active").removeClass("inactive");
-      plotRelations()
-    } else {
-      $("#tagCloud").addClass("active").removeClass("inactive");
-      $("#relationshipChart").removeClass("active").addClass("inactive");
-    }
-  }
+  //   $("#range").text(start.getMonth() + " " + start.getFullYear() + " TO " + end.getMonth() + " " + end.getFullYear());
+  //   topTerms = getTopTerms(allTermsArray);
+  //   showNewWords(myWordCloud, topTerms);
+  //   //update stream graph, topterms.monthfreq contains monthly frequency
+  //   updateStreamGraph(topTerms, false);
+  //   if ($("#relationships").is(":checked")) {
+  //     $("#tagCloud").removeClass("active").addClass("inactive");
+  //     $("#relationshipChart").addClass("active").removeClass("inactive");
+  //     plotRelations()
+  //   } else {
+  //     $("#tagCloud").addClass("active").removeClass("inactive");
+  //     $("#relationshipChart").removeClass("active").addClass("inactive");
+  //   }
+  // }
 
-  function setStreamGraph() {
+  function setStreamGraph(topTerms) {
     // TODO(manorepo): Remove below comment.
     // stream code change - Moved the sub functions out of this function to make available for update.
 
@@ -783,8 +642,8 @@
 
     // Define dimensions.
     var margin = {top: 20, right: 0, bottom: 30, left: 40};
-    var svgWidth = $("#timeline").width();
-    var svgHeight = $("#timeline").height();
+    var svgWidth = $("#timeline").width()
+    var svgHeight = 500;
     var width = svgWidth * 0.98 - margin.left - margin.right;
     var height = svgHeight - margin.bottom - margin.top;
 
@@ -799,7 +658,7 @@
     xAxis = d3.svg.axis()
             .scale(timelineX)
             .orient("bottom")
-            .ticks(20)
+            .ticks(15)
             .tickFormat(d3.time.format("%b %d"));
 
     yAxis = d3.svg.axis()
@@ -832,9 +691,9 @@
 
     // TODO: Sort topTerms by category.
     topTerms.sort(function(a, b) {
-      return parseFloat(a.freq) - parseFloat(b.freq);
+      return a.freq - b.freq;
     });
-
+console.log(topTerms);
     layers = stack(topTerms);
 
     timelineX.domain([endDate, startDate]);
@@ -874,6 +733,162 @@
             .on("mouseout", function () {
               unhighlightLayer();
               unHighlightWord();
+            });
+
+    // Lines separating stacked layers.
+    timeline.selectAll(".layerLine")
+            .data(layers)
+            .enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layerLine")
+            .call(updateLayerLine);
+
+    // Add axes.
+    timeline.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+    timeline.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+    timeline.append("text")
+        .attr("transform","rotate(-90)")
+        .attr("y",0 - margin.left-4)
+        .attr("x",0 - (height / 2))
+        .attr("dy","1em")
+        .style("text-anchor","middle")
+        .text("frequency");
+    timeline.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Date")
+        .attr("class", "axis-label")
+
+    // Create legend.
+    var legend = timeline.append("g")
+        .attr("transform", "translate(" + (width - 100) + "," + (-margin.top + 2) + ")")
+        .style("fill", "rgb(255, 142, 44)");
+
+    var categoryColors = [
+      { category: "Person", color: "#d62728" },
+        { category: "Location", color: "rgb(44, 160, 44)" },
+      { category: "Organization", color: "#1f77b4" },
+      { category: "Miscellaneous", color: "#ff7f0e" }
+    ];
+
+
+
+  }
+
+    function setStreamGraph2(topTerms) {
+    // TODO(manorepo): Remove below comment.
+    // stream code change - Moved the sub functions out of this function to make available for update.
+
+    startDate = maxDate(topTerms);
+
+    endDate = minDate(topTerms);
+
+    topTerms.forEach(function (d) {
+      d.monthfreq = fillData(d.monthfreq, startDate, endDate);
+    });
+
+    zeroSeries = [{freq: 0, month: endDate}];
+    zeroSeries = fillData(zeroSeries, startDate, endDate);
+
+    // Define dimensions.
+    var margin = {top: 20, right: 0, bottom: 30, left: 40};
+    var svgWidth = $("#timeline").width();
+    var svgHeight = 500;
+    var width = svgWidth * 0.98 - margin.left - margin.right;
+    var height = svgHeight - margin.bottom - margin.top;
+
+    // Define scales.
+    timelineX = d3.time.scale()
+            .range([0, width]);
+
+    timelineY = d3.scale.linear()
+            .range([height, 0]);
+
+    // Define axes.
+    xAxis = d3.svg.axis()
+            .scale(timelineX)
+            .orient("bottom")
+            .ticks(15)
+            .tickFormat(d3.time.format("%b %d"));
+
+    yAxis = d3.svg.axis()
+            .scale(timelineY)
+            .orient("left")
+            .ticks(7);
+
+    // Define stacked areas and lines that separate the areas.
+    area = d3.svg.area()
+            .interpolate("cardinal")
+            .x(function (d) {
+              return timelineX(d.month);
+            })
+            .y0(function (d) {
+                return timelineY(d.y0);
+            })
+            .y1(function (d) {
+              return timelineY(d.y0+ d.y);
+            });
+
+    line = d3.svg.line()
+            .interpolate("cardinal")
+            .x(function (d) {
+               // console.log(d.month)
+              return timelineX(d.month);
+            })
+            .y(function (d) {
+              return timelineY(d.y0);
+            });
+
+    // TODO: Sort topTerms by category.
+    topTerms.sort(function(a, b) {
+      return a.freq - b.freq;
+    });
+console.log(topTerms);
+    layers = stack(topTerms);
+
+    timelineX.domain([endDate, startDate]);
+    timelineY.domain([0, d3.max(layers, function (d) {
+      var localMax = d3.max(d.monthfreq, function (d) {
+        return d.y0 + d.y;
+      });
+      return localMax;
+    })]);
+
+    timeline = d3.select("#timeline2").append("svg")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define a clip path to prevent the graph from going out of its region on zoom.
+    defs = timeline.append("defs");
+    defs.append("clipPath")
+            .attr("id", "sideClip")
+            .append("rect")
+            .attr("transform", "translate(0,-" + margin.top + ")")
+            .attr("width", width)
+            .attr("height", height + margin.top);
+
+    // Stacked layers.
+    timeline.selectAll(".layer")
+            .data(layers)
+            .enter().append("path")
+            .attr("clip-path", "url(#sideClip)")
+            .attr("class", "layer")
+            .call(updateLayer)
+            .on("mouseover", function (d) {
+              highlightLayer(d);
+              // highlightWord(d);
+            })
+            .on("mouseout", function () {
+              unhighlightLayer();
+              // unHighlightWord();
             });
 
     // Lines separating stacked layers.
@@ -1131,9 +1146,4 @@
     else
       return fill(i);
   }
-
-
-
-
-console.log("a");
 </script>
