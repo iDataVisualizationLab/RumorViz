@@ -68,6 +68,7 @@
   var line;
   var layers;
   var timeline;
+  var timeline2;
   var defs;
   var timelineX
   var timelineY;
@@ -166,7 +167,7 @@
       var monthly = [];
       var currmonth;
       for (var term in data) {
-        console.log(data)
+        // console.log(data)
         monthly = []
         var entry = {};
         entry.term = term;
@@ -298,10 +299,11 @@
         var allTermsArray = wnallTermsArray;
         allTermsMap = wnallTermsMap
         var topTerms3 = getTopTerms(allTermsArray);
+        updateStreamGraph(topTerms3, false);
         showNewWords2(myWordCloud2, topTerms3);
         //Set stream graph, topterms.monthfreq contains monthly frequency
         // setStreamGraph2(topTerms3);
-        updateStreamGraph(topTerms3, false);
+        
        cloudmessages.attr("opacity", 0);
 
     });
@@ -473,19 +475,21 @@ function showNewWords2(vis, words) {
                 wordTip.show(d, this);
                 highlightLayer({term: d.text});
               })
-                            .on("mouseover", function (d) {
+               .on("mouseover", function (d) {
                  console.log(d);
+                 loadDataUpdate("data/diseaseData.csv", "wn", d.text);
               })
 
               .on("mouseout", function (d) {
                 d3.select(this).attr("opacity", "1");
                 wordTip.hide();
                 unhighlightLayer();
+                loadDataUpdate("data/diseaseData.csv", "wn", "all");
               })
               //handle single and double clicks
               .on("click", function (d) {
                   console.log(d);
-                  loadDataUpdate("data/diseaseData.csv", "wn", d.text);
+                  // loadDataUpdate("data/diseaseData.csv", "wn", d.text);
               })
 
       //Entering and existing words
@@ -579,12 +583,12 @@ function showNewWords2(vis, words) {
               .on("mousemove", function (d) {
                 //  d3.select(this).attr("opacity", "0.6");
                 wordTip.show(d, this);
-                highlightLayer({term: d.text});
+                highlightLayer2({term: d.text});
               })
               .on("mouseout", function (d) {
                 d3.select(this).attr("opacity", "1");
                 wordTip.hide();
-                unhighlightLayer();
+                unhighlightLayer2();
               })
               //handle single and double clicks
               .on("click", function (d) {
@@ -918,14 +922,14 @@ console.log(topTerms);
       return localMax;
     })]);
 
-    timeline = d3.select("#timeline2").append("svg")
+    timeline2 = d3.select("#timeline2").append("svg")
             .attr("width", svgWidth)
             .attr("height", svgHeight)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Define a clip path to prevent the graph from going out of its region on zoom.
-    defs = timeline.append("defs");
+    defs = timeline2.append("defs");
     defs.append("clipPath")
             .attr("id", "sideClip")
             .append("rect")
@@ -934,23 +938,23 @@ console.log(topTerms);
             .attr("height", height + margin.top);
 
     // Stacked layers.
-    timeline.selectAll(".layer")
+    timeline2.selectAll(".layer")
             .data(layers)
             .enter().append("path")
             .attr("clip-path", "url(#sideClip)")
             .attr("class", "layer")
             .call(updateLayer)
             .on("mouseover", function (d) {
-              highlightLayer(d);
-              highlightWord(d);
+              highlightLayer2(d);
+              highlightWord2(d);
             })
             .on("mouseout", function () {
-              unhighlightLayer();
-              unHighlightWord();
+              unhighlightLayer2();
+              unHighlightWord2();
             });
 
     // Lines separating stacked layers.
-    timeline.selectAll(".layerLine")
+    timeline2.selectAll(".layerLine")
             .data(layers)
             .enter().append("path")
             .attr("clip-path", "url(#sideClip)")
@@ -958,29 +962,29 @@ console.log(topTerms);
             .call(updateLayerLine);
 
     // Add axes.
-    timeline.append("g")
+    timeline2.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
-    timeline.append("g")
+    timeline2.append("g")
             .attr("class", "y axis")
             .call(yAxis);
-    timeline.append("text")
+    timeline2.append("text")
         .attr("transform","rotate(-90)")
         .attr("y",0 - margin.left-4)
         .attr("x",0 - (height / 2))
         .attr("dy","1em")
         .style("text-anchor","middle")
         .text("frequency");
-    timeline.append("text")
+    timeline2.append("text")
         .attr("transform", "translate(" + (width / 2) + " ," + (height+margin.bottom) + ")")
         .style("text-anchor", "middle")
         .text("Date")
         .attr("class", "axis-label")
 
     // Create legend.
-    var legend = timeline.append("g")
+    var legend = timeline2.append("g")
         .attr("transform", "translate(" + (width - 100) + "," + (-margin.top + 2) + ")")
         .style("fill", "rgb(255, 142, 44)");
 
@@ -1026,6 +1030,7 @@ console.log(topTerms);
   }
 
   function updateStreamGraph(topTerms, hasTransition) {
+    console.log("here");
     startDate = maxDate(topTerms);
 
     endDate = minDate(topTerms);
@@ -1046,7 +1051,7 @@ console.log(topTerms);
     })]);
 
     // Stacked layers.
-    var stackLayers = timeline.selectAll(".layer")
+    var stackLayers = timeline2.selectAll(".layer")
             .data(layers);
     stackLayers.enter().append("path")
             .attr("clip-path", "url(#sideClip)")
@@ -1062,7 +1067,7 @@ console.log(topTerms);
             });
 
     // Lines separating stacked layers.
-    var layerLines = timeline.selectAll(".layerLine")
+    var layerLines = timeline2.selectAll(".layerLine")
             .data(layers);
     layerLines.enter().append("path")
             .attr("clip-path", "url(#sideClip)")
@@ -1070,18 +1075,18 @@ console.log(topTerms);
             .call(updateLayerLine);
 
     if (hasTransition) {
-      timeline.selectAll(".layer")
+      timeline2.selectAll(".layer")
               .transition()
               .call(updateLayer);
 
-      timeline.selectAll(".layerLine")
+      timeline2.selectAll(".layerLine")
               .transition()
               .call(updateLayerLine);
     } else {
-      timeline.selectAll(".layer")
+      timeline2.selectAll(".layer")
               .call(updateLayer);
 
-      timeline.selectAll(".layerLine")
+      timeline2.selectAll(".layerLine")
               .call(updateLayerLine);
     }
 
@@ -1091,10 +1096,10 @@ console.log(topTerms);
 
     // Add axes.
 
-    timeline.select(".x.axis")
+    timeline2.select(".x.axis")
             .call(xAxis);
 
-    timeline.select(".y.axis")
+    timeline2.select(".y.axis")
             .call(yAxis);
 
   }
@@ -1134,9 +1139,57 @@ console.log(topTerms);
               }
             });
   }
+    function highlightLayer2(d) {
+    timeline2.selectAll(".layer")
+            .attr("opacity", function (d1) {
+              if (d.term == d1.term) {
+                return "1";
+              } else {
+                return "0.2";
+              }
+            });
+    timeline2.selectAll(".layerLine")
+            .attr("opacity", function (d1) {
+              if (d.term == d1.term) {
+                return "1";
+              } else {
+                return "0.2";
+              }
+            });
+  }
 
   function highlightWord(d) {
     var cloudText = svg.selectAll("g text")
+            .each(function (d1) {
+              var currentText = d3.select(this);
+              if (d1.text == d.term) {
+                wordTip.show(d1, this);
+                currentText.attr("opacity", "1");
+              } else {
+                currentText.attr("opacity", "0.1");
+              }
+            });
+    if ($("#relationshipChart").hasClass("active")) {
+      wordTip.hide();
+
+      container.selectAll("path.chord").style("opacity", function (p) {
+        // COMPARE CHORD IDS
+        return (p.source._id === d.term || p.target._id == d.term) ? 1 : 0.1;
+
+
+      });
+      container.selectAll(".group").select("path").style("opacity", function (p) {
+        if (p._id == d.term)
+          return 1
+        else
+          return 0.1
+
+      });
+
+    }
+  }
+    function highlightWord2(d) {
+    var cloudText = svg2.selectAll("g text")
             .each(function (d1) {
               var currentText = d3.select(this);
               if (d1.text == d.term) {
@@ -1185,11 +1238,35 @@ console.log(topTerms);
 
     }
   }
+  function unHighlightWord2() {
+    svg2.selectAll("g text")
+            .attr("opacity", "1")
+            .call(wordTip.hide);
+    if ($("#relationshipChart").hasClass("active")) {
 
+      container.selectAll("path.chord").style("opacity", function (p) {
+        // COMPARE CHORD IDS
+        return 1;
+
+
+      });
+      container.selectAll(".group").select("path").style("opacity", function (p) {
+        return 1;
+
+      });
+
+    }
+  }
   function unhighlightLayer() {
     timeline.selectAll(".layer")
             .attr("opacity", "1");
     timeline.selectAll(".layerLine")
+            .attr("opacity", "1");
+  }
+    function unhighlightLayer2() {
+    timeline2.selectAll(".layer")
+            .attr("opacity", "1");
+    timeline2.selectAll(".layerLine")
             .attr("opacity", "1");
   }
   function getColor(category, term) {

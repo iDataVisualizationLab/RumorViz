@@ -261,10 +261,12 @@ function preProcessData3(dName) {
   var formatDate = d3.time.format("%Y-%m-%d %H:%M:%S");
   var parse2 = d3.time.format("%Y %m %d %H");
   this.startProcess3 = function (filename, callback) {
+    var count = 0;
     d3.csv(filename, function (data) {
       // console.log(data);
       data.forEach(function (d) {
         if(d.diseaseName == dName){
+          count = 100;
         d.person = d.content;
          var persons = d.person;
         var timeStamp = d.timestamp;
@@ -318,6 +320,66 @@ function preProcessData3(dName) {
         })
       }
       });
+      if(count==0){
+       data.forEach(function (d) {
+        if(d.diseaseName.length>0){
+        // console.log("working elseif");
+        d.person = d.content;
+         var persons = d.person;
+        var timeStamp = d.timestamp;
+        var timeNow = new Date(Date.parse(timeStamp));
+        var time = formatDate(timeNow);
+        d.time = time;
+        var month = parse2(timeNow);
+        ++lines;
+
+        var personsArray = persons.split(",");
+        personsArray.forEach(function (d) {
+          if(stopObj[d]!=1){
+          if (d.length >0) {
+            //allTerms consideration.
+            if (allTerms[d]) {
+              var freq = allTerms[d].frequency;
+              allTerms[d].frequency = freq + 1;
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+            }
+            else {
+              allTerms[d] = new Object();
+              allTerms[d].frequency = 1;
+              allTerms[d].category = "Person";
+              if (allTerms[d][month]) {
+                allTerms[d][month].freq = allTerms[d][month].freq + 1;
+                allTerms[d][month].blogs.push(lines);
+              }
+              else {
+                allTerms[d][month] = new Object();
+                allTerms[d][month].freq = 1;
+                allTerms[d][month].blogs = [];
+                allTerms[d][month].blogs.push(lines);
+
+              }
+
+            }
+
+          }
+          }
+
+        })
+      }
+      });
+
+    }
+      
 
       callback(allTerms);
       console.log(lines);
