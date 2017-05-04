@@ -145,6 +145,7 @@
     myWordCloud2 = wordCloud2('#tagCloud2');
 //    loadData("data/wikinews.tsv", "wn")
       loadData("data/diseaseData.csv", "wn")
+      // loadDataUpdate("data/diseaseData.csv", "wn", "cancer");
 //      loadData("data/huffington.tsv", "wn")
 //      loadData("data/americablog.tsv", "wn")
   });
@@ -192,7 +193,7 @@
         localallTermsArray.push(entry)
       }
       console.log(localallTermsArray);
-      debugger;
+      // debugger;
 
         wnallTermsArray = localallTermsArray;
         wnallTermsMap = localallTermsMap;
@@ -248,6 +249,59 @@
         showNewWords2(myWordCloud2, topTerms2);
         //Set stream graph, topterms.monthfreq contains monthly frequency
         setStreamGraph2(topTerms2);
+       cloudmessages.attr("opacity", 0);
+
+    });
+  
+  }
+
+    function loadDataUpdate(filename, source, dName) {
+     var data3 = preProcessData3(dName);
+    console.log(data3);
+  data3.startProcess3(filename, function (data) {
+           var localallTermsArray = [];
+    var localallTermsMap;
+      console.log(data)
+      cloudmessages.attr("opacity", 1);
+      localallTermsMap = data;
+      var monthly = [];
+      var currmonth;
+      for (var term in data) {
+        monthly = []
+        var entry = {};
+        entry.term = term;
+        entry.values = {};
+        for (var val in data[term]) {
+          if (val == "frequency") {
+            entry.values.frequency = data[term][val];
+          }
+          else if (val == "category") {
+            entry.values.category = data[term][val];
+          }
+          else {
+            currmonth = parse.parse(val);
+            monthly.push({
+              "month": currmonth,
+              "freq": data[term][val].freq,
+              "blogs": data[term][val].blogs
+            })
+          }
+        }
+        entry.values.monthfreq = monthly;
+
+
+        localallTermsArray.push(entry)
+      }
+
+        wnallTermsArray = localallTermsArray;
+        wnallTermsMap = localallTermsMap;
+        var allTermsArray = wnallTermsArray;
+        allTermsMap = wnallTermsMap
+        var topTerms3 = getTopTerms(allTermsArray);
+        showNewWords2(myWordCloud2, topTerms3);
+        //Set stream graph, topterms.monthfreq contains monthly frequency
+        // setStreamGraph2(topTerms3);
+        updateStreamGraph(topTerms3, false);
        cloudmessages.attr("opacity", 0);
 
     });
@@ -431,6 +485,7 @@ function showNewWords2(vis, words) {
               //handle single and double clicks
               .on("click", function (d) {
                   console.log(d);
+                  loadDataUpdate("data/diseaseData.csv", "wn", d.text);
               })
 
       //Entering and existing words
@@ -980,7 +1035,7 @@ console.log(topTerms);
     });
 
     layers = stack(topTerms);
-    stack = stack.offset("wiggle");
+    stack = stack.offset("silhouette");
     
     timelineX.domain([endDate, startDate]);
     timelineY.domain([0, d3.max(layers, function (d) {
